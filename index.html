@@ -11,247 +11,210 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Pacifico&display=swap" rel="stylesheet">
 
   <style>
+    /* VARIABLES BASE */
     :root {
       --green: #78ad23;
       --green-dark: #5f9419;
       --navy: #1d2a44;
-      --blue: #8fd0e7;
-      --mint: #dff2e8;
       --soft: #f6fbf6;
       --yellow: #f4da2c;
       --text: #354056;
       --shadow: 0 18px 40px rgba(31,50,68,.10);
-      --brand-gradient: radial-gradient(circle at 35% 28%, #1f6f48 0%, #14555b 48%, #083a40 100%);
     }
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { margin: 0; font-family: 'Montserrat', sans-serif; color: var(--text); background: #fff; line-height: 1.6; }
+    body { margin: 0; font-family: 'Montserrat', system-ui, sans-serif; color: var(--text); background: #fff; }
     img { max-width: 100%; display: block; }
-    a { text-decoration: none; color: inherit; transition: all 0.3s ease; }
-
+    a { text-decoration: none; color: inherit; }
+    h1, h2, h3 { color: var(--navy); margin: 0; }
+    
     .section-pad { padding: 90px 7vw; }
-
-    /* HEADER & BRAND */
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(14px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 6vw;
-      min-height: 120px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .brand {
-      width: 300px;
-      min-height: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px 40px 25px 60px;
-      background: var(--brand-gradient);
-      border-radius: 0 0 120px 0;
-      margin-left: -6vw;
-      box-shadow: 0 10px 30px rgba(8,58,64,0.2);
-    }
-
-    .brand img {
-      width: 220px !important;
-      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
-    }
-
-    .main-nav {
-      display: flex;
-      gap: 20px;
-      flex: 1;
-      justify-content: center;
-    }
-
-    .main-nav a {
-      padding: 10px 20px;
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--navy);
-      border-radius: 999px;
-      border: 1px solid transparent;
-    }
-
-    .main-nav a:hover {
-      color: var(--green-dark);
-      background: var(--soft);
-      border-color: var(--green);
-    }
-
+    
+    /* BOTONES */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 999px;
-      padding: 16px 32px;
-      font-size: 14px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 999px; padding: 15px 28px; font-size: 13px;
+      font-weight: 800; text-transform: uppercase; letter-spacing: .02em;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-
+    .btn:hover { transform: translateY(-2px); }
     .btn-primary {
       background: linear-gradient(135deg, var(--green), var(--green-dark));
-      color: #fff;
-      box-shadow: 0 10px 22px rgba(120,173,35,0.3);
-      border: none;
+      color: #fff; box-shadow: 0 10px 22px rgba(120,173,35,.25);
+    }
+    .btn-outline { border: 2px solid var(--green); color: var(--green-dark); background: #fff; }
+
+    /* HEADER Y MARCA */
+    .site-header {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(255,255,255,.9); backdrop-filter: blur(14px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 6vw; min-height: 120px; overflow: visible;
+    }
+    
+    /* BLOB DE MARCA - Ajustado para que el fondo verde ocupe más espacio */
+    .brand {
+      display: flex; align-items: center; justify-content: center;
+      width: 380px; /* Fondo más ancho */
+      min-height: 180px; /* Fondo más alto */
+      margin-left: -6vw; 
+      padding: 30px 50px 40px 80px; /* Empuja el logo para dejar ver más fondo */
+      background: radial-gradient(circle at 35% 28%, #1f6f48 0%, #14555b 48%, #083a40 100%);
+      border-radius: 0 0 180px 0 / 0 0 150px 0;
+      box-shadow: 0 18px 38px rgba(8,58,64,.28);
+      align-self: flex-start;
+    }
+    .brand img {
+      width: 220px; /* Tamaño del logo proporcionado dentro del fondo */
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.24));
     }
 
-    .btn-outline {
-      border: 2px solid var(--green);
-      color: var(--green-dark);
-      background: transparent;
+    /* NAVEGACIÓN */
+    .main-nav { display: flex; gap: 14px; flex: 1; justify-content: center; }
+    .main-nav a {
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 999px; padding: 12px 22px; font-size: 12px;
+      font-weight: 800; text-transform: uppercase; letter-spacing: .035em;
+      border: 2px solid rgba(120,173,35,.55); color: var(--green-dark);
+      background: #fff; box-shadow: 0 10px 22px rgba(120,173,35,.10);
+      transition: all 0.2s ease;
+    }
+    .main-nav a:hover {
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      color: #fff; border-color: transparent; transform: translateY(-1px);
+      box-shadow: 0 12px 25px rgba(120,173,35,.23);
     }
 
     /* HERO */
     .hero {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-      gap: 40px;
-      min-height: 80vh;
+      min-height: 760px; display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; gap: 40px; position: relative; overflow: hidden;
     }
-
-    .eyebrow { font-weight: 800; color: #77b8d8; margin-bottom: 15px; display: flex; align-items: center; }
-    .eyebrow::before { content: "🍃"; margin-right: 8px; }
-
-    h1 { font-size: clamp(40px, 6vw, 80px); line-height: 1.1; color: var(--navy); margin: 0; text-transform: uppercase; }
+    .hero:after {
+      content: ""; position: absolute; right: -8%; bottom: 7%;
+      width: 58%; height: 36%; background: linear-gradient(135deg, #cdebdc, #83c8b7);
+      border-radius: 70% 0 0 0; z-index: -2;
+    }
+    .hero:before {
+      content: ""; position: absolute; right: 8%; top: 18%;
+      width: 420px; height: 420px; background: #e9f7fb; border-radius: 50%; z-index: -3;
+    }
+    .eyebrow { font-weight: 800; color: #77b8d8; margin: 0 0 24px; }
+    .eyebrow:before { content: "🍃"; margin-right: 8px; color: var(--green); }
+    h1 { font-size: clamp(52px, 7vw, 96px); line-height: .98; text-transform: uppercase; letter-spacing: .02em; }
     h1 span { color: var(--green); }
+    .brush-line { width: 240px; height: 9px; background: var(--yellow); border-radius: 50%; margin: 28px 0; }
+    .hero-text { font-size: 21px; line-height: 1.65; max-width: 600px; }
+    .hero-actions { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 34px; }
+    .hero-image { position: relative; z-index: 1; align-self: end; }
+    .hero-image img {
+      position: relative; z-index: 3; width: min(500px, 46vw); max-height: 680px;
+      object-fit: contain; object-position: center bottom;
+    }
 
-    .hero-text { font-size: 1.2rem; max-width: 500px; margin: 25px 0; }
-    .hero-actions { display: flex; gap: 15px; }
-
-    .hero-image { position: relative; display: flex; justify-content: flex-end; }
-    .hero-image img { position: relative; z-index: 2; max-height: 600px; }
-
-    /* PILLARS - ICONOS CENTRADOS */
+    /* PILARES (TARJETAS CENTRADAS) */
     .pillars {
-      width: min(1200px, 90vw);
-      margin: -60px auto 60px;
-      background: #fff;
-      border-radius: 30px;
-      box-shadow: var(--shadow);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      position: relative;
-      z-index: 5;
-      overflow: hidden;
+      width: min(1380px, 88vw); margin: -85px auto 0; background: #fff;
+      border-radius: 22px; box-shadow: var(--shadow); display: grid;
+      grid-template-columns: repeat(4, 1fr); position: relative; z-index: 2;
     }
-
     .pillars article {
-      padding: 40px 20px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      border-right: 1px solid #eee;
+      padding: 34px 32px; border-right: 1px solid #e5ece8;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
     }
-
-    .pillars article:last-child { border-right: none; }
-
+    .pillars article:last-child { border-right: 0; }
     .pillars article img {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 20px;
-      background: var(--soft);
-      padding: 15px;
-      border-radius: 50%;
+      width: 90px; height: 90px; object-fit: contain;
+      margin: 0 auto 20px auto; /* Centrado estricto */
+      background: #e7f2f1; border-radius: 50%; padding: 18px;
+      box-shadow: 0 10px 20px rgba(31,50,68,.08);
     }
+    .pillars h3 { font-size: 17px; text-transform: uppercase; margin-bottom: 10px; }
+    .pillars p { line-height: 1.65; margin: 0; }
 
-    .pillars h3 { font-size: 16px; margin-bottom: 10px; color: var(--navy); }
-
-    /* ABOUT */
-    .about {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 80px;
-      align-items: center;
-    }
-
-    .about-photo img { border-radius: 30px; box-shadow: var(--shadow); }
+    /* SOBRE MÍ & YANINA FONT */
+    .about { display: grid; grid-template-columns: 0.9fr 1fr; gap: 60px; align-items: center; }
+    .about-photo img { border-radius: 18px; box-shadow: var(--shadow); width: 100%; }
+    .about h2 { font-size: clamp(34px, 4vw, 54px); line-height: 1.15; margin-bottom: 20px; }
     
-    .about h2 { font-size: clamp(32px, 4vw, 50px); color: var(--navy); margin-bottom: 20px; }
-    
-    /* Clase solicitada para la fuente de marca */
+    /* Corrección tipografía Yanina */
     .yanina-brand {
       font-family: 'Pacifico', cursive;
+      font-weight: 400;
       color: var(--green);
+      font-size: 1.1em;
       text-transform: none;
+      display: inline-block;
     }
+    .about-copy p { line-height: 1.65; font-size: 18px; margin-bottom: 20px; }
 
     /* SERVICIOS */
-    .section-heading { text-align: center; max-width: 700px; margin: 0 auto 60px; }
-    .service-list { display: grid; gap: 30px; }
-
+    .services { position: relative; background: linear-gradient(180deg, #fff, #fbfdfb); overflow: hidden; }
+    .section-heading { max-width: 660px; margin-bottom: 46px; }
+    .section-heading h2 { font-size: clamp(34px, 4vw, 54px); line-height: 1.15; margin-bottom: 20px; }
+    .section-heading h2 span { color: var(--green); }
+    .service-list { display: grid; gap: 26px; }
     .service-card {
-      display: grid;
-      grid-template-columns: 120px 1fr 250px;
-      gap: 30px;
-      align-items: center;
-      background: #fff;
-      padding: 30px;
-      border-radius: 25px;
-      box-shadow: var(--shadow);
+      display: grid; grid-template-columns: 120px 1fr 300px; gap: 30px;
+      align-items: center; background: #fff; border-radius: 20px;
+      box-shadow: var(--shadow); padding: 22px 22px 22px 34px;
     }
-
     .service-icon {
-      width: 100px;
-      height: 100px;
-      background: var(--soft);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto; /* Asegura centrado en responsive */
-    }
-
-    .service-icon img { width: 60px; }
-
-    .service-photo {
-      height: 150px;
-      border-radius: 20px;
-      background-size: cover;
-      background-position: center;
-    }
-
-    .measure { background-image: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80'); }
-    .training { background-image: url('https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80'); }
-    .food { background-image: url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'); }
-    .follow { background-image: url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80'); }
-
-    /* TESTIMONIALS & CTA */
-    .testimonials { background: var(--soft); text-align: center; }
-    .quote-card p {
-      font-family: 'Pacifico', cursive;
-      font-size: clamp(24px, 3vw, 40px);
-      color: var(--green-dark);
-      max-width: 800px;
+      width: 104px; height: 104px; display: grid; place-items: center;
+      border-radius: 50%; background: #e7f2f1; box-shadow: 0 10px 20px rgba(31,50,68,.08);
       margin: 0 auto;
     }
+    .service-icon img { width: 65px; height: 65px; object-fit: contain; }
+    .service-card h3 { font-size: 20px; margin-bottom: 10px; }
+    .service-card p { line-height: 1.65; margin: 0; }
+    .service-photo { height: 160px; border-radius: 16px; background-size: cover; background-position: center; }
+    
+    .measure { background-image: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=900&q=80'); }
+    .training { background-image: url('https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=900&q=80'); }
+    .food { background-image: url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80'); }
+    .follow { background-image: url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80'); }
 
+    /* EXTRAS (TESTIMONIOS Y CONTACTO) */
+    .plans, .testimonials { background: var(--soft); }
+    .quote-card { max-width: 980px; margin: 0 auto; text-align: center; }
+    .quote-card p { font-size: clamp(28px, 3vw, 44px); line-height: 1.22; color: var(--green-dark); font-weight: 800; margin: 0; }
     .cta { text-align: center; background: linear-gradient(135deg, #f5f8e6, #fff); }
-    .cta h2 { font-size: clamp(30px, 5vw, 60px); margin: 20px 0; color: var(--navy); }
+    .cta p { font-size: 20px; font-weight: 700; color: var(--green-dark); }
+    .cta h2 { font-size: clamp(34px, 4vw, 54px); max-width: 780px; margin: 10px auto 30px auto; }
 
     /* RESPONSIVE */
-    @media (max-width: 900px) {
-      .site-header { padding: 10px 5vw; flex-direction: column; min-height: auto; }
-      .brand { margin-left: -5vw; width: 240px; border-radius: 0 0 80px 0; min-height: 90px; padding: 15px; }
-      .brand img { width: 160px !important; }
-      .main-nav { margin: 20px 0; flex-wrap: wrap; }
-      .hero, .about { grid-template-columns: 1fr; text-align: center; }
-      .hero-image, .hero-copy { justify-content: center; }
+    @media(max-width: 900px) {
+      .site-header { padding: 0 5vw 18px; flex-direction: column; align-items: center; min-height: auto; }
+      .brand {
+        width: 280px; min-height: 130px; margin-left: 0; align-self: center;
+        padding: 20px 30px 30px 30px; border-radius: 0 0 120px 120px;
+      }
+      .brand img { width: 170px; margin: 0 auto; }
+      .main-nav { width: 100%; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+      .main-nav a { font-size: 11px; padding: 10px 16px; }
+      .header-cta { display: none; /* Ocultar en móvil para ahorrar espacio si hay nav */ }
+      
+      .hero, .about { grid-template-columns: 1fr; }
+      .hero { padding-top: 50px; text-align: center; }
       .hero-actions { justify-content: center; }
-      .pillars { grid-template-columns: 1fr 1fr; margin-top: 20px; }
-      .pillars article { border-right: none; border-bottom: 1px solid #eee; }
-      .service-card { grid-template-columns: 1fr; text-align
+      .hero-image img { width: min(360px, 86vw); }
+      .brush-line { margin: 28px auto; }
+
+      .pillars { grid-template-columns: 1fr; margin-top: -40px; }
+      .pillars article { border-right: 0; border-bottom: 1px solid #e5ece8; }
+      .pillars article:last-child { border-bottom: 0; }
+      
+      .service-card { grid-template-columns: 1fr; text-align: center; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="Yanina Trainer & Nutrition Coach">
+      <img src="assets/logo-transp.png" alt="Yanina Trainer & Nutrition Coach" />
+    </a>
+
+    <nav class="main-nav" aria-label="Navegación principal">
+      <a href
