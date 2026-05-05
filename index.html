@@ -20,10 +20,91 @@
       --white:#ffffff;
     }
 
-    .site-header{
-      position:relative;
-      overflow:hidden;
-    }
+   /* MOBILE FIX - header + hero */
+@media (max-width: 700px){
+
+  .site-header{
+    position:relative !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    justify-content:flex-start !important;
+    padding:0 6vw 28px !important;
+    gap:22px !important;
+    overflow:visible !important;
+  }
+
+  .site-header .brand{
+    width:100vw !important;
+    max-width:420px !important;
+    min-height:230px !important;
+    margin-left:-6vw !important;
+    padding:38px 42px 42px 52px !important;
+    align-self:flex-start !important;
+    border-radius:0 0 170px 0 / 0 0 150px 0 !important;
+  }
+
+  .site-header .brand img{
+    width:300px !important;
+    max-width:78vw !important;
+    height:auto !important;
+  }
+
+  .header-cta{
+    order:2 !important;
+    margin:0 auto !important;
+    width:min(310px, 86vw) !important;
+  }
+
+  .main-nav{
+    order:3 !important;
+    width:100% !important;
+    display:flex !important;
+    flex-wrap:wrap !important;
+    justify-content:center !important;
+    gap:14px !important;
+  }
+
+  .main-nav a{
+    font-size:12px !important;
+    padding:12px 20px !important;
+  }
+
+  .hero{
+    display:flex !important;
+    flex-direction:column !important;
+    min-height:auto !important;
+    padding-top:50px !important;
+    overflow:hidden !important;
+  }
+
+  .hero-copy{
+    position:relative !important;
+    z-index:3 !important;
+  }
+
+  .hero-image{
+    width:100% !important;
+    min-height:auto !important;
+    margin-top:20px !important;
+  }
+
+  .hero-image::before{
+    width:420px !important;
+    height:420px !important;
+    right:-140px !important;
+    bottom:120px !important;
+  }
+
+  .hero-image img{
+    width:min(330px, 82vw) !important;
+    max-height:none !important;
+  }
+
+  h1{
+    font-size:clamp(44px, 15vw, 68px) !important;
+  }
+}
 
     .brand{
       position:relative;
