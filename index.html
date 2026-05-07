@@ -735,19 +735,24 @@
       </a>
     </section>
   </main>
-  <script>
+ <script>
 fetch("posts.json")
   .then(r => r.json())
   .then(posts => {
-    const grid = document.getElementById("blogGrid");
+    const grid = document.getElementById("blogGrid") || document.getElementById("blog-grid");
     if (!grid) return;
-    grid.innerHTML = posts.filter(p => p.status === "published").slice(0,3).map(p => `
-      <article class="blog-card">
-        <p class="eyebrow">${p.category || "Blog"}</p>
-        <h3>${p.title}</h3>
-        <p>${p.excerpt || ""}</p>
-        <a class="btn btn-outline" href="post.html?slug=${p.slug}">Leer más</a>
-      </article>
+
+    const published = posts.filter(p => p.status === "published");
+    grid.innerHTML = published.slice(0,3).map(p => `
+      <a class="blog-card" href="post.html?slug=${p.slug}">
+        ${p.image ? `<img src="${p.image}" alt="${p.title}" class="blog-card-image">` : ""}
+        <div class="blog-card-body">
+          <p class="eyebrow">${p.category || "Blog"}</p>
+          <h3>${p.title}</h3>
+          <p>${p.excerpt || ""}</p>
+          <span class="btn btn-outline">Leer más</span>
+        </div>
+      </a>
     `).join("");
   });
 </script>
