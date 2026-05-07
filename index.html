@@ -727,7 +727,7 @@
 <script>
 const grid = document.getElementById("blogGrid");
 
-fetch("./posts.json?v=" + Date.now())
+fetch("/posts.json")
   .then(r => r.json())
   .then(posts => {
     const published = posts.filter(p => (p.status || "").trim() === "published");
