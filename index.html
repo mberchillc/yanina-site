@@ -724,24 +724,27 @@
       </a>
     </section>
   </main>
- <script>
-fetch("posts.json")
+<script>
+const grid = document.getElementById("blogGrid");
+
+fetch("./posts.json?v=" + Date.now())
   .then(r => r.json())
   .then(posts => {
-    const grid = document.getElementById("blogGrid");
-    if (!grid) return;
+    const published = posts.filter(p => (p.status || "").trim() === "published");
 
-    const published = posts.filter(p => p.status === "published");
-
-    grid.innerHTML = published.map(p =>
-      '<a class="blog-card" href="post.html?slug=' + p.slug + '">' +
-      '<div class="blog-card-body">' +
-      '<p class="eyebrow">' + (p.category || "Blog") + '</p>' +
-      '<h3>' + p.title + '</h3>' +
-      '<p>' + (p.excerpt || "") + '</p>' +
-      '<span class="btn btn-outline">Leer más</span>' +
-      '</div></a>'
-    ).join("");
+    grid.innerHTML = published.map(p => `
+      <a class="blog-card" href="post.html?slug=${p.slug}">
+        <div class="blog-card-body">
+          <p class="eyebrow">${p.category || "Blog"}</p>
+          <h3>${p.title}</h3>
+          <p>${p.excerpt || ""}</p>
+          <span class="btn btn-outline">Leer más</span>
+        </div>
+      </a>
+    `).join("");
+  })
+  .catch(() => {
+    grid.innerHTML = "<p>No se pudo cargar el blog.</p>";
   });
 </script>
 </body>
