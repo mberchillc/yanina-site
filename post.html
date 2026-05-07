@@ -10,7 +10,7 @@
     *{box-sizing:border-box}
     body{margin:0;font-family:Montserrat,system-ui,sans-serif;color:var(--text);background:var(--soft)}
     .site-header{background:var(--header-dark);padding:16px 6vw;display:flex;align-items:center;justify-content:space-between;gap:24px}
-    .brand img{height:132px;display:block;transform:scale(1.8);transform-origin:left center}
+    .brand img{height:150px;display:block;transform:scale(1.9);transform-origin:left center}
     .main-nav{display:flex;gap:22px}
     .main-nav a,.back-link{color:var(--white);text-decoration:none;font-weight:600}
     .btn{background:var(--green);color:#fff;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:700}
@@ -23,7 +23,7 @@
     .body{font-size:1.08rem;line-height:1.8}
     .body p{margin:0 0 1.2em}
     .not-found{display:none;text-align:center}
-    @media(max-width:700px){.site-header{align-items:flex-start;flex-direction:column}.main-nav{flex-wrap:wrap}.brand img{height:96px}.post-card{padding:24px}}
+   @media(max-width:700px){.site-header{align-items:center;flex-direction:column;text-align:center}.main-nav{justify-content:center;flex-wrap:wrap}.header-cta,.btn{align-self:center}.brand img{height:120px;transform:scale(2);transform-origin:center center}.post-card{padding:24px}}
   </style>
 </head>
 <body>
