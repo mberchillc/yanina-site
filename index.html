@@ -735,5 +735,21 @@
       </a>
     </section>
   </main>
+  <script>
+fetch("posts.json")
+  .then(r => r.json())
+  .then(posts => {
+    const grid = document.getElementById("blogGrid");
+    if (!grid) return;
+    grid.innerHTML = posts.filter(p => p.status === "published").slice(0,3).map(p => `
+      <article class="blog-card">
+        <p class="eyebrow">${p.category || "Blog"}</p>
+        <h3>${p.title}</h3>
+        <p>${p.excerpt || ""}</p>
+        <a class="btn btn-outline" href="post.html?slug=${p.slug}">Leer más</a>
+      </article>
+    `).join("");
+  });
+</script>
 </body>
 </html>
