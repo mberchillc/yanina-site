@@ -1,1 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog | Yanina Trainer</title>
+  <meta name="description" content="Blog de Yanina Trainer & Nutrition Coach" />
+  <style>
+    :root{--green:#73ad13;--green-dark:#18223d;--soft:#f6fbf6;--text:#354056;--white:#fff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Montserrat,system-ui,sans-serif;color:var(--text);background:var(--soft)}
+    .site-header{background:var(--green-dark);padding:16px 6vw;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand img{height:72px;display:block}
+    .main-nav{display:flex;gap:22px}
+    .main-nav a,.back-link{color:var(--white);text-decoration:none;font-weight:600}
+    .btn{background:var(--green);color:#fff;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:700}
+    main{max-width:920px;margin:0 auto;padding:56px 20px}
+    .post-card{background:#fff;border-radius:28px;padding:36px;box-shadow:0 18px 40px rgba(24,34,61,.10)}
+    .category{color:var(--green);font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:.8rem}
+    h1{font-size:clamp(2rem,5vw,4rem);line-height:1.05;color:var(--green-dark);margin:12px 0}
+    .excerpt{font-size:1.25rem;line-height:1.6;color:#566176}
+    .post-image{width:100%;border-radius:24px;margin:28px 0;display:none}
+    .body{font-size:1.08rem;line-height:1.8}
+    .body p{margin:0 0 1.2em}
+    .not-found{display:none;text-align:center}
+    @media(max-width:700px){.site-header{align-items:flex-start;flex-direction:column}.main-nav{flex-wrap:wrap}.brand img{height:58px}.post-card{padding:24px}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html#home" aria-label="Yanina Trainer & Nutrition Coach">
+      <img src="assets/logo-transp.png" alt="Yanina Trainer & Nutrition Coach" />
+    </a>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <a href="index.html#servicios">Servicios</a>
+      <a href="index.html#planes">Planes</a>
+      <a href="index.html#testimonios">Testimonios</a>
+      <a href="index.html#sobre-mi">Sobre mí</a>
+    </nav>
+    <a class="btn" href="index.html#contacto">Comencemos</a>
+  </header>
 
+  <main>
+    <article class="post-card" id="post">
+      <p class="category" id="category"></p>
+      <h1 id="title"></h1>
+      <p class="excerpt" id="excerpt"></p>
+      <img class="post-image" id="image" alt="" />
+      <div class="body" id="body"></div>
+    </article>
+
+    <section class="not-found" id="notFound">
+      <h1>Post no encontrado</h1>
+      <p>Volvé al inicio para ver el contenido disponible.</p>
+      <a class="btn" href="index.html">Volver al sitio</a>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug");
+
+    fetch("posts.json")
+      .then(res => res.json())
+      .then(posts => {
+        const post = posts.find(p => p.slug === slug && p.status === "published");
+        if (!post) {
+          document.getElementById("post").style.display = "none";
+          document.getElementById("notFound").style.display = "block";
+          return;
+        }
+
+        document.title = post.title + " | Yanina Trainer";
+        document.getElementById("category").textContent = post.category || "";
+        document.getElementById("title").textContent = post.title;
+        document.getElementById("excerpt").textContent = post.excerpt || "";
+
+        if (post.image) {
+          const img = document.getElementById("image");
+          img.src = post.image;
+          img.alt = post.title;
+          img.style.display = "block";
+        }
+
+        document.getElementById("body").innerHTML = (post.body || "")
+          .split("\n")
+          .filter(Boolean)
+          .map(p => `<p>${p}</p>`)
+          .join("");
+      });
+  </script>
+</body>
+</html>
