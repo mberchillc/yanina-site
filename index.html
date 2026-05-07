@@ -725,25 +725,25 @@
     </section>
   </main>
 <script>
-const grid = document.getElementById("blogGrid");
+document.addEventListener("DOMContentLoaded", async () => {
+  const target = document.getElementById("blogGrid") || document.querySelector("#blog");
+  if (!target) return;
 
-fetch("/posts.json")
-  .then(r => r.json())
-  .then(posts => {
-    const published = posts.filter(p => (p.status || "").trim() === "published");
+  const res = await fetch("/posts.json?v=" + Date.now());
+  const posts = await res.json();
+  const published = posts.filter(p => p.status === "published");
 
-    grid.innerHTML = published.map(p => `
-      <a class="blog-card" href="post.html?slug=${p.slug}">
-        <div class="blog-card-body">
-          <p class="eyebrow">${p.category || "Blog"}</p>
-          <h3>${p.title}</h3>
-          <p>${p.excerpt || ""}</p>
-          <span class="btn btn-outline">Leer más</span>
-        </div>
-      </a>
-    `).join("");
-  })
-  
+  target.innerHTML = published.map(p => `
+    <a class="blog-card" href="/post.html?slug=${p.slug}">
+      <div class="blog-card-body">
+        <p class="eyebrow">${p.category || "Blog"}</p>
+        <h3>${p.title}</h3>
+        <p>${p.excerpt || ""}</p>
+        <span class="btn btn-outline">Leer más</span>
+      </div>
+    </a>
+  `).join("");
+});
 </script>
 </body>
 </html>
