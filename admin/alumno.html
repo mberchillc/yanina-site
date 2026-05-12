@@ -1,1 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ficha del Alumno | Yanina Trainer</title>
 
+  <style>
+    :root {
+      --green-dark: #183f35;
+      --green-main: #7ec845;
+      --green-soft: #d9f2cb;
+      --cream: #f7f3ea;
+      --white: #ffffff;
+      --text: #24332e;
+      --muted: #6f7d78;
+      --border: rgba(24, 63, 53, 0.14);
+      --shadow: 0 18px 50px rgba(24, 63, 53, 0.12);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, var(--cream), #eef7ea);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .admin-shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      background: var(--green-dark);
+      color: var(--white);
+      border-radius: 24px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 26px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand img {
+      width: 72px;
+      height: auto;
+      display: block;
+    }
+
+    .brand-text small {
+      display: block;
+      color: rgba(255,255,255,0.72);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 11px 17px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
+
+    .btn-primary {
+      background: var(--green-main);
+      color: var(--green-dark);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.24);
+    }
+
+    .page-header {
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.05;
+      color: var(--green-dark);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 720px;
+      line-height: 1.5;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.86);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .card-title {
+      font-size: 22px;
+      color: var(--green-dark);
+      font-weight: 800;
+    }
+
+    .status-pill {
+      background: var(--green-soft);
+      color: var(--green-dark);
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--green-main);
+      box-shadow: 0 0 0 4px rgba(126, 200, 69, 0.18);
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 22px;
+    }
+
+    .quick-card {
+      background: var(--green-dark);
+      color: var(--white);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .quick-card h2 {
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+
+    .metric-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .metric {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .metric span {
+      color: rgba(255,255,255,0.72);
+      font-size: 13px;
+    }
+
+    .metric strong {
+      color: var(--green-soft);
+      font-size: 15px;
+      text-align: right;
+    }
+
+    .next-block h3 {
+      color: var(--green-dark);
+      font-size: 19px;
+      margin-bottom: 12px;
+    }
+
+    .next-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .next-item {
+      border: 1px solid var(--border);
+      background: var(--white);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .next-item strong {
+      display: block;
+      color: var(--green-dark);
+      margin-bottom: 4px;
+    }
+
+    .next-item span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .bottom-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .btn-form-primary {
+      background: var(--green-dark);
+      color: var(--white);
+    }
+
+    .btn-form-secondary {
+      background: var(--green-soft);
+      color: var(--green-dark);
+    }
+
+    @media (max-width: 840px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        justify-content: flex-start;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-shell {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="admin-shell">
+
+    <header class="topbar">
+      <div class="brand">
+        <img src="../assets/logo.png" alt="Yanina Trainer" />
+        <div class="brand-text">
+          <strong>Admin Trainer</strong>
+          <small>Ficha del alumno</small>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <a href="../index.html" class="btn btn-secondary">Volver al sitio</a>
+        <button class="btn btn-secondary">Buscar alumno</button>
+        <button class="btn btn-primary">+ Nuevo alumno</button>
+      </div>
+    </header>
+
+    <section class="page-header">
+      <div class="eyebrow">Plataforma Yanina Trainer</div>
+      <h1>Datos del alumno</h1>
+      <p class="subtitle">
+        Pantalla inicial para cargar, revisar y ordenar la información base de cada alumno antes de planificar clases, rutinas y seguimiento.
+      </p>
+    </section>
+
+    <section class="layout">
+
+      <article class="card">
+        <div class="card-header">
+          <div class="card-title">Ficha personal</div>
+          <div class="status-pill">Datos iniciales</div>
+        </div>
+
+        <form>
+          <div class="form-grid">
+
+            <div class="field">
+              <label for="nombre">Nombre y apellido</label>
+              <input id="nombre" type="text" value="María González" />
+            </div>
+
+            <div class="field">
+              <label for="edad">Edad</label>
+              <input id="edad" type="number" value="48" />
+            </div>
+
+            <div class="field">
+              <label for="telefono">Teléfono</label>
+              <input id="telefono" type="tel" value="+1 305 555 0148" />
+            </div>
+
+            <div class="field">
+              <label for="domicilio">Domicilio</label>
+              <input id="domicilio" type="text" value="Coral Gables, FL" />
+            </div>
+
+            <div class="field">
+              <label for="fecha">Fecha de alta</label>
+              <input id="fecha" type="date" value="2026-05-12" />
+            </div>
+
+            <div class="field">
+              <label for="peso">Peso inicial</label>
+              <input id="peso" type="text" value="168 lbs" />
+            </div>
+
+            <div class="field">
+              <label for="ultimas-mediciones">Fecha de últimas mediciones</label>
+              <input id="ultimas-mediciones" type="date" value="2026-05-12" />
+            </div>
+
+            <div class="field">
+              <label for="dias">Días por semana</label>
+              <select id="dias">
+                <option>1 día</option>
+                <option>2 días</option>
+                <option selected>3 días</option>
+                <option>4 días</option>
+                <option>5 días</option>
+                <option>6 días</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="modalidad">Modalidad</label>
+              <select id="modalidad">
+                <option>Presencial</option>
+                <option selected>Online</option>
+                <option>Mixta</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label for="objetivo">Objetivo general</label>
+              <textarea id="objetivo">Bajar de peso, tonificar y mejorar fuerza general sin perder movilidad.</textarea>
+            </div>
+
+            <div class="field full">
+              <label for="limitaciones">Condiciones o limitaciones físicas</label>
+              <textarea id="limitaciones">Molestia leve en rodillas. Evitar impacto alto y progresar cargas de forma gradual.</textarea>
+            </div>
+
+            <div class="field full">
+              <label for="notas">Notas iniciales de Yanina</label>
+              <textarea id="notas">Buena predisposición. Necesita estructura semanal clara, ejercicios simples y seguimiento de adherencia.</textarea>
+            </div>
+
+          </div>
+
+          <div class="bottom-actions">
+            <button type="button" class="btn btn-form-primary">Guardar datos</button>
+            <button type="button" class="btn btn-form-secondary">Editar campos</button>
+            <button type="button" class="btn btn-form-secondary">Crear plan de entrenamiento</button>
+            <button type="button" class="btn btn-form-secondary">Descargar rutina PDF</button>
+          </div>
+        </form>
+      </article>
+
+      <aside class="side-stack">
+
+        <section class="quick-card">
+          <h2>Resumen rápido</h2>
+          <div class="metric-list">
+            <div class="metric">
+              <span>Alumno</span>
+              <strong>María González</strong>
+            </div>
+            <div class="metric">
+              <span>Objetivo</span>
+              <strong>Bajar de peso</strong>
+            </div>
+            <div class="metric">
+              <span>Frecuencia</span>
+              <strong>3 días/semana</strong>
+            </div>
+            <div class="metric">
+              <span>Modalidad</span>
+              <strong>Online</strong>
+            </div>
+            <div class="metric">
+              <span>Últimas mediciones</span>
+              <strong>12/05/2026</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="card next-block">
+          <h3>Próximos módulos</h3>
+
+          <div class="next-list">
+            <div class="next-item">
+              <strong>Calendario de clases</strong>
+              <span>Planificación, clases pasadas, próximas clases, criterio de cada sesión y descarga de rutina en PDF.</span>
+            </div>
+
+            <div class="next-item">
+              <strong>Plan de entrenamiento</strong>
+              <span>Rutinas, ejercicios, series, repeticiones, carga, descanso, notas técnicas y descarga en PDF para enviar al alumno.</span>
+            </div>
+
+            <div class="next-item">
+              <strong>PDF para alumno</strong>
+              <span>Versión descargable de la rutina actual para enviar por WhatsApp o email hasta que exista el acceso con usuario y contraseña.</span>
+            </div>
+
+            <div class="next-item">
+              <strong>Seguimiento</strong>
+              <span>Peso, mediciones, evolución, adherencia y objetivos mensurables.</span>
+            </div>
+          </div>
+        </section>
+
+      </aside>
+
+    </section>
+
+  </main>
+</body>
+</html>
