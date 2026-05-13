@@ -312,7 +312,100 @@
       background: var(--green-soft);
       color: var(--green-dark);
     }
+.card-subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 6px;
+  line-height: 1.4;
+}
 
+.calendar-card {
+  margin-top: 22px;
+}
+
+.calendar-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.calendar-toolbar select {
+  max-width: 240px;
+}
+
+.calendar-nav {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--green-dark);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.class-list {
+  display: grid;
+  gap: 14px;
+}
+
+.class-item {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.class-date {
+  background: var(--green-soft);
+  color: var(--green-dark);
+  border-radius: 16px;
+  min-height: 82px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.class-date strong {
+  font-size: 15px;
+}
+
+.class-date span {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.class-info p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.class-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.class-topline strong {
+  color: var(--green-dark);
+  font-size: 18px;
+}
+
+.class-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
     @media (max-width: 840px) {
       .topbar {
         align-items: flex-start;
@@ -457,7 +550,72 @@
           </div>
         </form>
       </article>
+      <article class="card calendar-card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Calendario de clases</div>
+            <p class="card-subtitle">Planificación semanal, clases pasadas y criterio de cada sesión.</p>
+          </div>
+          <button type="button" class="btn btn-form-primary">+ Agregar clase</button>
+        </div>
 
+        <div class="calendar-toolbar">
+          <button type="button" class="calendar-nav">‹</button>
+          <select>
+            <option selected>Semana 13–19 mayo</option>
+            <option>Semana 20–26 mayo</option>
+            <option>Semana 27 mayo–2 junio</option>
+          </select>
+          <button type="button" class="calendar-nav">›</button>
+          <button type="button" class="btn btn-form-secondary">Ver clases pasadas</button>
+        </div>
+
+        <div class="class-list">
+          <div class="class-item">
+            <div class="class-date">
+              <strong>Mar</strong>
+              <span>14</span>
+            </div>
+
+            <div class="class-info">
+              <div class="class-topline">
+                <strong>6:00 pm · Fuerza + movilidad</strong>
+                <span class="status-pill">Programada</span>
+              </div>
+              <p><strong>Criterio:</strong> técnica + progresión gradual de carga.</p>
+              <p><strong>Rutina asociada:</strong> tren inferior + movilidad articular.</p>
+
+              <div class="class-actions">
+                <button type="button" class="btn btn-form-secondary">Editar clase</button>
+                <button type="button" class="btn btn-form-secondary">Marcar realizada</button>
+                <button type="button" class="btn btn-form-secondary">Descargar rutina PDF</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="class-item">
+            <div class="class-date">
+              <strong>Jue</strong>
+              <span>16</span>
+            </div>
+
+            <div class="class-info">
+              <div class="class-topline">
+                <strong>6:00 pm · Full body</strong>
+                <span class="status-pill">Programada</span>
+              </div>
+              <p><strong>Criterio:</strong> sostener adherencia sin sobrecargar rodillas.</p>
+              <p><strong>Rutina asociada:</strong> fuerza general + estabilidad.</p>
+
+              <div class="class-actions">
+                <button type="button" class="btn btn-form-secondary">Editar clase</button>
+                <button type="button" class="btn btn-form-secondary">Marcar realizada</button>
+                <button type="button" class="btn btn-form-secondary">Descargar rutina PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
       <aside class="side-stack">
 
         <section class="quick-card">
