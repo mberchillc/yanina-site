@@ -456,14 +456,21 @@
 .workout-notes {
   margin-top: 18px;
 }
-    .student-tabs {
+  .student-tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin: 0 0 22px;
+  margin: 0 0 28px;
+  padding: 12px;
   position: sticky;
   top: 12px;
   z-index: 20;
+  background: rgba(247, 243, 234, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: 0 12px 34px rgba(24, 63, 53, 0.12);
+  width: fit-content;
 }
 
 .student-tab {
@@ -488,7 +495,7 @@
 #datos,
 #calendario,
 #plan {
-  scroll-margin-top: 90px;
+  scroll-margin-top: 110px;
 }
     @media (max-width: 840px) {
       .topbar {
@@ -547,9 +554,9 @@
 
     <section class="page-header">
       <div class="eyebrow">Plataforma Yanina Trainer</div>
-      <h1>Datos del alumno</h1>
+      <h1>Ficha del alumno</h1>
       <p class="subtitle">
-        Pantalla inicial para cargar, revisar y ordenar la información base de cada alumno antes de planificar clases, rutinas y seguimiento.
+        Gestioná los datos, el calendario y el plan de entrenamiento de cada alumno desde acá.
       </p>
     </section>
 <nav class="student-tabs">
