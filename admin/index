@@ -1,1 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Admin | Yanina Trainer</title>
 
+  <style>
+    :root {
+      --green-dark: #183f35;
+      --green-main: #7ec845;
+      --green-soft: #d9f2cb;
+      --cream: #f7f3ea;
+      --white: #ffffff;
+      --text: #24332e;
+      --muted: #6f7d78;
+      --border: rgba(24, 63, 53, 0.14);
+      --shadow: 0 18px 50px rgba(24, 63, 53, 0.12);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, var(--cream), #eef7ea);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .admin-shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      background: var(--green-dark);
+      color: var(--white);
+      border-radius: 24px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 26px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand img {
+      width: 300px;
+      height: 100px;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .brand-text small {
+      display: block;
+      color: rgba(255,255,255,0.72);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 11px 17px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
+
+    .btn-primary {
+      background: var(--green-main);
+      color: var(--green-dark);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.24);
+    }
+
+    .btn-soft {
+      background: var(--green-soft);
+      color: var(--green-dark);
+    }
+
+    .page-header {
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.05;
+      color: var(--green-dark);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 720px;
+      line-height: 1.5;
+    }
+
+    .dashboard-tools {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .search-box {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 14px 18px;
+      font-size: 15px;
+      width: 100%;
+      outline: none;
+      box-shadow: 0 10px 30px rgba(24, 63, 53, 0.06);
+    }
+
+    .search-box:focus {
+      border-color: var(--green-main);
+      box-shadow: 0 0 0 4px rgba(126, 200, 69, 0.18);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card {
+      background: var(--green-dark);
+      color: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card span {
+      display: block;
+      color: rgba(255,255,255,0.72);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 28px;
+      color: var(--green-soft);
+    }
+
+    .students-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .student-card {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .student-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .student-name {
+      color: var(--green-dark);
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .student-pill {
+      background: var(--green-soft);
+      color: var(--green-dark);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .student-meta {
+      display: grid;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .student-meta strong {
+      color: var(--green-dark);
+    }
+
+    .next-class {
+      background: rgba(217, 242, 203, 0.65);
+      border: 1px solid rgba(126, 200, 69, 0.25);
+      border-radius: 16px;
+      padding: 13px;
+      color: var(--green-dark);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        justify-content: flex-start;
+      }
+
+      .dashboard-tools {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid,
+      .students-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .brand img {
+        width: 240px;
+        height: 86px;
+      }
+
+      .admin-shell {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="admin-shell">
+
+    <header class="topbar">
+      <div class="brand">
+        <img src="../assets/logo-transp.png" alt="Yanina Trainer" />
+        <div class="brand-text">
+          <strong>Admin Trainer</strong>
+          <small>Panel de alumnos</small>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <a href="../index.html" class="btn btn-secondary">Volver al sitio</a>
+        <a href="login.html" class="btn btn-secondary">Salir</a>
+        <a href="alumno.html" class="btn btn-primary">+ Nuevo alumno</a>
+      </div>
+    </header>
+
+    <section class="page-header">
+      <div class="eyebrow">Plataforma Yanina Trainer</div>
+      <h1>Panel Admin</h1>
+      <p class="subtitle">
+        Buscá alumnos, abrí sus fichas y gestioná datos, clases y planes de entrenamiento desde una sola plataforma.
+      </p>
+    </section>
+
+    <section class="dashboard-tools">
+      <input class="search-box" type="search" placeholder="Buscar alumno por nombre, objetivo o modalidad…" />
+      <a href="alumno.html" class="btn btn-primary">+ Crear alumno</a>
+    </section>
+
+    <section class="stats-grid">
+      <div class="stat-card">
+        <span>Alumnos cargados</span>
+        <strong>3</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Clases esta semana</span>
+        <strong>8</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Rutinas listas</span>
+        <strong>5</strong>
+      </div>
+    </section>
+
+    <section class="students-grid">
+
+      <article class="student-card">
+        <div class="student-top">
+          <div class="student-name">María González</div>
+          <div class="student-pill">Online</div>
+        </div>
+
+        <div class="student-meta">
+          <div><strong>Objetivo:</strong> bajar de peso y tonificar</div>
+          <div><strong>Frecuencia:</strong> 3 días por semana</div>
+          <div><strong>Últimas mediciones:</strong> 12/05/2026</div>
+        </div>
+
+        <div class="next-class">
+          <strong>Próxima clase:</strong><br>
+          Martes · 6:00 pm · Fuerza + movilidad
+        </div>
+
+        <div class="card-actions">
+          <a href="alumno.html" class="btn btn-soft">Ver ficha</a>
+          <a href="alumno.html#calendario" class="btn btn-soft">Calendario</a>
+        </div>
+      </article>
+
+      <article class="student-card">
+        <div class="student-top">
+          <div class="student-name">Laura Fernández</div>
+          <div class="student-pill">Mixta</div>
+        </div>
+
+        <div class="student-meta">
+          <div><strong>Objetivo:</strong> ganar fuerza y mejorar movilidad</div>
+          <div><strong>Frecuencia:</strong> 2 días por semana</div>
+          <div><strong>Últimas mediciones:</strong> 05/05/2026</div>
+        </div>
+
+        <div class="next-class">
+          <strong>Próxima clase:</strong><br>
+          Jueves · 7:00 pm · Full body
+        </div>
+
+        <div class="card-actions">
+          <a href="alumno.html" class="btn btn-soft">Ver ficha</a>
+          <a href="alumno.html#calendario" class="btn btn-soft">Calendario</a>
+        </div>
+      </article>
+
+      <article class="student-card">
+        <div class="student-top">
+          <div class="student-name">Carolina Pérez</div>
+          <div class="student-pill">Presencial</div>
+        </div>
+
+        <div class="student-meta">
+          <div><strong>Objetivo:</strong> constancia, postura y descenso gradual</div>
+          <div><strong>Frecuencia:</strong> 4 días por semana</div>
+          <div><strong>Últimas mediciones:</strong> 18/04/2026</div>
+        </div>
+
+        <div class="next-class">
+          <strong>Próxima clase:</strong><br>
+          Sábado · 9:00 am · Tren inferior
+        </div>
+
+        <div class="card-actions">
+          <a href="alumno.html" class="btn btn-soft">Ver ficha</a>
+          <a href="alumno.html#calendario" class="btn btn-soft">Calendario</a>
+        </div>
+      </article>
+
+    </section>
+
+  </main>
+</body>
+</html>
