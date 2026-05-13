@@ -407,7 +407,103 @@
   gap: 10px;
   margin-top: 14px;
 }
-    @media (max-width: 840px) {
+    .card-subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.calendar-card {
+  margin-top: 0;
+}
+
+.calendar-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.calendar-toolbar select {
+  max-width: 260px;
+}
+
+.calendar-nav {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--green-dark);
+  font-size: 24px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.class-list {
+  display: grid;
+  gap: 14px;
+}
+
+.class-item {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.class-date {
+  background: var(--green-soft);
+  color: var(--green-dark);
+  border-radius: 16px;
+  min-height: 82px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.class-date strong {
+  font-size: 15px;
+}
+
+.class-date span {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.class-info p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.class-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.class-topline strong {
+  color: var(--green-dark);
+  font-size: 18px;
+}
+
+.class-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+      @media (max-width: 840px) {
       .topbar {
         align-items: flex-start;
         flex-direction: column;
