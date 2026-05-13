@@ -548,7 +548,7 @@
       <div class="top-actions">
         <a href="../index.html" class="btn btn-secondary">Volver al sitio</a>
         <a href="index.html" class="btn btn-secondary">Buscar alumno</a>
-        <button class="btn btn-primary">+ Nuevo alumno</button>
+        <a href="alumno.html?new=1" class="btn btn-primary">+ Nuevo alumno</a>
       </div>
     </header>
 
@@ -847,5 +847,37 @@
     </section>
 
   </main>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const isNewStudent = params.get("new") === "1";
+
+  if (isNewStudent) {
+    document.querySelector("h1").textContent = "Nuevo alumno";
+
+    const fieldsToClear = [
+      "nombre",
+      "edad",
+      "telefono",
+      "domicilio",
+      "fecha",
+      "peso",
+      "ultimas-mediciones",
+      "objetivo",
+      "limitaciones",
+      "notas"
+    ];
+
+    fieldsToClear.forEach(id => {
+      const field = document.getElementById(id);
+      if (field) field.value = "";
+    });
+
+    const dias = document.getElementById("dias");
+    if (dias) dias.selectedIndex = 0;
+
+    const modalidad = document.getElementById("modalidad");
+    if (modalidad) modalidad.selectedIndex = 0;
+  }
+</script>
 </body>
 </html>
