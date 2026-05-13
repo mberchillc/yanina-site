@@ -456,6 +456,40 @@
 .workout-notes {
   margin-top: 18px;
 }
+    .student-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 22px;
+  position: sticky;
+  top: 12px;
+  z-index: 20;
+}
+
+.student-tab {
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--green-dark);
+  background: rgba(255,255,255,0.76);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 26px rgba(24, 63, 53, 0.08);
+}
+
+.student-tab:hover,
+.student-tab.active {
+  background: var(--green-main);
+  color: var(--green-dark);
+  border-color: rgba(126, 200, 69, 0.6);
+}
+
+#datos,
+#calendario,
+#plan {
+  scroll-margin-top: 90px;
+}
     @media (max-width: 840px) {
       .topbar {
         align-items: flex-start;
@@ -518,10 +552,13 @@
         Pantalla inicial para cargar, revisar y ordenar la información base de cada alumno antes de planificar clases, rutinas y seguimiento.
       </p>
     </section>
-
+<nav class="student-tabs">
+  <a href="#datos" class="student-tab active">Datos del alumno</a>
+  <a href="#calendario" class="student-tab">Calendario de clases</a>
+  <a href="#plan" class="student-tab">Plan de entrenamiento</a>
+</nav>
     <section class="layout">
-
-      <article class="card">
+    <article class="card" id="datos">
         <div class="card-header">
           <div class="card-title">Ficha personal</div>
           <div class="status-pill">Datos iniciales</div>
@@ -611,7 +648,7 @@
           </div>
         </form>
       </article>
-      <article class="card calendar-card">
+      <article class="card calendar-card" id="calendario">
         <div class="card-header">
           <div>
             <div class="card-title">Calendario de clases</div>
@@ -677,7 +714,7 @@
           </div>
         </div>
       </article>
-      <article class="card workout-card">
+     <article class="card workout-card" id="plan">
         <div class="card-header">
           <div>
             <div class="card-title">Plan de entrenamiento</div>
