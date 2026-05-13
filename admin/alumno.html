@@ -409,7 +409,54 @@
   gap: 10px;
   margin-top: 14px;
 }
-      @media (max-width: 840px) {
+     .workout-card {
+  margin-top: 22px;
+}
+
+.workout-toolbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.exercise-table {
+  display: grid;
+  gap: 8px;
+}
+
+.exercise-head,
+.exercise-row {
+  display: grid;
+  grid-template-columns: 2fr 0.7fr 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.exercise-head {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  padding: 0 12px 4px;
+}
+
+.exercise-row {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 13px 12px;
+  font-size: 14px;
+}
+
+.exercise-row span:first-child {
+  color: var(--green-dark);
+  font-weight: 800;
+}
+
+.workout-notes {
+  margin-top: 18px;
+}
+    @media (max-width: 840px) {
       .topbar {
         align-items: flex-start;
         flex-direction: column;
@@ -430,6 +477,17 @@
       .admin-shell {
         padding: 16px;
       }
+    .exercise-head {
+  display: none;
+}
+
+.exercise-row {
+  grid-template-columns: 1fr;
+}
+
+.workout-toolbar {
+  grid-template-columns: 1fr;
+}
     }
   </style>
 </head>
@@ -617,6 +675,99 @@
               </div>
             </div>
           </div>
+        </div>
+      </article>
+      <article class="card workout-card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Plan de entrenamiento</div>
+            <p class="card-subtitle">Rutina asociada a la clase seleccionada.</p>
+          </div>
+          <button type="button" class="btn btn-form-primary">Guardar rutina</button>
+        </div>
+
+        <div class="workout-toolbar">
+          <div class="field">
+            <label for="dia-rutina">Día seleccionado</label>
+            <select id="dia-rutina">
+              <option selected>Martes · 6:00 pm</option>
+              <option>Jueves · 6:00 pm</option>
+              <option>Sábado · 9:00 am</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="tipo-rutina">Tipo de rutina</label>
+            <select id="tipo-rutina">
+              <option selected>Fuerza + movilidad</option>
+              <option>Full body</option>
+              <option>Cardio + core</option>
+              <option>Tren superior</option>
+              <option>Tren inferior</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="exercise-table">
+          <div class="exercise-head">
+            <span>Ejercicio</span>
+            <span>Series</span>
+            <span>Reps / Tiempo</span>
+            <span>Carga</span>
+          </div>
+
+          <div class="exercise-row">
+            <span>Calentamiento y movilidad articular</span>
+            <span>—</span>
+            <span>10’</span>
+            <span>—</span>
+          </div>
+
+          <div class="exercise-row">
+            <span>Bíceps con mancuernas</span>
+            <span>3</span>
+            <span>10</span>
+            <span>20 lbs/brazo</span>
+          </div>
+
+          <div class="exercise-row">
+            <span>Sentadillas con disco</span>
+            <span>3</span>
+            <span>10</span>
+            <span>30 lbs</span>
+          </div>
+
+          <div class="exercise-row">
+            <span>Vuelos laterales</span>
+            <span>3</span>
+            <span>8</span>
+            <span>15 lbs</span>
+          </div>
+
+          <div class="exercise-row">
+            <span>Abdominales rectos</span>
+            <span>3</span>
+            <span>10</span>
+            <span>Peso corporal</span>
+          </div>
+
+          <div class="exercise-row">
+            <span>Estiramiento</span>
+            <span>—</span>
+            <span>10’</span>
+            <span>—</span>
+          </div>
+        </div>
+
+        <div class="field full workout-notes">
+          <label for="notas-rutina">Observaciones técnicas</label>
+          <textarea id="notas-rutina">Priorizar técnica, controlar postura en sentadillas y mantener progresión gradual de carga.</textarea>
+        </div>
+
+        <div class="bottom-actions">
+          <button type="button" class="btn btn-form-secondary">+ Agregar ejercicio</button>
+          <button type="button" class="btn btn-form-secondary">Duplicar rutina</button>
+          <button type="button" class="btn btn-form-secondary">Descargar rutina PDF</button>
         </div>
       </article>
       <aside class="side-stack">
