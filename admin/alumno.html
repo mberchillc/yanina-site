@@ -1464,10 +1464,15 @@ async function saveRoutineToBackend() {
     }
 
     document.querySelectorAll(".pdf-link").forEach(link => {
-      link.addEventListener("click", () => {
-        saveCurrentRoutineToLocalStorage();
-      });
-    });
+  link.addEventListener("click", async (event) => {
+    event.preventDefault();
+
+    saveCurrentRoutineToLocalStorage();
+    await saveRoutineToBackend();
+
+    window.open(`rutina-pdf.html?classId=${activeBackendClassId}`, "_blank");
+  });
+});
 
     addDeleteButtonToExistingRows();
   document.querySelectorAll(".timeline-day.has-class").forEach(classCard => {
