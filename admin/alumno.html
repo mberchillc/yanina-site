@@ -1292,6 +1292,38 @@ function loadRoutineData(data) {
     });
   }
 }
+    async function loadRoutineFromBackend(classId) {
+  try {
+    const response = await fetch(`${API_BASE}/api/classes/${classId}/routine`);
+
+    if (!response.ok) {
+      throw new Error("No se pudo cargar la rutina desde D1");
+    }
+
+    const data = await response.json();
+
+    const routineData = {
+      rutina: {
+        dia: document.getElementById("dia-rutina")?.value || "",
+        tipo: data.class?.routine_type || "",
+        observaciones: data.routine?.technical_notes || "",
+        ejercicios: (data.exercises || []).map(item => ({
+          ejercicio: item.exercise_name || "",
+          series: item.sets || "",
+          reps: item.reps_time || "",
+          carga: item.load || ""
+        }))
+      }
+    };
+
+    if (data.routine || (data.exercises && data.exercises.length > 0)) {
+      loadRoutineData(routineData);
+      localStorage.setItem("yaninaRoutineData", JSON.stringify(routineData));
+    }
+  } catch (error) {
+    console.error("No se pudo cargar la rutina desde backend", error);
+  }
+}
     function addDeleteButtonToExistingRows() {
       document.querySelectorAll(".exercise-row").forEach(row => {
         if (row.querySelector(".delete-exercise-btn")) return;
@@ -1456,6 +1488,7 @@ const savedClassRoutine = routinesByClass[activeClassId];
 if (savedClassRoutine) {
   loadRoutineData(savedClassRoutine);
 }
+    loadRoutineFromBackend(activeBackendClassId);
     const daySelect = document.getElementById("dia-rutina");
     const typeSelect = document.getElementById("tipo-rutina");
 
