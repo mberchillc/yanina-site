@@ -507,6 +507,30 @@
   font-size: 14px;
   font-weight: 800;
 }
+   .delete-exercise-btn {
+  border: none;
+  border-radius: 999px;
+  background: rgba(24, 63, 53, 0.08);
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.exercise-row {
+  grid-template-columns: 2fr 0.7fr 1fr 1fr auto;
+}
+
+.exercise-row span[contenteditable="true"] {
+  outline: none;
+  border-radius: 8px;
+  padding: 4px 6px;
+}
+
+.exercise-row span[contenteditable="true"]:focus {
+  background: var(--green-soft);
+}
     @media (max-width: 840px) {
       .topbar {
         align-items: flex-start;
@@ -771,7 +795,7 @@
           </div>
         </div>
 
-        <div class="exercise-table">
+        <div class="exercise-table" id="exerciseTable">
           <div class="exercise-head">
             <span>Ejercicio</span>
             <span>Series</span>
@@ -828,10 +852,17 @@
         </div>
 
         <div class="bottom-actions">
-          <button type="button" class="btn btn-form-secondary">+ Agregar ejercicio</button>
-          <button type="button" class="btn btn-form-secondary">Duplicar rutina</button>
-          <a class="btn btn-primary" href="rutina-pdf.html" target="_blank">
-          Descargar rutina PDF
+  <button type="button" class="btn btn-form-secondary" id="addExerciseBtn">+ Agregar ejercicio</button>
+  <button type="button" class="btn btn-form-secondary" id="duplicateWorkoutBtn">Duplicar rutina</button>
+  <a class="btn btn-primary" href="rutina-pdf.html" target="_blank">
+    Descargar rutina PDF
+  </a>
+</div>
+
+<div class="save-message" id="saveWorkoutMessage">
+  Rutina guardada correctamente.
+</div>
+</article>
           </a>
       <div class="save-message" id="saveWorkoutMessage">
       Rutina guardada correctamente.
@@ -929,6 +960,52 @@
       setTimeout(() => {
         saveWorkoutMessage.style.display = "none";
       }, 3000);
+    });
+  }
+</script>
+<script>
+  const addExerciseBtn = document.getElementById("addExerciseBtn");
+  const duplicateWorkoutBtn = document.getElementById("duplicateWorkoutBtn");
+  const exerciseTable = document.getElementById("exerciseTable");
+
+  function createExerciseRow(exercise = "", series = "", reps = "", carga = "") {
+    const row = document.createElement("div");
+    row.className = "exercise-row";
+
+    row.innerHTML = `
+      <span contenteditable="true">${exercise || "Nuevo ejercicio"}</span>
+      <span contenteditable="true">${series || "3"}</span>
+      <span contenteditable="true">${reps || "10"}</span>
+      <span contenteditable="true">${carga || "—"}</span>
+      <button type="button" class="delete-exercise-btn">Eliminar</button>
+    `;
+
+    row.querySelector(".delete-exercise-btn").addEventListener("click", () => {
+      row.remove();
+    });
+
+    return row;
+  }
+
+  if (addExerciseBtn && exerciseTable) {
+    addExerciseBtn.addEventListener("click", () => {
+      exerciseTable.appendChild(createExerciseRow());
+    });
+  }
+
+  if (duplicateWorkoutBtn && exerciseTable) {
+    duplicateWorkoutBtn.addEventListener("click", () => {
+      const rows = exerciseTable.querySelectorAll(".exercise-row");
+      rows.forEach(row => {
+        const cells = row.querySelectorAll("span");
+        const clonedRow = createExerciseRow(
+          cells[0]?.textContent || "",
+          cells[1]?.textContent || "",
+          cells[2]?.textContent || "",
+          cells[3]?.textContent || ""
+        );
+        exerciseTable.appendChild(clonedRow);
+      });
     });
   }
 </script>
