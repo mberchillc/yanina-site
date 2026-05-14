@@ -1170,19 +1170,62 @@
       if (modalidad) modalidad.selectedIndex = 0;
     }
 
-    const saveStudentBtn = document.getElementById("saveStudentBtn");
-    const saveMessage = document.getElementById("saveMessage");
+   const saveStudentBtn = document.getElementById("saveStudentBtn");
+const saveMessage = document.getElementById("saveMessage");
 
-    if (saveStudentBtn && saveMessage) {
-      saveStudentBtn.addEventListener("click", () => {
-        saveMessage.style.display = "block";
-        saveMessage.textContent = "Datos guardados correctamente.";
+async function saveStudentToBackend() {
+  const studentData = {
+    full_name: document.getElementById("nombre")?.value || "",
+    age: document.getElementById("edad")?.value || "",
+    phone: document.getElementById("telefono")?.value || "",
+    address: document.getElementById("domicilio")?.value || "",
+    start_date: document.getElementById("fecha")?.value || "",
+    initial_weight: document.getElementById("peso")?.value || "",
+    last_measurements_date: document.getElementById("ultimas-mediciones")?.value || "",
+    frequency: document.getElementById("dias")?.value || "",
+    modality: document.getElementById("modalidad")?.value || "",
+    goal: document.getElementById("objetivo")?.value || "",
+    limitations: document.getElementById("limitaciones")?.value || "",
+    trainer_notes: document.getElementById("notas")?.value || ""
+  };
 
-        setTimeout(() => {
-          saveMessage.style.display = "none";
-        }, 3000);
-      });
+  const response = await fetch(`${API_BASE}/api/students/1`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(studentData)
+  });
+
+  if (!response.ok) {
+    throw new Error("No se pudieron guardar los datos del alumno");
+  }
+
+  return await response.json();
+}
+
+if (saveStudentBtn && saveMessage) {
+  saveStudentBtn.addEventListener("click", async () => {
+    try {
+      await saveStudentToBackend();
+
+      saveMessage.style.display = "block";
+      saveMessage.textContent = "Datos guardados correctamente.";
+
+      if (typeof updateStudentIdentity === "function") {
+        updateStudentIdentity();
+      }
+
+      setTimeout(() => {
+        saveMessage.style.display = "none";
+      }, 3000);
+    } catch (error) {
+      saveMessage.style.display = "block";
+      saveMessage.textContent = "No se pudieron guardar los datos. Probá nuevamente.";
+      console.error(error);
     }
+  });
+}
 
     const addExerciseBtn = document.getElementById("addExerciseBtn");
     const duplicateWorkoutBtn = document.getElementById("duplicateWorkoutBtn");
