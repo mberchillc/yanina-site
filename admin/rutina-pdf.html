@@ -462,53 +462,64 @@
     <a class="btn btn-secondary" href="alumno.html#plan">Volver a la ficha</a>
   </div>
 <script>
-  const savedRoutine = localStorage.getItem("yaninaRoutineData");
+  const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
 
-  if (savedRoutine) {
-    const data = JSON.parse(savedRoutine);
-    const routine = data.rutina || {};
-    const exercises = routine.ejercicios || [];
-    const student = data.alumno || {};
-    const title = document.getElementById("pdfRoutineTitle");
-    const intro = document.getElementById("pdfRoutineIntro");
-    const notes = document.getElementById("pdfTechnicalNotes");
-    const exerciseBody = document.getElementById("pdfExerciseBody");
+  const params = new URLSearchParams(window.location.search);
+  const classId = params.get("classId") || "1";
 
-    if (title) {
-      title.textContent = routine.tipo || "Rutina de entrenamiento";
-    }
-    if (intro) {
-      intro.textContent = "Rutina personalizada según el plan actual del alumno.";
-    }
-    if (notes) {
-      notes.textContent = routine.observaciones || "Sin observaciones técnicas.";
-    }
-const studentName = document.getElementById("pdfStudentName");
-const studentGoal = document.getElementById("pdfStudentGoal");
-const studentMode = document.getElementById("pdfStudentMode");
-const studentFrequency = document.getElementById("pdfStudentFrequency");
+  async function loadPdfFromBackend() {
+    try {
+      const studentResponse = await fetch(`${API_BASE}/api/students/1`);
+      const routineResponse = await fetch(`${API_BASE}/api/classes/${classId}/routine`);
 
-if (studentName) studentName.textContent = student.nombre || "Alumno";
-if (studentGoal) studentGoal.textContent = student.objetivo || "Objetivo no especificado";
-if (studentMode) studentMode.textContent = student.modalidad || "Modalidad no especificada";
-if (studentFrequency) studentFrequency.textContent = student.frecuencia || "Frecuencia no especificada";
-    if (exerciseBody && exercises.length > 0) {
-      exerciseBody.innerHTML = "";
+      const student = await studentResponse.json();
+      const routineData = await routineResponse.json();
 
-      exercises.forEach(item => {
-        const row = document.createElement("tr");
+      const classData = routineData.class || {};
+      const routine = routineData.routine || {};
+      const exercises = routineData.exercises || [];
 
-        row.innerHTML = `
-          <td>${item.ejercicio || ""}</td>
-          <td>${item.series || ""}</td>
-          <td>${item.reps || ""}</td>
-          <td>${item.carga || ""}</td>
-        `;
+      const title = document.getElementById("pdfRoutineTitle");
+      const intro = document.getElementById("pdfRoutineIntro");
+      const notes = document.getElementById("pdfTechnicalNotes");
+      const exerciseBody = document.getElementById("pdfExerciseBody");
 
-        exerciseBody.appendChild(row);
-      });
+      const studentName = document.getElementById("pdfStudentName");
+      const studentGoal = document.getElementById("pdfStudentGoal");
+      const studentMode = document.getElementById("pdfStudentMode");
+      const studentFrequency = document.getElementById("pdfStudentFrequency");
+
+      if (title) title.textContent = classData.routine_type || "Rutina de entrenamiento";
+      if (intro) intro.textContent = "Rutina personalizada según el plan actual del alumno.";
+      if (notes) notes.textContent = routine.technical_notes || "Sin observaciones técnicas.";
+
+      if (studentName) studentName.textContent = student.full_name || "Alumno";
+      if (studentGoal) studentGoal.textContent = student.goal || "Objetivo no especificado";
+      if (studentMode) studentMode.textContent = student.modality || "Modalidad no especificada";
+      if (studentFrequency) studentFrequency.textContent = student.frequency || "Frecuencia no especificada";
+
+      if (exerciseBody && exercises.length > 0) {
+        exerciseBody.innerHTML = "";
+
+        exercises.forEach(item => {
+          const row = document.createElement("tr");
+
+          row.innerHTML = `
+            <td>${item.exercise_name || ""}</td>
+            <td>${item.sets || ""}</td>
+            <td>${item.reps_time || ""}</td>
+            <td>${item.load || ""}</td>
+          `;
+
+          exerciseBody.appendChild(row);
+        });
+      }
+    } catch (error) {
+      console.error("No se pudo cargar el PDF desde backend", error);
     }
   }
+
+  loadPdfFromBackend();
 </script>
 </body>
 </html>
