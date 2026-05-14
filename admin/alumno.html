@@ -1348,7 +1348,8 @@ function applyStudentClassesToTimeline(classes) {
     setSelectValueByText("tipo-rutina", info.type);
   }
 }
-      const row = document.createElement("div");
+    function createExerciseRow(exercise = "", series = "", reps = "", carga = "") {
+    const row = document.createElement("div");
       row.className = "exercise-row";
 
       const values = [
