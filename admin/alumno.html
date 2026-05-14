@@ -1234,7 +1234,9 @@
     });
 
     classCard.classList.add("is-active");
-
+    
+    activeClassId = classCard.dataset.classId || "mar-14";
+    
     const selectedDay = classCard.dataset.day || "";
     const selectedType = classCard.dataset.type || "";
 
