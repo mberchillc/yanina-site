@@ -1088,14 +1088,27 @@
     });
 
     localStorage.setItem("yaninaRoutineData", JSON.stringify({
-      rutina: {
-        dia: document.getElementById("dia-rutina")?.value || "",
-        tipo: document.getElementById("tipo-rutina")?.value || "",
-        observaciones: document.getElementById("notas-rutina")?.value || "",
-        ejercicios: exercises
-      }
-    }));
+  alumno: {
+    nombre: document.getElementById("nombre")?.value || "",
+    edad: document.getElementById("edad")?.value || "",
+    telefono: document.getElementById("telefono")?.value || "",
+    domicilio: document.getElementById("domicilio")?.value || "",
+    fechaAlta: document.getElementById("fecha")?.value || "",
+    pesoInicial: document.getElementById("peso")?.value || "",
+    ultimasMediciones: document.getElementById("ultimas-mediciones")?.value || "",
+    frecuencia: document.getElementById("dias")?.value || "",
+    modalidad: document.getElementById("modalidad")?.value || "",
+    objetivo: document.getElementById("objetivo")?.value || "",
+    limitaciones: document.getElementById("limitaciones")?.value || "",
+    notas: document.getElementById("notas")?.value || ""
+  },
+  rutina: {
+    dia: document.getElementById("dia-rutina")?.value || "",
+    tipo: document.getElementById("tipo-rutina")?.value || "",
+    observaciones: document.getElementById("notas-rutina")?.value || "",
+    ejercicios: exercises
   }
+}));
 
   const workoutSaveButton = document.getElementById("saveWorkoutBtn");
 
