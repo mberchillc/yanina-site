@@ -338,8 +338,8 @@
 
     <main class="content">
       <section class="routine-title">
-        <h1>Fuerza + movilidad</h1>
-        <p>Rutina diseñada para sostener técnica, progresión gradual de carga y constancia semanal.</p>
+        <h1 id="pdfRoutineTitle">Fuerza + movilidad</h1>
+        <p id="pdfRoutineIntro">Rutina diseñada para sostener técnica, progresión gradual de carga y constancia semanal.</p>
       </section>
 
       <section class="intro">
@@ -398,7 +398,7 @@
           </tr>
         </thead>
 
-        <tbody>
+        <tbody id="pdfExerciseBody">
           <tr>
             <td>Calentamiento y movilidad articular</td>
             <td>—</td>
@@ -441,7 +441,7 @@
       <section class="notes">
         <div class="note-box">
           <h3>Observaciones técnicas</h3>
-          <p>Priorizar técnica, controlar postura en sentadillas y mantener progresión gradual de carga.</p>
+          <p id="pdfTechnicalNotes">Priorizar técnica, controlar postura en sentadillas y mantener progresión gradual de carga.</p>
         </div>
 
         <div class="note-box">
@@ -461,6 +461,46 @@
     <button class="btn btn-primary" onclick="window.print()">Guardar como PDF</button>
     <a class="btn btn-secondary" href="alumno.html#plan">Volver a la ficha</a>
   </div>
+<script>
+  const savedRoutine = localStorage.getItem("yaninaRoutineData");
 
+  if (savedRoutine) {
+    const data = JSON.parse(savedRoutine);
+    const routine = data.rutina || {};
+    const exercises = routine.ejercicios || [];
+
+    const title = document.getElementById("pdfRoutineTitle");
+    const intro = document.getElementById("pdfRoutineIntro");
+    const notes = document.getElementById("pdfTechnicalNotes");
+    const exerciseBody = document.getElementById("pdfExerciseBody");
+
+    if (title) {
+      title.textContent = routine.tipo || "Rutina de entrenamiento";
+    }
+    if (intro) {
+      intro.textContent = "Rutina personalizada según el plan actual del alumno.";
+    }
+    if (notes) {
+      notes.textContent = routine.observaciones || "Sin observaciones técnicas.";
+    }
+
+    if (exerciseBody && exercises.length > 0) {
+      exerciseBody.innerHTML = "";
+
+      exercises.forEach(item => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${item.ejercicio || ""}</td>
+          <td>${item.series || ""}</td>
+          <td>${item.reps || ""}</td>
+          <td>${item.carga || ""}</td>
+        `;
+
+        exerciseBody.appendChild(row);
+      });
+    }
+  }
+</script>
 </body>
 </html>
