@@ -1433,6 +1433,47 @@ if (studentNameInput) {
     updateStudentIdentity();
   });
 }
+  const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
+
+async function loadStudentFromBackend() {
+  try {
+    const response = await fetch(`${API_BASE}/api/students/1`);
+    const student = await response.json();
+
+    document.getElementById("nombre").value = student.full_name || "";
+    document.getElementById("edad").value = student.age || "";
+    document.getElementById("telefono").value = student.phone || "";
+    document.getElementById("domicilio").value = student.address || "";
+    document.getElementById("fecha").value = student.start_date || "";
+    document.getElementById("peso").value = student.initial_weight || "";
+    document.getElementById("ultimas-mediciones").value = student.last_measurements_date || "";
+    document.getElementById("objetivo").value = student.goal || "";
+    document.getElementById("limitaciones").value = student.limitations || "";
+    document.getElementById("notas").value = student.trainer_notes || "";
+
+    const dias = document.getElementById("dias");
+    if (dias && student.frequency) {
+      [...dias.options].forEach(option => {
+        option.selected = option.textContent.trim() === student.frequency;
+      });
+    }
+
+    const modalidad = document.getElementById("modalidad");
+    if (modalidad && student.modality) {
+      [...modalidad.options].forEach(option => {
+        option.selected = option.textContent.trim() === student.modality;
+      });
+    }
+
+    if (typeof updateStudentIdentity === "function") {
+      updateStudentIdentity();
+    }
+  } catch (error) {
+    console.error("No se pudo cargar el alumno desde D1", error);
+  }
+}
+
+loadStudentFromBackend();
   </script>
 </body>
 </html>
