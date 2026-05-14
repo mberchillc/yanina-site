@@ -681,8 +681,8 @@
             <button type="button" class="btn btn-form-primary" id="saveStudentBtn">Guardar datos</button>
             <button type="button" class="btn btn-form-secondary">Editar campos</button>
             <button type="button" class="btn btn-form-secondary">Crear plan de entrenamiento</button>
-            <a class="btn btn-primary" href="rutina-pdf.html" target="_blank">
-            Descargar rutina PDF
+            <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">
+             Descargar rutina PDF
             </a>
           </div>
         <div class="save-message" id="saveMessage">
@@ -728,8 +728,8 @@
               <div class="class-actions">
                 <button type="button" class="btn btn-form-secondary">Editar clase</button>
                 <button type="button" class="btn btn-form-secondary">Marcar realizada</button>
-                <a class="btn btn-primary" href="rutina-pdf.html" target="_blank">
-                Descargar rutina PDF
+                <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">
+                 Descargar rutina PDF
                 </a>
               </div>
             </div>
@@ -752,8 +752,8 @@
               <div class="class-actions">
                 <button type="button" class="btn btn-form-secondary">Editar clase</button>
                 <button type="button" class="btn btn-form-secondary">Marcar realizada</button>
-                <a class="btn btn-primary" href="rutina-pdf.html" target="_blank">
-                Descargar rutina PDF
+                <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">
+                 Descargar rutina PDF
                 </a>
               </div>
             </div>
@@ -944,12 +944,49 @@
 </script>
 <script>
 
+  <script>
   const saveWorkoutBtn = document.getElementById("saveWorkoutBtn");
+
+  function saveCurrentRoutineToLocalStorage() {
+    const exercises = [];
+
+    document.querySelectorAll(".exercise-row").forEach(row => {
+      const cells = row.querySelectorAll("span");
+
+      exercises.push({
+        ejercicio: cells[0]?.textContent.trim() || "",
+        series: cells[1]?.textContent.trim() || "",
+        reps: cells[2]?.textContent.trim() || "",
+        carga: cells[3]?.textContent.trim() || ""
+      });
+    });
+
+    const routineData = {
+      alumno: {
+        nombre: document.getElementById("nombre")?.value || "",
+        edad: document.getElementById("edad")?.value || "",
+        telefono: document.getElementById("telefono")?.value || "",
+        objetivo: document.getElementById("objetivo")?.value || "",
+        limitaciones: document.getElementById("limitaciones")?.value || ""
+      },
+      rutina: {
+        dia: document.getElementById("dia-rutina")?.value || "",
+        tipo: document.getElementById("tipo-rutina")?.value || "",
+        observaciones: document.getElementById("notas-rutina")?.value || "",
+        ejercicios: exercises
+      },
+      guardadoEn: new Date().toISOString()
+    };
+
+    localStorage.setItem("yaninaRoutineData", JSON.stringify(routineData));
+  }
 
   if (saveWorkoutBtn) {
     const originalWorkoutText = saveWorkoutBtn.textContent;
 
     saveWorkoutBtn.addEventListener("click", () => {
+      saveCurrentRoutineToLocalStorage();
+
       saveWorkoutBtn.textContent = "✓ Guardado";
       saveWorkoutBtn.classList.add("is-saved");
 
@@ -959,6 +996,12 @@
       }, 2200);
     });
   }
+
+  document.querySelectorAll(".pdf-link").forEach(link => {
+    link.addEventListener("click", () => {
+      saveCurrentRoutineToLocalStorage();
+    });
+  });
 </script>
 <script>
   const addExerciseBtn = document.getElementById("addExerciseBtn");
