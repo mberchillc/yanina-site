@@ -368,22 +368,26 @@
 
   <script>
     const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
-    const SESSION_KEY = "yaninaAdminSession";
+   const SESSION_KEY = "yaninaAdminSession";
 
-    let students = [];
+function hasAdminSession() {
+  const raw = localStorage.getItem(SESSION_KEY);
 
-    function hasSession() {
-      try {
-        const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "{}");
-        return session.loggedIn === true;
-      } catch (_) {
-        return false;
-      }
-    }
+  if (!raw) return false;
 
-    if (!hasSession()) {
-      window.location.href = "login.html";
-    }
+  if (raw === "active") return true;
+
+  try {
+    const session = JSON.parse(raw);
+    return session.loggedIn === true;
+  } catch (_) {
+    return false;
+  }
+}
+
+if (!hasAdminSession()) {
+  window.location.href = "login.html";
+}
 
     const logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {
