@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel Admin | Yanina Trainer</title>
 
+  <script>
+    const SESSION_KEY = "yaninaAdminSession";
+    const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+
+    if (!session || session.loggedIn !== true) {
+      window.location.href = "login.html";
+    }
+  </script>
+
   <style>
     :root {
       --green-dark: #183f35;
@@ -263,6 +272,33 @@
       margin-top: 2px;
     }
 
+
+    .empty-state {
+      grid-column: 1 / -1;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .loading-state {
+      grid-column: 1 / -1;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      color: var(--green-dark);
+      font-weight: 800;
+    }
+
+    .btn-link-reset {
+      font-family: inherit;
+    }
+
     @media (max-width: 900px) {
       .topbar {
         align-items: flex-start;
@@ -308,7 +344,7 @@
 
       <div class="top-actions">
         <a href="../index.html" class="btn btn-secondary">Volver al sitio</a>
-        <a href="login.html" class="btn btn-secondary">Salir</a>
+        <button type="button" class="btn btn-secondary btn-link-reset" id="logoutBtn">Salir</button>
         <a href="alumno.html?new=1" class="btn btn-primary">+ Nuevo alumno</a>
       </div>
     </header>
@@ -322,100 +358,222 @@
     </section>
 
     <section class="dashboard-tools">
-      <input class="search-box" type="search" placeholder="Buscar alumno por nombre, objetivo o modalidad…" />
+      <input class="search-box" id="studentSearch" type="search" placeholder="Buscar alumno por nombre, objetivo o modalidad…" />
       <a href="alumno.html?new=1" class="btn btn-primary">+ Crear alumno</a>
     </section>
 
     <section class="stats-grid">
       <div class="stat-card">
         <span>Alumnos cargados</span>
-        <strong>3</strong>
+        <strong id="studentsCount">—</strong>
       </div>
 
       <div class="stat-card">
         <span>Clases esta semana</span>
-        <strong>8</strong>
+        <strong id="classesCount">—</strong>
       </div>
 
       <div class="stat-card">
         <span>Rutinas listas</span>
-        <strong>5</strong>
+        <strong id="routinesCount">—</strong>
       </div>
     </section>
 
-    <section class="students-grid">
-
-      <article class="student-card">
-        <div class="student-top">
-          <div class="student-name">María González</div>
-          <div class="student-pill">Online</div>
-        </div>
-
-        <div class="student-meta">
-          <div><strong>Objetivo:</strong> bajar de peso y tonificar</div>
-          <div><strong>Frecuencia:</strong> 3 días por semana</div>
-          <div><strong>Últimas mediciones:</strong> 12/05/2026</div>
-        </div>
-
-        <div class="next-class">
-          <strong>Próxima clase:</strong><br>
-          Martes · 6:00 pm · Fuerza + movilidad
-        </div>
-
-        <div class="card-actions">
-          <a href="alumno.html" class="btn btn-soft">Ver ficha</a>
-          <a href="alumno.html#calendario" class="btn btn-soft">Calendario</a>
-        </div>
-      </article>
-
-      <article class="student-card">
-        <div class="student-top">
-          <div class="student-name">Laura Fernández</div>
-          <div class="student-pill">Mixta</div>
-        </div>
-
-        <div class="student-meta">
-          <div><strong>Objetivo:</strong> ganar fuerza y mejorar movilidad</div>
-          <div><strong>Frecuencia:</strong> 2 días por semana</div>
-          <div><strong>Últimas mediciones:</strong> 05/05/2026</div>
-        </div>
-
-        <div class="next-class">
-          <strong>Próxima clase:</strong><br>
-          Jueves · 7:00 pm · Full body
-        </div>
-
-        <div class="card-actions">
-          <a href="alumno.html" class="btn btn-soft">Ver ficha</a>
-          <a href="alumno.html#calendario" class="btn btn-soft">Calendario</a>
-        </div>
-      </article>
-
-      <article class="student-card">
-        <div class="student-top">
-          <div class="student-name">Carolina Pérez</div>
-          <div class="student-pill">Presencial</div>
-        </div>
-
-        <div class="student-meta">
-          <div><strong>Objetivo:</strong> constancia, postura y descenso gradual</div>
-          <div><strong>Frecuencia:</strong> 4 días por semana</div>
-          <div><strong>Últimas mediciones:</strong> 18/04/2026</div>
-        </div>
-
-        <div class="next-class">
-          <strong>Próxima clase:</strong><br>
-          Sábado · 9:00 am · Tren inferior
-        </div>
-
-        <div class="card-actions">
-          <a href="alumno.html" class="btn btn-soft">Ver ficha</a>
-          <a href="alumno.html#calendario" class="btn btn-soft">Calendario</a>
-        </div>
-      </article>
-
+    <section class="students-grid" id="studentsGrid">
+      <div class="loading-state">Cargando alumnos desde D1…</div>
     </section>
 
   </main>
+
+  <script>
+    const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
+    const studentsGrid = document.getElementById("studentsGrid");
+    const studentSearch = document.getElementById("studentSearch");
+    const studentsCount = document.getElementById("studentsCount");
+    const classesCount = document.getElementById("classesCount");
+    const routinesCount = document.getElementById("routinesCount");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    let allStudents = [];
+
+    function normalizeText(value) {
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function formatDate(value) {
+      if (!value) return "Sin datos";
+
+      const date = new Date(value + "T00:00:00");
+      if (Number.isNaN(date.getTime())) return value;
+
+      return date.toLocaleDateString("es-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+    }
+
+    function getStudentId(student) {
+      return student.id || student.student_id || student.studentId || "1";
+    }
+
+    function getStudentName(student) {
+      return student.full_name || student.name || "Alumno sin nombre";
+    }
+
+    function getStudentGoal(student) {
+      return student.goal || student.objective || "Sin objetivo cargado";
+    }
+
+    function getStudentFrequency(student) {
+      return student.frequency || "Sin frecuencia cargada";
+    }
+
+    function getStudentModality(student) {
+      return student.modality || "Sin modalidad";
+    }
+
+    function getLastMeasurements(student) {
+      return student.last_measurements_date || student.lastMeasurementsDate || "";
+    }
+
+    function renderStudents(students) {
+      if (!studentsGrid) return;
+
+      if (!students.length) {
+        studentsGrid.innerHTML = `
+          <div class="empty-state">
+            No hay alumnos para mostrar. Usá <strong>+ Crear alumno</strong> para cargar el primero.
+          </div>
+        `;
+        return;
+      }
+
+      studentsGrid.innerHTML = students.map(student => {
+        const id = getStudentId(student);
+        const name = getStudentName(student);
+        const modality = getStudentModality(student);
+        const goal = getStudentGoal(student);
+        const frequency = getStudentFrequency(student);
+        const lastMeasurements = formatDate(getLastMeasurements(student));
+
+        return `
+          <article class="student-card">
+            <div class="student-top">
+              <div class="student-name">${name}</div>
+              <div class="student-pill">${modality}</div>
+            </div>
+
+            <div class="student-meta">
+              <div><strong>Objetivo:</strong> ${goal}</div>
+              <div><strong>Frecuencia:</strong> ${frequency}</div>
+              <div><strong>Últimas mediciones:</strong> ${lastMeasurements}</div>
+            </div>
+
+            <div class="next-class">
+              <strong>Próxima clase:</strong><br>
+              Se cargará desde el calendario del alumno.
+            </div>
+
+            <div class="card-actions">
+              <a href="alumno.html?id=${id}" class="btn btn-soft">Ver ficha</a>
+              <a href="alumno.html?id=${id}#calendario" class="btn btn-soft">Calendario</a>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function updateStats(students) {
+      if (studentsCount) studentsCount.textContent = students.length;
+      if (classesCount) classesCount.textContent = "—";
+      if (routinesCount) routinesCount.textContent = "—";
+    }
+
+    function applySearch() {
+      const query = normalizeText(studentSearch?.value || "");
+
+      if (!query) {
+        renderStudents(allStudents);
+        return;
+      }
+
+      const filtered = allStudents.filter(student => {
+        const haystack = [
+          getStudentName(student),
+          getStudentGoal(student),
+          getStudentFrequency(student),
+          getStudentModality(student),
+          student.phone,
+          student.address
+        ].map(normalizeText).join(" ");
+
+        return haystack.includes(query);
+      });
+
+      renderStudents(filtered);
+    }
+
+    async function loadStudentsFromBackend() {
+      try {
+        const response = await fetch(`${API_BASE}/api/students`);
+
+        if (!response.ok) {
+          throw new Error("GET /api/students todavía no está disponible");
+        }
+
+        const data = await response.json();
+
+        if (Array.isArray(data)) return data;
+        if (Array.isArray(data.students)) return data.students;
+
+        return [];
+      } catch (error) {
+        console.warn("No se pudo cargar la lista completa. Se usa fallback del alumno 1.", error);
+
+        const fallbackResponse = await fetch(`${API_BASE}/api/students/1`);
+
+        if (!fallbackResponse.ok) {
+          throw new Error("No se pudo cargar ningún alumno desde D1");
+        }
+
+        const student = await fallbackResponse.json();
+        return student ? [student] : [];
+      }
+    }
+
+    async function initDashboard() {
+      try {
+        allStudents = await loadStudentsFromBackend();
+        updateStats(allStudents);
+        renderStudents(allStudents);
+      } catch (error) {
+        console.error(error);
+
+        if (studentsGrid) {
+          studentsGrid.innerHTML = `
+            <div class="empty-state">
+              No se pudieron cargar los alumnos desde D1. Revisá el Worker o probá nuevamente.
+            </div>
+          `;
+        }
+
+        updateStats([]);
+      }
+    }
+
+    if (studentSearch) {
+      studentSearch.addEventListener("input", applySearch);
+    }
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem(SESSION_KEY);
+        window.location.href = "login.html";
+      });
+    }
+
+    initDashboard();
+  </script>
 </body>
 </html>
