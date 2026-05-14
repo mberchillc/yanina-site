@@ -138,19 +138,17 @@
     }
 
     .layout {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 22px;
-      align-items: start;
+  display: block;
     }
 
-    .card {
-      background: rgba(255,255,255,0.86);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 24px;
-    }
+.card {
+  background: rgba(255,255,255,0.86);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  margin-bottom: 22px;
+ }
 
     .card-header {
       display: flex;
@@ -562,18 +560,18 @@
 
 .timeline-grid {
   display: grid;
-  grid-template-columns: repeat(15, minmax(96px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(15, minmax(78px, 1fr));
+  gap: 8px;
   overflow-x: auto;
   padding-bottom: 6px;
 }
 
 .timeline-day {
-  min-height: 118px;
+  min-height: 92px;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 14px;
   background: var(--white);
-  padding: 12px;
+  padding: 9px;
   text-align: left;
   color: var(--text);
 }
@@ -589,8 +587,8 @@
 .timeline-day strong {
   display: block;
   color: var(--green-dark);
-  font-size: 24px;
-  margin-bottom: 8px;
+  font-size: 20px;
+  margin-bottom: 5px;
 }
 
 .timeline-day em {
@@ -605,8 +603,8 @@
 .timeline-day small {
   display: block;
   color: var(--text);
-  font-size: 12px;
-  line-height: 1.3;
+  font-size: 11px;
+  line-height: 1.25;
 }
 
 .timeline-day.has-class {
@@ -1042,35 +1040,6 @@
         </div>
       </article>
 
-      <aside class="side-stack">
-
-        <section class="card next-block">
-          <h3>Próximos módulos</h3>
-
-          <div class="next-list">
-            <div class="next-item">
-              <strong>Calendario de clases</strong>
-              <span>Planificación, clases pasadas, próximas clases, criterio de cada sesión y descarga de rutina en PDF.</span>
-            </div>
-
-            <div class="next-item">
-              <strong>Plan de entrenamiento</strong>
-              <span>Rutinas, ejercicios, series, repeticiones, carga, descanso, notas técnicas y descarga en PDF para enviar al alumno.</span>
-            </div>
-
-            <div class="next-item">
-              <strong>PDF para alumno</strong>
-              <span>Versión descargable de la rutina actual para enviar por WhatsApp o email hasta que exista el acceso con usuario y contraseña.</span>
-            </div>
-
-            <div class="next-item">
-              <strong>Seguimiento</strong>
-              <span>Peso, mediciones, evolución, adherencia y objetivos mensurables.</span>
-            </div>
-          </div>
-        </section>
-
-      </aside>
 
     </section>
 
