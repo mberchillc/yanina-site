@@ -1140,6 +1140,7 @@
 
   <script>
     let activeClassId = "mar-14";
+    let activeBackendClassId = "1";
     const params = new URLSearchParams(window.location.search);
     const isNewStudent = params.get("new") === "1";
 
@@ -1412,7 +1413,7 @@ function loadRoutineData(data) {
     classCard.classList.add("is-active");
     
     activeClassId = classCard.dataset.classId || "mar-14";
-    
+    activeBackendClassId = classCard.dataset.backendClassId || "1";
     const selectedDay = classCard.dataset.day || "";
     const selectedType = classCard.dataset.type || "";
 const routinesByClass = JSON.parse(localStorage.getItem("yaninaRoutinesByClass") || "{}");
