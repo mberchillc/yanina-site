@@ -1006,5 +1006,28 @@
     });
   }
 </script>
+<script>
+  function addDeleteButtonToExistingRows() {
+    const rows = document.querySelectorAll(".exercise-row");
+
+    rows.forEach(row => {
+      const alreadyHasButton = row.querySelector(".delete-exercise-btn");
+      if (alreadyHasButton) return;
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "delete-exercise-btn";
+      deleteBtn.textContent = "Eliminar";
+
+      deleteBtn.addEventListener("click", () => {
+        row.remove();
+      });
+
+      row.appendChild(deleteBtn);
+    });
+  }
+
+  addDeleteButtonToExistingRows();
+</script>
 </body>
 </html>
