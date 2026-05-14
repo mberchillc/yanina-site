@@ -1143,7 +1143,9 @@
     const LOGIN_URL = "login.html";
     const DASHBOARD_URL = "index.html";
 
-    if (localStorage.getItem("yaninaAdminSession") !== "active") {
+    const session = JSON.parse(localStorage.getItem("yaninaAdminSession") || "null");
+
+    if (!session || session.loggedIn !== true) {
       window.location.href = LOGIN_URL;
     }
 
