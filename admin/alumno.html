@@ -1243,6 +1243,32 @@
       updateStudentIdentity();
     }
 
+    function applyStudentClassesToTimeline(classes) {
+      const timelineButtons = Array.from(document.querySelectorAll(".timeline-day.has-class"));
+      const orderedClasses = Array.isArray(classes) ? classes : [];
+
+      timelineButtons.forEach((button, index) => {
+        const classData = orderedClasses[index];
+        if (!classData || !classData.id) return;
+
+        button.dataset.backendClassId = String(classData.id);
+
+        if (classData.routine_type) {
+          button.dataset.type = classData.routine_type;
+          const small = button.querySelector("small");
+          if (small) small.textContent = classData.routine_type;
+        }
+      });
+
+      const activeButton = document.querySelector(".timeline-day.has-class.is-active") || timelineButtons[0];
+      if (activeButton) {
+        activeClassId = activeButton.dataset.classId || "mar-14";
+        activeBackendClassId = activeButton.dataset.backendClassId || "1";
+        setSelectValueByText("dia-rutina", activeButton.dataset.day || "");
+        setSelectValueByText("tipo-rutina", activeButton.dataset.type || "");
+      }
+    }
+
     function createExerciseRow(exercise = "", series = "", reps = "", carga = "") {
       const row = document.createElement("div");
       row.className = "exercise-row";
@@ -1411,6 +1437,23 @@
           saveMessage.style.display = "block";
           saveMessage.textContent = "No se pudo cargar este alumno. Volvé al panel y probá nuevamente.";
         }
+      }
+    }
+
+    async function loadStudentClassesFromBackend() {
+      if (!studentId) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/api/students/${studentId}/classes`);
+
+        if (!response.ok) {
+          throw new Error("No se pudieron cargar las clases del alumno desde D1");
+        }
+
+        const classes = await response.json();
+        applyStudentClassesToTimeline(classes);
+      } catch (error) {
+        console.error(error);
       }
     }
 
@@ -1656,12 +1699,18 @@
     addDeleteButtonToExistingRows();
     updateStudentIdentity();
 
-    if (isNewStudent) {
-      resetForNewStudent();
-    } else {
-      loadStudentFromBackend();
-      loadRoutineFromBackend(activeBackendClassId);
+    async function initializeStudentPage() {
+      if (isNewStudent) {
+        resetForNewStudent();
+        return;
+      }
+
+      await loadStudentFromBackend();
+      await loadStudentClassesFromBackend();
+      await loadRoutineFromBackend(activeBackendClassId);
     }
+
+    initializeStudentPage();
   </script>
 </body>
 </html>
