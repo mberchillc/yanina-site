@@ -1415,7 +1415,9 @@ function loadRoutineData(data) {
 async function saveRoutineToBackend() {
   const exercises = [];
 
-  document.querySelectorAll(".exercise-row").forEach(row => {
+  const rows = document.querySelectorAll("#exerciseTable .exercise-row");
+
+  rows.forEach(row => {
     const cells = row.querySelectorAll("span");
 
     exercises.push({
@@ -1425,6 +1427,30 @@ async function saveRoutineToBackend() {
       load: cells[3]?.textContent.trim() || ""
     });
   });
+
+  const payload = {
+    routine_type: document.getElementById("tipo-rutina")?.value || "",
+    technical_notes: document.getElementById("notas-rutina")?.value || "",
+    student_message: "Entrená a tu ritmo, cuidá la técnica y avisame si necesitás adaptar algún ejercicio.",
+    exercises: exercises
+  };
+
+  const response = await fetch(`${API_BASE}/api/classes/${activeBackendClassId}/routine`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error("No se pudo guardar la rutina en D1");
+  }
+
+  console.log("Rutina enviada a D1:", activeBackendClassId, exercises.length, exercises);
+
+  return await response.json();
+}
 
   const payload = {
     routine_type: document.getElementById("tipo-rutina")?.value || "",
