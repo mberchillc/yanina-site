@@ -533,6 +533,92 @@
 .exercise-row span[contenteditable="true"]:focus {
   background: var(--green-soft);
 }
+    .plan-timeline {
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 18px;
+  background: rgba(247, 243, 234, 0.55);
+}
+
+.plan-timeline-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.plan-timeline-header h3 {
+  color: var(--green-dark);
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.plan-timeline-header p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(15, minmax(96px, 1fr));
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.timeline-day {
+  min-height: 118px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--white);
+  padding: 12px;
+  text-align: left;
+  color: var(--text);
+}
+
+.timeline-day span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.timeline-day strong {
+  display: block;
+  color: var(--green-dark);
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.timeline-day em {
+  display: block;
+  color: var(--green-dark);
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+.timeline-day small {
+  display: block;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.timeline-day.has-class {
+  cursor: pointer;
+  background: var(--green-soft);
+  border-color: rgba(126, 200, 69, 0.7);
+}
+
+.timeline-day.has-class.is-active {
+  outline: 3px solid rgba(126, 200, 69, 0.35);
+  background: var(--green-main);
+}
     @media (max-width: 840px) {
       .topbar {
         align-items: flex-start;
@@ -686,7 +772,7 @@
           <div class="bottom-actions">
             <button type="button" class="btn btn-form-primary" id="saveStudentBtn">Guardar datos</button>
             <button type="button" class="btn btn-form-secondary">Editar campos</button>
-            <button type="button" class="btn btn-form-secondary">Crear plan de entrenamiento</button>
+            <a href="#plan" class="btn btn-form-secondary">Crear plan de entrenamiento</a>
             <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">
             Descargar rutina PDF
             </a>
@@ -774,7 +860,100 @@
           </div>
           <button type="button" class="btn btn-form-primary" id="saveWorkoutBtn">Guardar rutina</button>
         </div>
+<section class="plan-timeline">
+  <div class="plan-timeline-header">
+    <div>
+      <h3>Planificación 15 días</h3>
+      <p>Vista horizontal para organizar las próximas clases del alumno.</p>
+    </div>
+    <span class="status-pill">4 clases previstas</span>
+  </div>
 
+  <div class="timeline-grid">
+    <div class="timeline-day">
+      <span>Lun</span>
+      <strong>13</strong>
+    </div>
+
+    <button type="button" class="timeline-day has-class is-active" data-day="Martes · 6:00 pm" data-type="Fuerza + movilidad">
+      <span>Mar</span>
+      <strong>14</strong>
+      <em>6:00 pm</em>
+      <small>Fuerza + movilidad</small>
+    </button>
+
+    <div class="timeline-day">
+      <span>Mié</span>
+      <strong>15</strong>
+    </div>
+
+    <button type="button" class="timeline-day has-class" data-day="Jueves · 6:00 pm" data-type="Full body">
+      <span>Jue</span>
+      <strong>16</strong>
+      <em>6:00 pm</em>
+      <small>Full body</small>
+    </button>
+
+    <div class="timeline-day">
+      <span>Vie</span>
+      <strong>17</strong>
+    </div>
+
+    <div class="timeline-day">
+      <span>Sáb</span>
+      <strong>18</strong>
+    </div>
+
+    <div class="timeline-day">
+      <span>Dom</span>
+      <strong>19</strong>
+    </div>
+
+    <div class="timeline-day">
+      <span>Lun</span>
+      <strong>20</strong>
+    </div>
+
+    <button type="button" class="timeline-day has-class" data-day="Martes · 6:00 pm" data-type="Tren inferior">
+      <span>Mar</span>
+      <strong>21</strong>
+      <em>6:00 pm</em>
+      <small>Tren inferior</small>
+    </button>
+
+    <div class="timeline-day">
+      <span>Mié</span>
+      <strong>22</strong>
+    </div>
+
+    <button type="button" class="timeline-day has-class" data-day="Jueves · 6:00 pm" data-type="Cardio + core">
+      <span>Jue</span>
+      <strong>23</strong>
+      <em>6:00 pm</em>
+      <small>Cardio + core</small>
+    </button>
+
+    <div class="timeline-day">
+      <span>Vie</span>
+      <strong>24</strong>
+    </div>
+
+    <div class="timeline-day">
+      <span>Sáb</span>
+      <strong>25</strong>
+    </div>
+
+    <div class="timeline-day">
+      <span>Dom</span>
+      <strong>26</strong>
+    </div>
+
+    <div class="timeline-day">
+      <span>Lun</span>
+      <strong>27</strong>
+    </div>
+  </div>
+</section>
         <div class="workout-toolbar">
           <div class="field">
             <label for="dia-rutina">Día seleccionado</label>
@@ -1074,6 +1253,33 @@
     });
 
     addDeleteButtonToExistingRows();
+  document.querySelectorAll(".timeline-day.has-class").forEach(classCard => {
+  classCard.addEventListener("click", () => {
+    document.querySelectorAll(".timeline-day.has-class").forEach(card => {
+      card.classList.remove("is-active");
+    });
+
+    classCard.classList.add("is-active");
+
+    const selectedDay = classCard.dataset.day || "";
+    const selectedType = classCard.dataset.type || "";
+
+    const daySelect = document.getElementById("dia-rutina");
+    const typeSelect = document.getElementById("tipo-rutina");
+
+    if (daySelect && selectedDay) {
+      [...daySelect.options].forEach(option => {
+        option.selected = option.textContent.trim() === selectedDay;
+      });
+    }
+
+    if (typeSelect && selectedType) {
+      [...typeSelect.options].forEach(option => {
+        option.selected = option.textContent.trim() === selectedType;
+      });
+    }
+  });
+});
   </script>
 </body>
 </html>
