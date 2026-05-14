@@ -348,19 +348,19 @@
           <div class="info-grid">
             <div class="info-row">
               <span>Nombre</span>
-              <strong>María González</strong>
+              <strong id="pdfStudentName">María González</strong>
             </div>
             <div class="info-row">
               <span>Objetivo</span>
-              <strong>Bajar de peso y tonificar</strong>
+              <strong id="pdfStudentGoal">Bajar de peso y tonificar</strong>
             </div>
             <div class="info-row">
               <span>Modalidad</span>
-              <strong>Online</strong>
+              <strong id="pdfStudentMode">Online</strong>
             </div>
             <div class="info-row">
               <span>Frecuencia</span>
-              <strong>3 días por semana</strong>
+              <strong id="pdfStudentFrequency">3 días por semana</strong>
             </div>
           </div>
         </div>
@@ -468,7 +468,7 @@
     const data = JSON.parse(savedRoutine);
     const routine = data.rutina || {};
     const exercises = routine.ejercicios || [];
-
+    const student = data.alumno || {};
     const title = document.getElementById("pdfRoutineTitle");
     const intro = document.getElementById("pdfRoutineIntro");
     const notes = document.getElementById("pdfTechnicalNotes");
@@ -483,7 +483,15 @@
     if (notes) {
       notes.textContent = routine.observaciones || "Sin observaciones técnicas.";
     }
+const studentName = document.getElementById("pdfStudentName");
+const studentGoal = document.getElementById("pdfStudentGoal");
+const studentMode = document.getElementById("pdfStudentMode");
+const studentFrequency = document.getElementById("pdfStudentFrequency");
 
+if (studentName) studentName.textContent = student.nombre || "Alumno";
+if (studentGoal) studentGoal.textContent = student.objetivo || "Objetivo no especificado";
+if (studentMode) studentMode.textContent = student.modalidad || "Modalidad no especificada";
+if (studentFrequency) studentFrequency.textContent = student.frecuencia || "Frecuencia no especificada";
     if (exerciseBody && exercises.length > 0) {
       exerciseBody.innerHTML = "";
 
