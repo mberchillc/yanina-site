@@ -1235,31 +1235,231 @@
       updateStudentIdentity();
     }
 
-    function applyStudentClassesToTimeline(classes) {
-      const timelineButtons = Array.from(document.querySelectorAll(".timeline-day.has-class"));
-      const orderedClasses = Array.isArray(classes) ? classes : [];
+    function formatClassDayLabel(classDate) {
+  if (!classDate) return { weekday: "Clase", day: "—" };
 
-      timelineButtons.forEach((button, index) => {
-        const classData = orderedClasses[index];
-        if (!classData || !classData.id) return;
+  const date = new Date(classDate + "T00:00:00");
 
-        button.dataset.backendClassId = String(classData.id);
+  if (Number.isNaN(date.getTime())) {
+    return { weekday: "Clase", day: classDate };
+  }
 
-        if (classData.routine_type) {
-          button.dataset.type = classData.routine_type;
-          const small = button.querySelector("small");
-          if (small) small.textContent = classData.routine_type;
-        }
-      });
+  const weekdays = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
-      const activeButton = document.querySelector(".timeline-day.has-class.is-active") || timelineButtons[0];
-      if (activeButton) {
-        activeClassId = activeButton.dataset.classId || "mar-14";
-        activeBackendClassId = activeButton.dataset.backendClassId || "1";
-        setSelectValueByText("dia-rutina", activeButton.dataset.day || "");
-        setSelectValueByText("tipo-rutina", activeButton.dataset.type || "");
-      }
-    }
+  return {
+    weekday: weekdays[date.getDay()],
+    day: String(date.getDate())
+  };
+}
+
+function formatClassDisplay(classData) {
+  const label = formatClassDayLabel(classData.class_date);
+  const time = classData.class_time || "";
+  const type = classData.routine_type || "Clase";
+
+  return {
+    weekday: label.weekday,
+    day: label.day,
+    time,
+    type,
+    fullDay: `${label.weekday} · ${time}`
+  };
+}
+
+function createTimelineClassButton(classData, index) {
+  const info = formatClassDisplay(classData);
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "timeline-day has-class";
+  button.dataset.classId = `class-${classData.id}`;
+  button.dataset.backendClassId = String(classData.id);
+  button.dataset.day = info.fullDay;
+  button.dataset.type = info.type;
+
+  button.innerHTML = `
+    <span>${info.weekday}</span>
+    <strong>${info.day}</strong>
+    <em>${info.time}</em>
+    <small>${info.type}</small>
+  `;
+
+  button.addEventListener("click", async () => {
+    document.querySelectorAll(".timeline-day.has-class").forEach(card => {
+      card.classList.remove("is-active");
+    });
+
+    button.classList.add("is-active");
+
+    activeClassId = button.dataset.classId;
+    activeBackendClassId = button.dataset.backendClassId;
+
+    setSelectValueByText("dia-rutina", button.dataset.day || "");
+    setSelectValueByText("tipo-rutina", button.dataset.type || "");
+
+    await loadRoutineFromBackend(activeBackendClassId);
+  });
+
+  if (index === 0) {
+    button.classList.add("is-active");
+  }
+
+  return button;
+}
+
+function formatClassDayLabel(classDate) {
+  if (!classDate) return { weekday: "Clase", day: "—" };
+
+  const date = new Date(classDate + "T00:00:00");
+
+  if (Number.isNaN(date.getTime())) {
+    return { weekday: "Clase", day: classDate };
+  }
+
+  const weekdays = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+  return {
+    weekday: weekdays[date.getDay()],
+    day: String(date.getDate())
+  };
+}
+
+function formatClassDisplay(classData) {
+  const label = formatClassDayLabel(classData.class_date);
+  const time = classData.class_time || "";
+  const type = classData.routine_type || "Clase";
+
+  return {
+    weekday: label.weekday,
+    day: label.day,
+    time,
+    type,
+    fullDay: `${label.weekday} · ${time}`
+  };
+}
+
+function createTimelineClassButton(classData, index) {
+  const info = formatClassDisplay(classData);
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "timeline-day has-class";
+  button.dataset.classId = `class-${classData.id}`;
+  button.dataset.backendClassId = String(classData.id);
+  button.dataset.day = info.fullDay;
+  button.dataset.type = info.type;
+
+  button.innerHTML = `
+    <span>${info.weekday}</span>
+    <strong>${info.day}</strong>
+    <em>${info.time}</em>
+    <small>${info.type}</small>
+  `;
+
+  button.addEventListener("click", async () => {
+    document.querySelectorAll(".timeline-day.has-class").forEach(card => {
+      card.classList.remove("is-active");
+    });
+
+    button.classList.add("is-active");
+
+    activeClassId = button.dataset.classId;
+    activeBackendClassId = button.dataset.backendClassId;
+
+    setSelectValueByText("dia-rutina", button.dataset.day || "");
+    setSelectValueByText("tipo-rutina", button.dataset.type || "");
+
+    await loadRoutineFromBackend(activeBackendClassId);
+  });
+
+  if (index === 0) {
+    button.classList.add("is-active");
+  }
+
+  return button;
+}
+
+function applyStudentClassesToTimeline(classes) {
+  const timelineGrid = document.querySelector(".timeline-grid");
+  const plannedCounter = document.querySelector(".plan-timeline-header .status-pill");
+
+  if (!timelineGrid) return;
+
+  const orderedClasses = Array.isArray(classes) ? classes : [];
+
+  timelineGrid.innerHTML = "";
+
+  if (plannedCounter) {
+    plannedCounter.textContent = `${orderedClasses.length} clases previstas`;
+  }
+
+  if (orderedClasses.length === 0) {
+    timelineGrid.innerHTML = `
+      <div class="timeline-day">
+        <span>Sin</span>
+        <strong>—</strong>
+        <small>No hay clases cargadas</small>
+      </div>
+    `;
+    return;
+  }
+
+  orderedClasses.forEach((classData, index) => {
+    timelineGrid.appendChild(createTimelineClassButton(classData, index));
+  });
+
+  const firstClass = orderedClasses[0];
+
+  if (firstClass) {
+    activeClassId = `class-${firstClass.id}`;
+    activeBackendClassId = String(firstClass.id);
+
+    const info = formatClassDisplay(firstClass);
+
+    setSelectValueByText("dia-rutina", info.fullDay);
+    setSelectValueByText("tipo-rutina", info.type);
+  }
+}
+  const timelineGrid = document.querySelector(".timeline-grid");
+  const plannedCounter = document.querySelector(".plan-timeline-header .status-pill");
+
+  if (!timelineGrid) return;
+
+  const orderedClasses = Array.isArray(classes) ? classes : [];
+
+  timelineGrid.innerHTML = "";
+
+  if (plannedCounter) {
+    plannedCounter.textContent = `${orderedClasses.length} clases previstas`;
+  }
+
+  if (orderedClasses.length === 0) {
+    timelineGrid.innerHTML = `
+      <div class="timeline-day">
+        <span>Sin</span>
+        <strong>—</strong>
+        <small>No hay clases cargadas</small>
+      </div>
+    `;
+    return;
+  }
+
+  orderedClasses.forEach((classData, index) => {
+    timelineGrid.appendChild(createTimelineClassButton(classData, index));
+  });
+
+  const firstClass = orderedClasses[0];
+
+  if (firstClass) {
+    activeClassId = `class-${firstClass.id}`;
+    activeBackendClassId = String(firstClass.id);
+
+    const info = formatClassDisplay(firstClass);
+
+    setSelectValueByText("dia-rutina", info.fullDay);
+    setSelectValueByText("tipo-rutina", info.type);
+  }
+}
 
     function createExerciseRow(exercise = "", series = "", reps = "", carga = "") {
       const row = document.createElement("div");
