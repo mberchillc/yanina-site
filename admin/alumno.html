@@ -1261,7 +1261,9 @@
 
               <div class="class-actions">
                 <button type="button" class="btn btn-form-secondary" data-action="edit-class" data-id="${item.id}">Editar clase</button>
-                <button type="button" class="btn btn-form-secondary" data-action="complete-class" data-id="${item.id}">Marcar realizada</button>
+                <button type="button" class="btn btn-form-secondary" data-action="complete-class" data-id="${item.id}">
+                 ${isCompleted ? "Realizada" : "Marcar realizada"}
+                </button>
                 <a class="btn btn-primary pdf-link-list" href="rutina-pdf.html?classId=${item.id}" target="_blank" data-id="${item.id}">Descargar rutina PDF</a>
               </div>
             </div>
