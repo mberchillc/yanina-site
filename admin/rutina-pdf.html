@@ -1,1 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rutina PDF | Yanina Trainer</title>
 
+  <style>
+    :root {
+      --green-dark: #183f35;
+      --green-main: #7ec845;
+      --green-soft: #d9f2cb;
+      --cream: #f7f3ea;
+      --white: #ffffff;
+      --text: #24332e;
+      --muted: #6f7d78;
+      --border: rgba(24, 63, 53, 0.16);
+      --shadow: 0 18px 50px rgba(24, 63, 53, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, var(--cream), #eef7ea);
+      color: var(--text);
+      padding: 28px;
+    }
+
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .header {
+      background: var(--green-dark);
+      color: var(--white);
+      padding: 26px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand img {
+      width: 240px;
+      height: 86px;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .doc-label {
+      text-align: right;
+    }
+
+    .doc-label strong {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .doc-label span {
+      color: rgba(255,255,255,0.72);
+      font-size: 14px;
+    }
+
+    .content {
+      padding: 32px;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+
+    .box {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      background: rgba(247, 243, 234, 0.45);
+    }
+
+    .box h2 {
+      color: var(--green-dark);
+      font-size: 19px;
+      margin-bottom: 14px;
+    }
+
+    .info-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 1px solid rgba(24, 63, 53, 0.08);
+      padding-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .info-row span {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .info-row strong {
+      color: var(--green-dark);
+      text-align: right;
+    }
+
+    .routine-title {
+      margin: 8px 0 16px;
+    }
+
+    .routine-title h1 {
+      color: var(--green-dark);
+      font-size: 34px;
+      line-height: 1.08;
+      margin-bottom: 8px;
+    }
+
+    .routine-title p {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .exercise-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+    }
+
+    .exercise-table th {
+      background: var(--green-dark);
+      color: var(--white);
+      text-align: left;
+      font-size: 13px;
+      padding: 13px 12px;
+    }
+
+    .exercise-table td {
+      padding: 13px 12px;
+      border-bottom: 1px solid rgba(24, 63, 53, 0.1);
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    .exercise-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .exercise-table td:first-child {
+      color: var(--green-dark);
+      font-weight: 800;
+    }
+
+    .notes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .note-box {
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      background: var(--green-soft);
+    }
+
+    .note-box h3 {
+      color: var(--green-dark);
+      font-size: 17px;
+      margin-bottom: 10px;
+    }
+
+    .note-box p {
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .footer {
+      padding: 22px 32px 30px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .actions {
+      max-width: 860px;
+      margin: 18px auto 0;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: var(--green-dark);
+      color: var(--white);
+    }
+
+    .btn-secondary {
+      background: var(--green-soft);
+      color: var(--green-dark);
+    }
+
+    @media print {
+      body {
+        background: var(--white);
+        padding: 0;
+      }
+
+      .page {
+        max-width: none;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .actions {
+        display: none;
+      }
+
+      .header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .exercise-table th,
+      .note-box {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 14px;
+      }
+
+      .header,
+      .intro,
+      .notes {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .doc-label {
+        text-align: left;
+      }
+
+      .brand img {
+        width: 220px;
+        height: 82px;
+      }
+
+      .content {
+        padding: 22px;
+      }
+
+      .exercise-table {
+        font-size: 13px;
+      }
+
+      .exercise-table th,
+      .exercise-table td {
+        padding: 10px 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <section class="page">
+    <header class="header">
+      <div class="brand">
+        <img src="../assets/logo-transp.png" alt="Yanina Trainer" />
+      </div>
+
+      <div class="doc-label">
+        <strong>Rutina de entrenamiento</strong>
+        <span>Plan semanal personalizado</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="routine-title">
+        <h1>Fuerza + movilidad</h1>
+        <p>Rutina diseñada para sostener técnica, progresión gradual de carga y constancia semanal.</p>
+      </section>
+
+      <section class="intro">
+        <div class="box">
+          <h2>Datos del alumno</h2>
+          <div class="info-grid">
+            <div class="info-row">
+              <span>Nombre</span>
+              <strong>María González</strong>
+            </div>
+            <div class="info-row">
+              <span>Objetivo</span>
+              <strong>Bajar de peso y tonificar</strong>
+            </div>
+            <div class="info-row">
+              <span>Modalidad</span>
+              <strong>Online</strong>
+            </div>
+            <div class="info-row">
+              <span>Frecuencia</span>
+              <strong>3 días por semana</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="box">
+          <h2>Clase</h2>
+          <div class="info-grid">
+            <div class="info-row">
+              <span>Día</span>
+              <strong>Martes 14 de mayo</strong>
+            </div>
+            <div class="info-row">
+              <span>Horario</span>
+              <strong>6:00 pm</strong>
+            </div>
+            <div class="info-row">
+              <span>Rutina</span>
+              <strong>Fuerza + movilidad</strong>
+            </div>
+            <div class="info-row">
+              <span>Criterio</span>
+              <strong>Progresión gradual</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <table class="exercise-table">
+        <thead>
+          <tr>
+            <th>Ejercicio</th>
+            <th>Series</th>
+            <th>Reps / Tiempo</th>
+            <th>Carga</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>Calentamiento y movilidad articular</td>
+            <td>—</td>
+            <td>10’</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Bíceps con mancuernas</td>
+            <td>3</td>
+            <td>10</td>
+            <td>20 lbs/brazo</td>
+          </tr>
+          <tr>
+            <td>Sentadillas con disco</td>
+            <td>3</td>
+            <td>10</td>
+            <td>30 lbs</td>
+          </tr>
+          <tr>
+            <td>Vuelos laterales</td>
+            <td>3</td>
+            <td>8</td>
+            <td>15 lbs</td>
+          </tr>
+          <tr>
+            <td>Abdominales rectos</td>
+            <td>3</td>
+            <td>10</td>
+            <td>Peso corporal</td>
+          </tr>
+          <tr>
+            <td>Estiramiento</td>
+            <td>—</td>
+            <td>10’</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <section class="notes">
+        <div class="note-box">
+          <h3>Observaciones técnicas</h3>
+          <p>Priorizar técnica, controlar postura en sentadillas y mantener progresión gradual de carga.</p>
+        </div>
+
+        <div class="note-box">
+          <h3>Mensaje para el alumno</h3>
+          <p>Entrená a tu ritmo, cuidá la técnica y avisame si necesitás adaptar algún ejercicio.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Yanina Trainer · Personal training & wellness</span>
+      <span>Rutina generada desde Plataforma Yanina Trainer</span>
+    </footer>
+  </section>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="window.print()">Guardar como PDF</button>
+    <a class="btn btn-secondary" href="alumno.html#plan">Volver a la ficha</a>
+  </div>
+
+</body>
+</html>
