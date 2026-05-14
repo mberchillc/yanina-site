@@ -1380,13 +1380,47 @@ function loadRoutineData(data) {
         });
       });
     }
+async function saveRoutineToBackend() {
+  const exercises = [];
 
+  document.querySelectorAll(".exercise-row").forEach(row => {
+    const cells = row.querySelectorAll("span");
+
+    exercises.push({
+      exercise_name: cells[0]?.textContent.trim() || "",
+      sets: cells[1]?.textContent.trim() || "",
+      reps_time: cells[2]?.textContent.trim() || "",
+      load: cells[3]?.textContent.trim() || ""
+    });
+  });
+
+  const payload = {
+    routine_type: document.getElementById("tipo-rutina")?.value || "",
+    technical_notes: document.getElementById("notas-rutina")?.value || "",
+    student_message: "Entrená a tu ritmo, cuidá la técnica y avisame si necesitás adaptar algún ejercicio.",
+    exercises
+  };
+
+  const response = await fetch(`${API_BASE}/api/classes/${activeBackendClassId}/routine`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error("No se pudo guardar la rutina en D1");
+  }
+
+  return await response.json();
+}
     if (workoutSaveButton) {
       const originalWorkoutText = workoutSaveButton.textContent;
 
-      workoutSaveButton.addEventListener("click", () => {
+      workoutSaveButton.addEventListener("click", async () => {
         saveCurrentRoutineToLocalStorage();
-
+        await saveRoutineToBackend();
         workoutSaveButton.textContent = "✓ Guardado";
         workoutSaveButton.classList.add("is-saved");
 
