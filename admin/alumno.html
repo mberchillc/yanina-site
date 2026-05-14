@@ -856,9 +856,6 @@
   </a>
 </div>
 
-<div class="save-message" id="saveWorkoutMessage">
-  Rutina guardada correctamente.
-</div>
 </article>
           </a>
       <div class="save-message" id="saveWorkoutMessage">
@@ -946,17 +943,20 @@
   }
 </script>
 <script>
+  <script>
   const saveWorkoutBtn = document.getElementById("saveWorkoutBtn");
-  const saveWorkoutMessage = document.getElementById("saveWorkoutMessage");
 
-  if (saveWorkoutBtn && saveWorkoutMessage) {
+  if (saveWorkoutBtn) {
+    const originalWorkoutText = saveWorkoutBtn.textContent;
+
     saveWorkoutBtn.addEventListener("click", () => {
-      saveWorkoutMessage.style.display = "block";
-      saveWorkoutMessage.textContent = "Rutina guardada correctamente.";
+      saveWorkoutBtn.textContent = "✓ Guardado";
+      saveWorkoutBtn.classList.add("is-saved");
 
       setTimeout(() => {
-        saveWorkoutMessage.style.display = "none";
-      }, 3000);
+        saveWorkoutBtn.textContent = originalWorkoutText;
+        saveWorkoutBtn.classList.remove("is-saved");
+      }, 2200);
     });
   }
 </script>
