@@ -1140,12 +1140,23 @@
 
   <script>
     const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
+    const LOGIN_URL = "login.html";
+    const DASHBOARD_URL = "index.html";
 
-    let activeClassId = "mar-14";
-    let activeBackendClassId = "1";
+    if (localStorage.getItem("yaninaAdminSession") !== "active") {
+      window.location.href = LOGIN_URL;
+    }
 
     const params = new URLSearchParams(window.location.search);
     const isNewStudent = params.get("new") === "1";
+    let studentId = params.get("id") || "1";
+
+    if (isNewStudent) {
+      studentId = null;
+    }
+
+    let activeClassId = "mar-14";
+    let activeBackendClassId = "1";
 
     const saveStudentBtn = document.getElementById("saveStudentBtn");
     const saveMessage = document.getElementById("saveMessage");
@@ -1194,6 +1205,40 @@
         option.selected = true;
         select.appendChild(option);
       }
+    }
+
+    function getStudentPayload() {
+      return {
+        full_name: document.getElementById("nombre")?.value || "",
+        age: document.getElementById("edad")?.value || "",
+        phone: document.getElementById("telefono")?.value || "",
+        address: document.getElementById("domicilio")?.value || "",
+        start_date: document.getElementById("fecha")?.value || "",
+        initial_weight: document.getElementById("peso")?.value || "",
+        last_measurements_date: document.getElementById("ultimas-mediciones")?.value || "",
+        frequency: document.getElementById("dias")?.value || "",
+        modality: document.getElementById("modalidad")?.value || "",
+        goal: document.getElementById("objetivo")?.value || "",
+        limitations: document.getElementById("limitaciones")?.value || "",
+        trainer_notes: document.getElementById("notas")?.value || ""
+      };
+    }
+
+    function fillStudentForm(student) {
+      document.getElementById("nombre").value = student.full_name || "";
+      document.getElementById("edad").value = student.age || "";
+      document.getElementById("telefono").value = student.phone || "";
+      document.getElementById("domicilio").value = student.address || "";
+      document.getElementById("fecha").value = student.start_date || "";
+      document.getElementById("peso").value = student.initial_weight || "";
+      document.getElementById("ultimas-mediciones").value = student.last_measurements_date || "";
+      document.getElementById("objetivo").value = student.goal || "";
+      document.getElementById("limitaciones").value = student.limitations || "";
+      document.getElementById("notas").value = student.trainer_notes || "";
+
+      setSelectValueByText("dias", student.frequency || "");
+      setSelectValueByText("modalidad", student.modality || "");
+      updateStudentIdentity();
     }
 
     function createExerciseRow(exercise = "", series = "", reps = "", carga = "") {
@@ -1291,12 +1336,7 @@
           load: cells[3]?.textContent.trim() || ""
         };
 
-        if (
-          exercise.exercise_name ||
-          exercise.sets ||
-          exercise.reps_time ||
-          exercise.load
-        ) {
+        if (exercise.exercise_name || exercise.sets || exercise.reps_time || exercise.load) {
           exercises.push(exercise);
         }
       });
@@ -1311,6 +1351,7 @@
 
     function saveCurrentRoutineToLocalStorage() {
       const payload = collectRoutinePayload();
+      const storageKey = studentId ? `yaninaRoutinesByClass_student_${studentId}` : "yaninaRoutinesByClass_new";
 
       const routineData = {
         alumno: {
@@ -1343,75 +1384,72 @@
 
       localStorage.setItem("yaninaRoutineData", JSON.stringify(routineData));
 
-      const routinesByClass = JSON.parse(localStorage.getItem("yaninaRoutinesByClass") || "{}");
+      const routinesByClass = JSON.parse(localStorage.getItem(storageKey) || "{}");
       routinesByClass[activeClassId] = routineData;
-      localStorage.setItem("yaninaRoutinesByClass", JSON.stringify(routinesByClass));
+      localStorage.setItem(storageKey, JSON.stringify(routinesByClass));
 
       return routineData;
     }
 
     async function loadStudentFromBackend() {
+      if (!studentId) return;
+
       try {
-        const response = await fetch(`${API_BASE}/api/students/1`);
+        const response = await fetch(`${API_BASE}/api/students/${studentId}`);
 
         if (!response.ok) {
           throw new Error("No se pudo cargar el alumno desde D1");
         }
 
         const student = await response.json();
-
-        document.getElementById("nombre").value = student.full_name || "";
-        document.getElementById("edad").value = student.age || "";
-        document.getElementById("telefono").value = student.phone || "";
-        document.getElementById("domicilio").value = student.address || "";
-        document.getElementById("fecha").value = student.start_date || "";
-        document.getElementById("peso").value = student.initial_weight || "";
-        document.getElementById("ultimas-mediciones").value = student.last_measurements_date || "";
-        document.getElementById("objetivo").value = student.goal || "";
-        document.getElementById("limitaciones").value = student.limitations || "";
-        document.getElementById("notas").value = student.trainer_notes || "";
-
-        setSelectValueByText("dias", student.frequency || "");
-        setSelectValueByText("modalidad", student.modality || "");
-
-        updateStudentIdentity();
+        fillStudentForm(student);
       } catch (error) {
         console.error(error);
+        if (saveMessage) {
+          saveMessage.style.display = "block";
+          saveMessage.textContent = "No se pudo cargar este alumno. Volvé al panel y probá nuevamente.";
+        }
       }
     }
 
     async function saveStudentToBackend() {
-      const studentData = {
-        full_name: document.getElementById("nombre")?.value || "",
-        age: document.getElementById("edad")?.value || "",
-        phone: document.getElementById("telefono")?.value || "",
-        address: document.getElementById("domicilio")?.value || "",
-        start_date: document.getElementById("fecha")?.value || "",
-        initial_weight: document.getElementById("peso")?.value || "",
-        last_measurements_date: document.getElementById("ultimas-mediciones")?.value || "",
-        frequency: document.getElementById("dias")?.value || "",
-        modality: document.getElementById("modalidad")?.value || "",
-        goal: document.getElementById("objetivo")?.value || "",
-        limitations: document.getElementById("limitaciones")?.value || "",
-        trainer_notes: document.getElementById("notas")?.value || ""
-      };
+      const studentData = getStudentPayload();
+      const isCreatingStudent = !studentId;
 
-      const response = await fetch(`${API_BASE}/api/students/1`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(studentData)
-      });
+      const response = await fetch(
+        isCreatingStudent ? `${API_BASE}/api/students` : `${API_BASE}/api/students/${studentId}`,
+        {
+          method: isCreatingStudent ? "POST" : "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(studentData)
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("No se pudieron guardar los datos del alumno");
+        throw new Error(isCreatingStudent ? "No se pudo crear el alumno" : "No se pudieron guardar los datos del alumno");
       }
 
-      return await response.json();
+      const savedStudent = await response.json();
+
+      if (isCreatingStudent) {
+        const newId = savedStudent.id || savedStudent.student?.id || savedStudent.student_id;
+
+        if (!newId) {
+          throw new Error("El alumno fue creado, pero la API no devolvió el ID");
+        }
+
+        window.location.href = `alumno.html?id=${newId}`;
+        return savedStudent;
+      }
+
+      return savedStudent;
     }
 
     async function loadRoutineFromBackend(classId) {
+      if (!studentId) return;
+
       try {
         const response = await fetch(`${API_BASE}/api/classes/${classId}/routine`);
 
@@ -1446,6 +1484,10 @@
     }
 
     async function saveRoutineToBackend() {
+      if (!studentId) {
+        throw new Error("Primero guardá los datos del alumno para crear su ficha.");
+      }
+
       const payload = collectRoutinePayload();
 
       const response = await fetch(`${API_BASE}/api/classes/${activeBackendClassId}/routine`, {
@@ -1461,7 +1503,6 @@
       }
 
       console.log("Rutina enviada a D1:", activeBackendClassId, payload.exercises.length, payload.exercises);
-
       return await response.json();
     }
 
@@ -1491,6 +1532,8 @@
       const modalidad = document.getElementById("modalidad");
       if (modalidad) modalidad.selectedIndex = 0;
 
+      clearExerciseRows();
+      exerciseTable?.appendChild(createExerciseRow());
       updateStudentIdentity();
     }
 
@@ -1500,7 +1543,7 @@
           await saveStudentToBackend();
 
           saveMessage.style.display = "block";
-          saveMessage.textContent = "Datos guardados correctamente.";
+          saveMessage.textContent = studentId ? "Datos guardados correctamente." : "Alumno creado correctamente.";
           updateStudentIdentity();
 
           setTimeout(() => {
@@ -1508,7 +1551,7 @@
           }, 3000);
         } catch (error) {
           saveMessage.style.display = "block";
-          saveMessage.textContent = "No se pudieron guardar los datos. Probá nuevamente.";
+          saveMessage.textContent = error.message || "No se pudieron guardar los datos. Probá nuevamente.";
           console.error(error);
         }
       });
@@ -1559,7 +1602,7 @@
           }, 2200);
         } catch (error) {
           console.error(error);
-          alert("No se pudo guardar la rutina en D1. Revisá la consola.");
+          alert(error.message || "No se pudo guardar la rutina en D1. Revisá la consola.");
         }
       });
     }
@@ -1574,7 +1617,7 @@
           window.open(`rutina-pdf.html?classId=${activeBackendClassId}`, "_blank");
         } catch (error) {
           console.error(error);
-          alert("No se pudo guardar la rutina antes de generar el PDF.");
+          alert(error.message || "No se pudo guardar la rutina antes de generar el PDF.");
         }
       });
     });
@@ -1596,7 +1639,8 @@
         setSelectValueByText("dia-rutina", selectedDay);
         setSelectValueByText("tipo-rutina", selectedType);
 
-        const routinesByClass = JSON.parse(localStorage.getItem("yaninaRoutinesByClass") || "{}");
+        const storageKey = studentId ? `yaninaRoutinesByClass_student_${studentId}` : "yaninaRoutinesByClass_new";
+        const routinesByClass = JSON.parse(localStorage.getItem(storageKey) || "{}");
         const savedClassRoutine = routinesByClass[activeClassId];
 
         if (savedClassRoutine) {
