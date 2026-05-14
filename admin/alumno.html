@@ -313,6 +313,12 @@
   color: var(--green-dark);
 }
 
+.btn.is-saved {
+  background: var(--green-soft);
+  color: var(--green-dark);
+}
+
+
 .card-subtitle {
   color: var(--muted);
   font-size: 14px;
@@ -849,19 +855,14 @@
         </div>
 
         <div class="bottom-actions">
-  <button type="button" class="btn btn-form-secondary" id="addExerciseBtn">+ Agregar ejercicio</button>
-  <button type="button" class="btn btn-form-secondary" id="duplicateWorkoutBtn">Duplicar rutina</button>
-  <a class="btn btn-primary" href="rutina-pdf.html" target="_blank">
-    Descargar rutina PDF
-  </a>
-</div>
-
-</article>
+          <button type="button" class="btn btn-form-secondary" id="addExerciseBtn">+ Agregar ejercicio</button>
+          <button type="button" class="btn btn-form-secondary" id="duplicateWorkoutBtn">Duplicar rutina</button>
+          <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">
+            Descargar rutina PDF
           </a>
-      <div class="save-message" id="saveWorkoutMessage">
-      Rutina guardada correctamente.
-      </div>
-     </article>
+        </div>
+      </article>
+
       <aside class="side-stack">
 
         <section class="card next-block">
@@ -895,236 +896,184 @@
     </section>
 
   </main>
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const isNewStudent = params.get("new") === "1";
-
-  if (isNewStudent) {
-    document.querySelector("h1").textContent = "Nuevo alumno";
-
-    const fieldsToClear = [
-      "nombre",
-      "edad",
-      "telefono",
-      "domicilio",
-      "fecha",
-      "peso",
-      "ultimas-mediciones",
-      "objetivo",
-      "limitaciones",
-      "notas"
-    ];
-
-    fieldsToClear.forEach(id => {
-      const field = document.getElementById(id);
-      if (field) field.value = "";
-    });
-
-    const dias = document.getElementById("dias");
-    if (dias) dias.selectedIndex = 0;
-
-    const modalidad = document.getElementById("modalidad");
-    if (modalidad) modalidad.selectedIndex = 0;
-  }
-</script>
-<script>
-  const saveStudentBtn = document.getElementById("saveStudentBtn");
-  const saveMessage = document.getElementById("saveMessage");
-
-  if (saveStudentBtn && saveMessage) {
-    saveStudentBtn.addEventListener("click", () => {
-      saveMessage.style.display = "block";
-      saveMessage.textContent = "Datos guardados correctamente.";
-
-      setTimeout(() => {
-        saveMessage.style.display = "none";
-      }, 3000);
-    });
-  }
-</script>
-<script>
 
   <script>
- const workoutSaveButton = document.getElementById("saveWorkoutBtn");
+    const params = new URLSearchParams(window.location.search);
+    const isNewStudent = params.get("new") === "1";
 
-  function saveCurrentRoutineToLocalStorage() {
-    const exercises = [];
+    if (isNewStudent) {
+      const mainTitle = document.querySelector("h1");
+      if (mainTitle) mainTitle.textContent = "Nuevo alumno";
 
-    document.querySelectorAll(".exercise-row").forEach(row => {
-      const cells = row.querySelectorAll("span");
-
-      exercises.push({
-        ejercicio: cells[0]?.textContent.trim() || "",
-        series: cells[1]?.textContent.trim() || "",
-        reps: cells[2]?.textContent.trim() || "",
-        carga: cells[3]?.textContent.trim() || ""
+      [
+        "nombre",
+        "edad",
+        "telefono",
+        "domicilio",
+        "fecha",
+        "peso",
+        "ultimas-mediciones",
+        "objetivo",
+        "limitaciones",
+        "notas"
+      ].forEach(id => {
+        const field = document.getElementById(id);
+        if (field) field.value = "";
       });
-    });
 
-    const routineData = {
-      alumno: {
-        nombre: document.getElementById("nombre")?.value || "",
-        edad: document.getElementById("edad")?.value || "",
-        telefono: document.getElementById("telefono")?.value || "",
-        objetivo: document.getElementById("objetivo")?.value || "",
-        limitaciones: document.getElementById("limitaciones")?.value || ""
-      },
-      rutina: {
-        dia: document.getElementById("dia-rutina")?.value || "",
-        tipo: document.getElementById("tipo-rutina")?.value || "",
-        observaciones: document.getElementById("notas-rutina")?.value || "",
-        ejercicios: exercises
-      },
-      guardadoEn: new Date().toISOString()
-    };
+      const dias = document.getElementById("dias");
+      if (dias) dias.selectedIndex = 0;
 
-    localStorage.setItem("yaninaRoutineData", JSON.stringify(routineData));
-  }
+      const modalidad = document.getElementById("modalidad");
+      if (modalidad) modalidad.selectedIndex = 0;
+    }
 
- if (workoutSaveButton) {
-  const originalWorkoutText = workoutSaveButton.textContent;
+    const saveStudentBtn = document.getElementById("saveStudentBtn");
+    const saveMessage = document.getElementById("saveMessage");
 
-  workoutSaveButton.addEventListener("click", () => {
-    saveCurrentRoutineToLocalStorage();
+    if (saveStudentBtn && saveMessage) {
+      saveStudentBtn.addEventListener("click", () => {
+        saveMessage.style.display = "block";
+        saveMessage.textContent = "Datos guardados correctamente.";
 
-    workoutSaveButton.textContent = "✓ Guardado";
-    workoutSaveButton.classList.add("is-saved");
-
-    setTimeout(() => {
-      workoutSaveButton.textContent = originalWorkoutText;
-      workoutSaveButton.classList.remove("is-saved");
-    }, 2200);
-  });
-}
-
-  document.querySelectorAll(".pdf-link").forEach(link => {
-    link.addEventListener("click", () => {
-      saveCurrentRoutineToLocalStorage();
-    });
-  });
-</script>
-<script>
-  const addExerciseBtn = document.getElementById("addExerciseBtn");
-  const duplicateWorkoutBtn = document.getElementById("duplicateWorkoutBtn");
-  const exerciseTable = document.getElementById("exerciseTable");
-
-  function createExerciseRow(exercise = "", series = "", reps = "", carga = "") {
-    const row = document.createElement("div");
-    row.className = "exercise-row";
-
-    row.innerHTML = `
-      <span contenteditable="true">${exercise || "Nuevo ejercicio"}</span>
-      <span contenteditable="true">${series || "3"}</span>
-      <span contenteditable="true">${reps || "10"}</span>
-      <span contenteditable="true">${carga || "—"}</span>
-      <button type="button" class="delete-exercise-btn">Eliminar</button>
-    `;
-
-    row.querySelector(".delete-exercise-btn").addEventListener("click", () => {
-      row.remove();
-    });
-
-    return row;
-  }
-
-  if (addExerciseBtn && exerciseTable) {
-    addExerciseBtn.addEventListener("click", () => {
-      exerciseTable.appendChild(createExerciseRow());
-    });
-  }
-
-  if (duplicateWorkoutBtn && exerciseTable) {
-    duplicateWorkoutBtn.addEventListener("click", () => {
-      const rows = exerciseTable.querySelectorAll(".exercise-row");
-      rows.forEach(row => {
-        const cells = row.querySelectorAll("span");
-        const clonedRow = createExerciseRow(
-          cells[0]?.textContent || "",
-          cells[1]?.textContent || "",
-          cells[2]?.textContent || "",
-          cells[3]?.textContent || ""
-        );
-        exerciseTable.appendChild(clonedRow);
+        setTimeout(() => {
+          saveMessage.style.display = "none";
+        }, 3000);
       });
-    });
-  }
-</script>
-<script>
-  function addDeleteButtonToExistingRows() {
-    const rows = document.querySelectorAll(".exercise-row");
+    }
 
-    rows.forEach(row => {
-      const alreadyHasButton = row.querySelector(".delete-exercise-btn");
-      if (alreadyHasButton) return;
+    const addExerciseBtn = document.getElementById("addExerciseBtn");
+    const duplicateWorkoutBtn = document.getElementById("duplicateWorkoutBtn");
+    const exerciseTable = document.getElementById("exerciseTable");
+    const workoutSaveButton = document.getElementById("saveWorkoutBtn");
 
-      const deleteBtn = document.createElement("button");
-      deleteBtn.type = "button";
-      deleteBtn.className = "delete-exercise-btn";
-      deleteBtn.textContent = "Eliminar";
+    function createExerciseRow(exercise = "", series = "", reps = "", carga = "") {
+      const row = document.createElement("div");
+      row.className = "exercise-row";
 
-      deleteBtn.addEventListener("click", () => {
+      row.innerHTML = `
+        <span contenteditable="true">${exercise || "Nuevo ejercicio"}</span>
+        <span contenteditable="true">${series || "3"}</span>
+        <span contenteditable="true">${reps || "10"}</span>
+        <span contenteditable="true">${carga || "—"}</span>
+        <button type="button" class="delete-exercise-btn">Eliminar</button>
+      `;
+
+      row.querySelector(".delete-exercise-btn").addEventListener("click", () => {
         row.remove();
       });
 
-      row.appendChild(deleteBtn);
-    });
-  }
+      return row;
+    }
 
-  addDeleteButtonToExistingRows();
-</script>
-<script>
-  function saveCurrentRoutineToLocalStorage() {
-    const exercises = [];
+    function addDeleteButtonToExistingRows() {
+      document.querySelectorAll(".exercise-row").forEach(row => {
+        if (row.querySelector(".delete-exercise-btn")) return;
 
-    document.querySelectorAll(".exercise-row").forEach(row => {
-      const cells = row.querySelectorAll("span");
+        row.querySelectorAll("span").forEach(cell => {
+          cell.setAttribute("contenteditable", "true");
+        });
 
-      exercises.push({
-        ejercicio: cells[0]?.textContent.trim() || "",
-        series: cells[1]?.textContent.trim() || "",
-        reps: cells[2]?.textContent.trim() || "",
-        carga: cells[3]?.textContent.trim() || ""
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "delete-exercise-btn";
+        deleteBtn.textContent = "Eliminar";
+        deleteBtn.addEventListener("click", () => {
+          row.remove();
+        });
+
+        row.appendChild(deleteBtn);
+      });
+    }
+
+    function saveCurrentRoutineToLocalStorage() {
+      const exercises = [];
+
+      document.querySelectorAll(".exercise-row").forEach(row => {
+        const cells = row.querySelectorAll("span");
+
+        exercises.push({
+          ejercicio: cells[0]?.textContent.trim() || "",
+          series: cells[1]?.textContent.trim() || "",
+          reps: cells[2]?.textContent.trim() || "",
+          carga: cells[3]?.textContent.trim() || ""
+        });
+      });
+
+      const routineData = {
+        alumno: {
+          nombre: document.getElementById("nombre")?.value || "",
+          edad: document.getElementById("edad")?.value || "",
+          telefono: document.getElementById("telefono")?.value || "",
+          domicilio: document.getElementById("domicilio")?.value || "",
+          fechaAlta: document.getElementById("fecha")?.value || "",
+          pesoInicial: document.getElementById("peso")?.value || "",
+          ultimasMediciones: document.getElementById("ultimas-mediciones")?.value || "",
+          frecuencia: document.getElementById("dias")?.value || "",
+          modalidad: document.getElementById("modalidad")?.value || "",
+          objetivo: document.getElementById("objetivo")?.value || "",
+          limitaciones: document.getElementById("limitaciones")?.value || "",
+          notas: document.getElementById("notas")?.value || ""
+        },
+        rutina: {
+          dia: document.getElementById("dia-rutina")?.value || "",
+          tipo: document.getElementById("tipo-rutina")?.value || "",
+          observaciones: document.getElementById("notas-rutina")?.value || "",
+          ejercicios: exercises
+        },
+        guardadoEn: new Date().toISOString()
+      };
+
+      localStorage.setItem("yaninaRoutineData", JSON.stringify(routineData));
+    }
+
+    if (addExerciseBtn && exerciseTable) {
+      addExerciseBtn.addEventListener("click", () => {
+        exerciseTable.appendChild(createExerciseRow());
+      });
+    }
+
+    if (duplicateWorkoutBtn && exerciseTable) {
+      duplicateWorkoutBtn.addEventListener("click", () => {
+        const rows = Array.from(exerciseTable.querySelectorAll(".exercise-row"));
+
+        rows.forEach(row => {
+          const cells = row.querySelectorAll("span");
+          const clonedRow = createExerciseRow(
+            cells[0]?.textContent || "",
+            cells[1]?.textContent || "",
+            cells[2]?.textContent || "",
+            cells[3]?.textContent || ""
+          );
+
+          exerciseTable.appendChild(clonedRow);
+        });
+      });
+    }
+
+    if (workoutSaveButton) {
+      const originalWorkoutText = workoutSaveButton.textContent;
+
+      workoutSaveButton.addEventListener("click", () => {
+        saveCurrentRoutineToLocalStorage();
+
+        workoutSaveButton.textContent = "✓ Guardado";
+        workoutSaveButton.classList.add("is-saved");
+
+        setTimeout(() => {
+          workoutSaveButton.textContent = originalWorkoutText;
+          workoutSaveButton.classList.remove("is-saved");
+        }, 2200);
+      });
+    }
+
+    document.querySelectorAll(".pdf-link").forEach(link => {
+      link.addEventListener("click", () => {
+        saveCurrentRoutineToLocalStorage();
       });
     });
 
-    localStorage.setItem("yaninaRoutineData", JSON.stringify({
-  alumno: {
-    nombre: document.getElementById("nombre")?.value || "",
-    edad: document.getElementById("edad")?.value || "",
-    telefono: document.getElementById("telefono")?.value || "",
-    domicilio: document.getElementById("domicilio")?.value || "",
-    fechaAlta: document.getElementById("fecha")?.value || "",
-    pesoInicial: document.getElementById("peso")?.value || "",
-    ultimasMediciones: document.getElementById("ultimas-mediciones")?.value || "",
-    frecuencia: document.getElementById("dias")?.value || "",
-    modalidad: document.getElementById("modalidad")?.value || "",
-    objetivo: document.getElementById("objetivo")?.value || "",
-    limitaciones: document.getElementById("limitaciones")?.value || "",
-    notas: document.getElementById("notas")?.value || ""
-  },
-  rutina: {
-    dia: document.getElementById("dia-rutina")?.value || "",
-    tipo: document.getElementById("tipo-rutina")?.value || "",
-    observaciones: document.getElementById("notas-rutina")?.value || "",
-    ejercicios: exercises
-  }
-}));
-
-  const workoutSaveButton = document.getElementById("saveWorkoutBtn");
-
-  if (workoutSaveButton) {
-    workoutSaveButton.addEventListener("click", () => {
-      saveCurrentRoutineToLocalStorage();
-
-      workoutSaveButton.textContent = "✓ Guardado";
-      workoutSaveButton.classList.add("is-saved");
-
-      setTimeout(() => {
-        workoutSaveButton.textContent = "Guardar rutina";
-        workoutSaveButton.classList.remove("is-saved");
-      }, 2200);
-    });
-  }
-</script>
+    addDeleteButtonToExistingRows();
+  </script>
 </body>
 </html>
