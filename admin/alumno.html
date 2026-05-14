@@ -1114,7 +1114,47 @@
 
       return row;
     }
+function loadRoutineData(data) {
+  if (!data || !data.rutina) return;
 
+  const routine = data.rutina;
+
+  const daySelect = document.getElementById("dia-rutina");
+  const typeSelect = document.getElementById("tipo-rutina");
+  const notesField = document.getElementById("notas-rutina");
+  const exerciseTable = document.getElementById("exerciseTable");
+
+  if (daySelect && routine.dia) {
+    [...daySelect.options].forEach(option => {
+      option.selected = option.textContent.trim() === routine.dia;
+    });
+  }
+
+  if (typeSelect && routine.tipo) {
+    [...typeSelect.options].forEach(option => {
+      option.selected = option.textContent.trim() === routine.tipo;
+    });
+  }
+
+  if (notesField) {
+    notesField.value = routine.observaciones || "";
+  }
+
+  if (exerciseTable && routine.ejercicios && routine.ejercicios.length > 0) {
+    exerciseTable.querySelectorAll(".exercise-row").forEach(row => row.remove());
+
+    routine.ejercicios.forEach(item => {
+      exerciseTable.appendChild(
+        createExerciseRow(
+          item.ejercicio || "",
+          item.series || "",
+          item.reps || "",
+          item.carga || ""
+        )
+      );
+    });
+  }
+}
     function addDeleteButtonToExistingRows() {
       document.querySelectorAll(".exercise-row").forEach(row => {
         if (row.querySelector(".delete-exercise-btn")) return;
@@ -1239,7 +1279,12 @@
     
     const selectedDay = classCard.dataset.day || "";
     const selectedType = classCard.dataset.type || "";
+const routinesByClass = JSON.parse(localStorage.getItem("yaninaRoutinesByClass") || "{}");
+const savedClassRoutine = routinesByClass[activeClassId];
 
+if (savedClassRoutine) {
+  loadRoutineData(savedClassRoutine);
+}
     const daySelect = document.getElementById("dia-rutina");
     const typeSelect = document.getElementById("tipo-rutina");
 
