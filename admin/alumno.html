@@ -1174,6 +1174,10 @@
       };
 
       localStorage.setItem("yaninaRoutineData", JSON.stringify(routineData));
+      
+      const routinesByClass = JSON.parse(localStorage.getItem("yaninaRoutinesByClass") || "{}");
+      routinesByClass[activeClassId] = routineData;
+      localStorage.setItem("yaninaRoutinesByClass", JSON.stringify(routinesByClass));
     }
 
     if (addExerciseBtn && exerciseTable) {
