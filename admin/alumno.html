@@ -945,7 +945,7 @@
 <script>
 
   <script>
-  const saveWorkoutBtn = document.getElementById("saveWorkoutBtn");
+ const workoutSaveButton = document.getElementById("saveWorkoutBtn");
 
   function saveCurrentRoutineToLocalStorage() {
     const exercises = [];
@@ -981,21 +981,21 @@
     localStorage.setItem("yaninaRoutineData", JSON.stringify(routineData));
   }
 
-  if (saveWorkoutBtn) {
-    const originalWorkoutText = saveWorkoutBtn.textContent;
+ if (workoutSaveButton) {
+  const originalWorkoutText = workoutSaveButton.textContent;
 
-    saveWorkoutBtn.addEventListener("click", () => {
-      saveCurrentRoutineToLocalStorage();
+  workoutSaveButton.addEventListener("click", () => {
+    saveCurrentRoutineToLocalStorage();
 
-      saveWorkoutBtn.textContent = "✓ Guardado";
-      saveWorkoutBtn.classList.add("is-saved");
+    workoutSaveButton.textContent = "✓ Guardado";
+    workoutSaveButton.classList.add("is-saved");
 
-      setTimeout(() => {
-        saveWorkoutBtn.textContent = originalWorkoutText;
-        saveWorkoutBtn.classList.remove("is-saved");
-      }, 2200);
-    });
-  }
+    setTimeout(() => {
+      workoutSaveButton.textContent = originalWorkoutText;
+      workoutSaveButton.classList.remove("is-saved");
+    }, 2200);
+  });
+}
 
   document.querySelectorAll(".pdf-link").forEach(link => {
     link.addEventListener("click", () => {
