@@ -366,26 +366,26 @@
         </div>
 
         <div class="box">
-          <h2>Clase</h2>
-          <div class="info-grid">
-            <div class="info-row">
-              <span>Día</span>
-              <strong>Martes 14 de mayo</strong>
-            </div>
-            <div class="info-row">
-              <span>Horario</span>
-              <strong>6:00 pm</strong>
-            </div>
-            <div class="info-row">
-              <span>Rutina</span>
-              <strong>Fuerza + movilidad</strong>
-            </div>
-            <div class="info-row">
-              <span>Criterio</span>
-              <strong>Progresión gradual</strong>
-            </div>
-          </div>
-        </div>
+  <h2>Clase</h2>
+  <div class="info-grid">
+    <div class="info-row">
+      <span>Fecha</span>
+      <strong id="pdfClassDate">—</strong>
+    </div>
+    <div class="info-row">
+      <span>Horario</span>
+      <strong id="pdfClassTime">—</strong>
+    </div>
+    <div class="info-row">
+      <span>Rutina</span>
+      <strong id="pdfClassRoutine">—</strong>
+    </div>
+    <div class="info-row">
+      <span>Criterio</span>
+      <strong id="pdfClassCriteria">—</strong>
+    </div>
+  </div>
+</div>
       </section>
 
       <table class="exercise-table">
@@ -461,23 +461,66 @@
     <button class="btn btn-primary" onclick="window.print()">Guardar como PDF</button>
     <a class="btn btn-secondary" href="alumno.html#plan">Volver a la ficha</a>
   </div>
+
 <script>
   const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
 
   const params = new URLSearchParams(window.location.search);
-  const classId = params.get("classId") || "1";
+  const classId = params.get("classId");
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+
+    const normalized = String(value).trim();
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+      const [year, month, day] = normalized.split("-");
+      return `${day}/${month}/${year}`;
+    }
+
+    return normalized;
+  }
 
   async function loadPdfFromBackend() {
     try {
-      const studentResponse = await fetch(`${API_BASE}/api/students/1`);
+      if (!classId) {
+        throw new Error("Falta classId en la URL del PDF");
+      }
+
       const routineResponse = await fetch(`${API_BASE}/api/classes/${classId}/routine`);
 
-      const student = await studentResponse.json();
+      if (!routineResponse.ok) {
+        throw new Error("No se pudo cargar la rutina desde D1");
+      }
+
       const routineData = await routineResponse.json();
 
       const classData = routineData.class || {};
       const routine = routineData.routine || {};
-      const exercises = routineData.exercises || [];
+      const exercises = Array.isArray(routineData.exercises) ? routineData.exercises : [];
+
+      const studentId = classData.student_id;
+
+      if (!studentId) {
+        throw new Error("La clase no tiene student_id asociado");
+      }
+
+      const studentResponse = await fetch(`${API_BASE}/api/students/${studentId}`);
+
+      if (!studentResponse.ok) {
+        throw new Error("No se pudo cargar el alumno asociado a la clase");
+      }
+
+      const student = await studentResponse.json();
 
       const title = document.getElementById("pdfRoutineTitle");
       const intro = document.getElementById("pdfRoutineIntro");
@@ -489,7 +532,14 @@
       const studentMode = document.getElementById("pdfStudentMode");
       const studentFrequency = document.getElementById("pdfStudentFrequency");
 
-      if (title) title.textContent = classData.routine_type || "Rutina de entrenamiento";
+      const classDate = document.getElementById("pdfClassDate");
+      const classTime = document.getElementById("pdfClassTime");
+      const classRoutine = document.getElementById("pdfClassRoutine");
+      const classCriteria = document.getElementById("pdfClassCriteria");
+
+      const routineType = classData.routine_type || routine.routine_type || "Rutina de entrenamiento";
+
+      if (title) title.textContent = routineType;
       if (intro) intro.textContent = "Rutina personalizada según el plan actual del alumno.";
       if (notes) notes.textContent = routine.technical_notes || "Sin observaciones técnicas.";
 
@@ -498,24 +548,51 @@
       if (studentMode) studentMode.textContent = student.modality || "Modalidad no especificada";
       if (studentFrequency) studentFrequency.textContent = student.frequency || "Frecuencia no especificada";
 
-      if (exerciseBody && exercises.length > 0) {
+      if (classDate) classDate.textContent = formatDate(classData.class_date || classData.date || "");
+      if (classTime) classTime.textContent = classData.class_time || classData.time || classData.hour || "—";
+      if (classRoutine) classRoutine.textContent = routineType;
+      if (classCriteria) classCriteria.textContent = classData.criteria || classData.notes || "Plan personalizado";
+
+      if (exerciseBody) {
         exerciseBody.innerHTML = "";
 
-        exercises.forEach(item => {
-          const row = document.createElement("tr");
+        if (exercises.length > 0) {
+          exercises.forEach(item => {
+            const row = document.createElement("tr");
 
-          row.innerHTML = `
-            <td>${item.exercise_name || ""}</td>
-            <td>${item.sets || ""}</td>
-            <td>${item.reps_time || ""}</td>
-            <td>${item.load || ""}</td>
+            row.innerHTML = `
+              <td>${escapeHtml(item.exercise_name || "")}</td>
+              <td>${escapeHtml(item.sets || "")}</td>
+              <td>${escapeHtml(item.reps_time || "")}</td>
+              <td>${escapeHtml(item.load || "")}</td>
+            `;
+
+            exerciseBody.appendChild(row);
+          });
+        } else {
+          exerciseBody.innerHTML = `
+            <tr>
+              <td colspan="4">No hay ejercicios cargados para esta clase.</td>
+            </tr>
           `;
+        }
+      }
 
-          exerciseBody.appendChild(row);
-        });
+      const backLink = document.querySelector(".actions a");
+      if (backLink) {
+        backLink.href = `alumno.html?id=${studentId}#plan`;
       }
     } catch (error) {
       console.error("No se pudo cargar el PDF desde backend", error);
+
+      const exerciseBody = document.getElementById("pdfExerciseBody");
+      if (exerciseBody) {
+        exerciseBody.innerHTML = `
+          <tr>
+            <td colspan="4">No se pudo cargar esta rutina. Revisá que la clase exista y tenga una rutina guardada.</td>
+          </tr>
+        `;
+      }
     }
   }
 
