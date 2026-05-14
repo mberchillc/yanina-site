@@ -740,7 +740,7 @@
             <div class="card-title">Plan de entrenamiento</div>
             <p class="card-subtitle">Rutina asociada a la clase seleccionada.</p>
           </div>
-          <button type="button" class="btn btn-form-primary">Guardar rutina</button>
+          <button type="button" class="btn btn-form-primary" id="saveWorkoutBtn">Guardar rutina</button>
         </div>
 
         <div class="workout-toolbar">
@@ -826,7 +826,10 @@
           <button type="button" class="btn btn-form-secondary">Duplicar rutina</button>
           <button type="button" class="btn btn-form-secondary">Descargar rutina PDF</button>
         </div>
-      </article>
+      <div class="save-message" id="saveWorkoutMessage">
+      Rutina guardada correctamente.
+      </div>
+     </article>
       <aside class="side-stack">
 
         <section class="card next-block">
@@ -903,6 +906,21 @@
 
       setTimeout(() => {
         saveMessage.style.display = "none";
+      }, 3000);
+    });
+  }
+</script>
+<script>
+  const saveWorkoutBtn = document.getElementById("saveWorkoutBtn");
+  const saveWorkoutMessage = document.getElementById("saveWorkoutMessage");
+
+  if (saveWorkoutBtn && saveWorkoutMessage) {
+    saveWorkoutBtn.addEventListener("click", () => {
+      saveWorkoutMessage.style.display = "block";
+      saveWorkoutMessage.textContent = "Rutina guardada correctamente.";
+
+      setTimeout(() => {
+        saveWorkoutMessage.style.display = "none";
       }, 3000);
     });
   }
