@@ -1139,12 +1139,333 @@
   </main>
 
   <script>
+    const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
+
     let activeClassId = "mar-14";
     let activeBackendClassId = "1";
+
     const params = new URLSearchParams(window.location.search);
     const isNewStudent = params.get("new") === "1";
 
-    if (isNewStudent) {
+    const saveStudentBtn = document.getElementById("saveStudentBtn");
+    const saveMessage = document.getElementById("saveMessage");
+    const addExerciseBtn = document.getElementById("addExerciseBtn");
+    const duplicateWorkoutBtn = document.getElementById("duplicateWorkoutBtn");
+    const exerciseTable = document.getElementById("exerciseTable");
+    const workoutSaveButton = document.getElementById("saveWorkoutBtn");
+    const studentNameInput = document.getElementById("nombre");
+    const navStudentName = document.getElementById("navStudentName");
+    const studentPhoto = document.querySelector(".student-photo");
+    const studentAvatar = document.querySelector(".student-avatar");
+
+    function getInitials(name) {
+      return name
+        .trim()
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part[0]?.toUpperCase())
+        .join("") || "NA";
+    }
+
+    function updateStudentIdentity() {
+      const currentName = studentNameInput?.value || "";
+      const initials = getInitials(currentName);
+
+      if (navStudentName) navStudentName.textContent = currentName || "Nuevo alumno";
+      if (studentPhoto) studentPhoto.textContent = initials;
+      if (studentAvatar) studentAvatar.textContent = initials;
+    }
+
+    function setSelectValueByText(selectId, text) {
+      const select = document.getElementById(selectId);
+      if (!select || !text) return;
+
+      const cleanText = String(text).trim();
+      const existingOption = [...select.options].find(option => option.textContent.trim() === cleanText);
+
+      if (existingOption) {
+        select.value = existingOption.value;
+        existingOption.selected = true;
+      } else {
+        const option = document.createElement("option");
+        option.textContent = cleanText;
+        option.value = cleanText;
+        option.selected = true;
+        select.appendChild(option);
+      }
+    }
+
+    function createExerciseRow(exercise = "", series = "", reps = "", carga = "") {
+      const row = document.createElement("div");
+      row.className = "exercise-row";
+
+      const values = [
+        exercise || "Nuevo ejercicio",
+        series || "3",
+        reps || "10",
+        carga || "—"
+      ];
+
+      values.forEach(value => {
+        const cell = document.createElement("span");
+        cell.contentEditable = "true";
+        cell.textContent = value;
+        row.appendChild(cell);
+      });
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "delete-exercise-btn";
+      deleteBtn.textContent = "Eliminar";
+      deleteBtn.addEventListener("click", () => row.remove());
+
+      row.appendChild(deleteBtn);
+      return row;
+    }
+
+    function clearExerciseRows() {
+      if (!exerciseTable) return;
+      exerciseTable.querySelectorAll(".exercise-row").forEach(row => row.remove());
+    }
+
+    function addDeleteButtonToExistingRows() {
+      document.querySelectorAll("#exerciseTable .exercise-row").forEach(row => {
+        row.querySelectorAll("span").forEach(cell => {
+          cell.contentEditable = "true";
+        });
+
+        if (row.querySelector(".delete-exercise-btn")) return;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "delete-exercise-btn";
+        deleteBtn.textContent = "Eliminar";
+        deleteBtn.addEventListener("click", () => row.remove());
+        row.appendChild(deleteBtn);
+      });
+    }
+
+    function loadRoutineData(data) {
+      if (!data || !data.rutina) return;
+
+      const routine = data.rutina;
+      const notesField = document.getElementById("notas-rutina");
+
+      setSelectValueByText("dia-rutina", routine.dia || "");
+      setSelectValueByText("tipo-rutina", routine.tipo || "");
+
+      if (notesField) notesField.value = routine.observaciones || "";
+
+      clearExerciseRows();
+
+      const exercises = Array.isArray(routine.ejercicios) ? routine.ejercicios : [];
+
+      if (exercises.length === 0) {
+        exerciseTable?.appendChild(createExerciseRow());
+        return;
+      }
+
+      exercises.forEach(item => {
+        exerciseTable?.appendChild(
+          createExerciseRow(
+            item.ejercicio || "",
+            item.series || "",
+            item.reps || "",
+            item.carga || ""
+          )
+        );
+      });
+    }
+
+    function collectRoutinePayload() {
+      const exercises = [];
+
+      document.querySelectorAll("#exerciseTable .exercise-row").forEach(row => {
+        const cells = row.querySelectorAll("span");
+
+        const exercise = {
+          exercise_name: cells[0]?.textContent.trim() || "",
+          sets: cells[1]?.textContent.trim() || "",
+          reps_time: cells[2]?.textContent.trim() || "",
+          load: cells[3]?.textContent.trim() || ""
+        };
+
+        if (
+          exercise.exercise_name ||
+          exercise.sets ||
+          exercise.reps_time ||
+          exercise.load
+        ) {
+          exercises.push(exercise);
+        }
+      });
+
+      return {
+        routine_type: document.getElementById("tipo-rutina")?.value || "",
+        technical_notes: document.getElementById("notas-rutina")?.value || "",
+        student_message: "Entrená a tu ritmo, cuidá la técnica y avisame si necesitás adaptar algún ejercicio.",
+        exercises
+      };
+    }
+
+    function saveCurrentRoutineToLocalStorage() {
+      const payload = collectRoutinePayload();
+
+      const routineData = {
+        alumno: {
+          nombre: document.getElementById("nombre")?.value || "",
+          edad: document.getElementById("edad")?.value || "",
+          telefono: document.getElementById("telefono")?.value || "",
+          domicilio: document.getElementById("domicilio")?.value || "",
+          fechaAlta: document.getElementById("fecha")?.value || "",
+          pesoInicial: document.getElementById("peso")?.value || "",
+          ultimasMediciones: document.getElementById("ultimas-mediciones")?.value || "",
+          frecuencia: document.getElementById("dias")?.value || "",
+          modalidad: document.getElementById("modalidad")?.value || "",
+          objetivo: document.getElementById("objetivo")?.value || "",
+          limitaciones: document.getElementById("limitaciones")?.value || "",
+          notas: document.getElementById("notas")?.value || ""
+        },
+        rutina: {
+          dia: document.getElementById("dia-rutina")?.value || "",
+          tipo: payload.routine_type,
+          observaciones: payload.technical_notes,
+          ejercicios: payload.exercises.map(item => ({
+            ejercicio: item.exercise_name,
+            series: item.sets,
+            reps: item.reps_time,
+            carga: item.load
+          }))
+        },
+        guardadoEn: new Date().toISOString()
+      };
+
+      localStorage.setItem("yaninaRoutineData", JSON.stringify(routineData));
+
+      const routinesByClass = JSON.parse(localStorage.getItem("yaninaRoutinesByClass") || "{}");
+      routinesByClass[activeClassId] = routineData;
+      localStorage.setItem("yaninaRoutinesByClass", JSON.stringify(routinesByClass));
+
+      return routineData;
+    }
+
+    async function loadStudentFromBackend() {
+      try {
+        const response = await fetch(`${API_BASE}/api/students/1`);
+
+        if (!response.ok) {
+          throw new Error("No se pudo cargar el alumno desde D1");
+        }
+
+        const student = await response.json();
+
+        document.getElementById("nombre").value = student.full_name || "";
+        document.getElementById("edad").value = student.age || "";
+        document.getElementById("telefono").value = student.phone || "";
+        document.getElementById("domicilio").value = student.address || "";
+        document.getElementById("fecha").value = student.start_date || "";
+        document.getElementById("peso").value = student.initial_weight || "";
+        document.getElementById("ultimas-mediciones").value = student.last_measurements_date || "";
+        document.getElementById("objetivo").value = student.goal || "";
+        document.getElementById("limitaciones").value = student.limitations || "";
+        document.getElementById("notas").value = student.trainer_notes || "";
+
+        setSelectValueByText("dias", student.frequency || "");
+        setSelectValueByText("modalidad", student.modality || "");
+
+        updateStudentIdentity();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async function saveStudentToBackend() {
+      const studentData = {
+        full_name: document.getElementById("nombre")?.value || "",
+        age: document.getElementById("edad")?.value || "",
+        phone: document.getElementById("telefono")?.value || "",
+        address: document.getElementById("domicilio")?.value || "",
+        start_date: document.getElementById("fecha")?.value || "",
+        initial_weight: document.getElementById("peso")?.value || "",
+        last_measurements_date: document.getElementById("ultimas-mediciones")?.value || "",
+        frequency: document.getElementById("dias")?.value || "",
+        modality: document.getElementById("modalidad")?.value || "",
+        goal: document.getElementById("objetivo")?.value || "",
+        limitations: document.getElementById("limitaciones")?.value || "",
+        trainer_notes: document.getElementById("notas")?.value || ""
+      };
+
+      const response = await fetch(`${API_BASE}/api/students/1`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(studentData)
+      });
+
+      if (!response.ok) {
+        throw new Error("No se pudieron guardar los datos del alumno");
+      }
+
+      return await response.json();
+    }
+
+    async function loadRoutineFromBackend(classId) {
+      try {
+        const response = await fetch(`${API_BASE}/api/classes/${classId}/routine`);
+
+        if (!response.ok) {
+          throw new Error("No se pudo cargar la rutina desde D1");
+        }
+
+        const data = await response.json();
+
+        const selectedDay = document.querySelector(`.timeline-day.has-class[data-backend-class-id="${classId}"]`)?.dataset.day || "";
+        const selectedType = document.querySelector(`.timeline-day.has-class[data-backend-class-id="${classId}"]`)?.dataset.type || "";
+
+        const routineData = {
+          rutina: {
+            dia: selectedDay,
+            tipo: data.routine?.routine_type || data.class?.routine_type || selectedType,
+            observaciones: data.routine?.technical_notes || "",
+            ejercicios: (data.exercises || []).map(item => ({
+              ejercicio: item.exercise_name || "",
+              series: item.sets || "",
+              reps: item.reps_time || "",
+              carga: item.load || ""
+            }))
+          }
+        };
+
+        loadRoutineData(routineData);
+        localStorage.setItem("yaninaRoutineData", JSON.stringify(routineData));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async function saveRoutineToBackend() {
+      const payload = collectRoutinePayload();
+
+      const response = await fetch(`${API_BASE}/api/classes/${activeBackendClassId}/routine`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("No se pudo guardar la rutina en D1");
+      }
+
+      console.log("Rutina enviada a D1:", activeBackendClassId, payload.exercises.length, payload.exercises);
+
+      return await response.json();
+    }
+
+    function resetForNewStudent() {
       const mainTitle = document.querySelector("h1");
       if (mainTitle) mainTitle.textContent = "Nuevo alumno";
 
@@ -1169,224 +1490,32 @@
 
       const modalidad = document.getElementById("modalidad");
       if (modalidad) modalidad.selectedIndex = 0;
+
+      updateStudentIdentity();
     }
 
-   const saveStudentBtn = document.getElementById("saveStudentBtn");
-const saveMessage = document.getElementById("saveMessage");
+    if (saveStudentBtn && saveMessage) {
+      saveStudentBtn.addEventListener("click", async () => {
+        try {
+          await saveStudentToBackend();
 
-async function saveStudentToBackend() {
-  const studentData = {
-    full_name: document.getElementById("nombre")?.value || "",
-    age: document.getElementById("edad")?.value || "",
-    phone: document.getElementById("telefono")?.value || "",
-    address: document.getElementById("domicilio")?.value || "",
-    start_date: document.getElementById("fecha")?.value || "",
-    initial_weight: document.getElementById("peso")?.value || "",
-    last_measurements_date: document.getElementById("ultimas-mediciones")?.value || "",
-    frequency: document.getElementById("dias")?.value || "",
-    modality: document.getElementById("modalidad")?.value || "",
-    goal: document.getElementById("objetivo")?.value || "",
-    limitations: document.getElementById("limitaciones")?.value || "",
-    trainer_notes: document.getElementById("notas")?.value || ""
-  };
+          saveMessage.style.display = "block";
+          saveMessage.textContent = "Datos guardados correctamente.";
+          updateStudentIdentity();
 
-  const response = await fetch(`${API_BASE}/api/students/1`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(studentData)
-  });
-
-  if (!response.ok) {
-    throw new Error("No se pudieron guardar los datos del alumno");
-  }
-
-  return await response.json();
-}
-
-if (saveStudentBtn && saveMessage) {
-  saveStudentBtn.addEventListener("click", async () => {
-    try {
-      await saveStudentToBackend();
-
-      saveMessage.style.display = "block";
-      saveMessage.textContent = "Datos guardados correctamente.";
-
-      if (typeof updateStudentIdentity === "function") {
-        updateStudentIdentity();
-      }
-
-      setTimeout(() => {
-        saveMessage.style.display = "none";
-      }, 3000);
-    } catch (error) {
-      saveMessage.style.display = "block";
-      saveMessage.textContent = "No se pudieron guardar los datos. Probá nuevamente.";
-      console.error(error);
-    }
-  });
-}
-
-    const addExerciseBtn = document.getElementById("addExerciseBtn");
-    const duplicateWorkoutBtn = document.getElementById("duplicateWorkoutBtn");
-    const exerciseTable = document.getElementById("exerciseTable");
-    const workoutSaveButton = document.getElementById("saveWorkoutBtn");
-
-    function createExerciseRow(exercise = "", series = "", reps = "", carga = "") {
-      const row = document.createElement("div");
-      row.className = "exercise-row";
-
-      row.innerHTML = `
-        <span contenteditable="true">${exercise || "Nuevo ejercicio"}</span>
-        <span contenteditable="true">${series || "3"}</span>
-        <span contenteditable="true">${reps || "10"}</span>
-        <span contenteditable="true">${carga || "—"}</span>
-        <button type="button" class="delete-exercise-btn">Eliminar</button>
-      `;
-
-      row.querySelector(".delete-exercise-btn").addEventListener("click", () => {
-        row.remove();
-      });
-
-      return row;
-    }
-function loadRoutineData(data) {
-  if (!data || !data.rutina) return;
-
-  const routine = data.rutina;
-
-  const daySelect = document.getElementById("dia-rutina");
-  const typeSelect = document.getElementById("tipo-rutina");
-  const notesField = document.getElementById("notas-rutina");
-  const exerciseTable = document.getElementById("exerciseTable");
-
-  if (daySelect && routine.dia) {
-    [...daySelect.options].forEach(option => {
-      option.selected = option.textContent.trim() === routine.dia;
-    });
-  }
-
-  if (typeSelect && routine.tipo) {
-    [...typeSelect.options].forEach(option => {
-      option.selected = option.textContent.trim() === routine.tipo;
-    });
-  }
-
-  if (notesField) {
-    notesField.value = routine.observaciones || "";
-  }
-
-  if (exerciseTable && routine.ejercicios && routine.ejercicios.length > 0) {
-    exerciseTable.querySelectorAll(".exercise-row").forEach(row => row.remove());
-
-    routine.ejercicios.forEach(item => {
-      exerciseTable.appendChild(
-        createExerciseRow(
-          item.ejercicio || "",
-          item.series || "",
-          item.reps || "",
-          item.carga || ""
-        )
-      );
-    });
-  }
-}
-    async function loadRoutineFromBackend(classId) {
-  try {
-    const response = await fetch(`${API_BASE}/api/classes/${classId}/routine`);
-
-    if (!response.ok) {
-      throw new Error("No se pudo cargar la rutina desde D1");
-    }
-
-    const data = await response.json();
-
-    const routineData = {
-      rutina: {
-        dia: document.getElementById("dia-rutina")?.value || "",
-        tipo: data.class?.routine_type || "",
-        observaciones: data.routine?.technical_notes || "",
-        ejercicios: (data.exercises || []).map(item => ({
-          ejercicio: item.exercise_name || "",
-          series: item.sets || "",
-          reps: item.reps_time || "",
-          carga: item.load || ""
-        }))
-      }
-    };
-
-    if (data.routine || (data.exercises && data.exercises.length > 0)) {
-      loadRoutineData(routineData);
-      localStorage.setItem("yaninaRoutineData", JSON.stringify(routineData));
-    }
-  } catch (error) {
-    console.error("No se pudo cargar la rutina desde backend", error);
-  }
-}
-    function addDeleteButtonToExistingRows() {
-      document.querySelectorAll(".exercise-row").forEach(row => {
-        if (row.querySelector(".delete-exercise-btn")) return;
-
-        row.querySelectorAll("span").forEach(cell => {
-          cell.setAttribute("contenteditable", "true");
-        });
-
-        const deleteBtn = document.createElement("button");
-        deleteBtn.type = "button";
-        deleteBtn.className = "delete-exercise-btn";
-        deleteBtn.textContent = "Eliminar";
-        deleteBtn.addEventListener("click", () => {
-          row.remove();
-        });
-
-        row.appendChild(deleteBtn);
+          setTimeout(() => {
+            saveMessage.style.display = "none";
+          }, 3000);
+        } catch (error) {
+          saveMessage.style.display = "block";
+          saveMessage.textContent = "No se pudieron guardar los datos. Probá nuevamente.";
+          console.error(error);
+        }
       });
     }
 
-    function saveCurrentRoutineToLocalStorage() {
-      const exercises = [];
-
-      document.querySelectorAll(".exercise-row").forEach(row => {
-        const cells = row.querySelectorAll("span");
-
-        exercises.push({
-          ejercicio: cells[0]?.textContent.trim() || "",
-          series: cells[1]?.textContent.trim() || "",
-          reps: cells[2]?.textContent.trim() || "",
-          carga: cells[3]?.textContent.trim() || ""
-        });
-      });
-
-      const routineData = {
-        alumno: {
-          nombre: document.getElementById("nombre")?.value || "",
-          edad: document.getElementById("edad")?.value || "",
-          telefono: document.getElementById("telefono")?.value || "",
-          domicilio: document.getElementById("domicilio")?.value || "",
-          fechaAlta: document.getElementById("fecha")?.value || "",
-          pesoInicial: document.getElementById("peso")?.value || "",
-          ultimasMediciones: document.getElementById("ultimas-mediciones")?.value || "",
-          frecuencia: document.getElementById("dias")?.value || "",
-          modalidad: document.getElementById("modalidad")?.value || "",
-          objetivo: document.getElementById("objetivo")?.value || "",
-          limitaciones: document.getElementById("limitaciones")?.value || "",
-          notas: document.getElementById("notas")?.value || ""
-        },
-        rutina: {
-          dia: document.getElementById("dia-rutina")?.value || "",
-          tipo: document.getElementById("tipo-rutina")?.value || "",
-          observaciones: document.getElementById("notas-rutina")?.value || "",
-          ejercicios: exercises
-        },
-        guardadoEn: new Date().toISOString()
-      };
-
-      localStorage.setItem("yaninaRoutineData", JSON.stringify(routineData));
-      
-      const routinesByClass = JSON.parse(localStorage.getItem("yaninaRoutinesByClass") || "{}");
-      routinesByClass[activeClassId] = routineData;
-      localStorage.setItem("yaninaRoutinesByClass", JSON.stringify(routinesByClass));
+    if (studentNameInput) {
+      studentNameInput.addEventListener("input", updateStudentIdentity);
     }
 
     if (addExerciseBtn && exerciseTable) {
@@ -1401,221 +1530,92 @@ function loadRoutineData(data) {
 
         rows.forEach(row => {
           const cells = row.querySelectorAll("span");
-          const clonedRow = createExerciseRow(
-            cells[0]?.textContent || "",
-            cells[1]?.textContent || "",
-            cells[2]?.textContent || "",
-            cells[3]?.textContent || ""
+          exerciseTable.appendChild(
+            createExerciseRow(
+              cells[0]?.textContent || "",
+              cells[1]?.textContent || "",
+              cells[2]?.textContent || "",
+              cells[3]?.textContent || ""
+            )
           );
-
-          exerciseTable.appendChild(clonedRow);
         });
       });
     }
-async function saveRoutineToBackend() {
-  const exercises = [];
 
-  const rows = document.querySelectorAll("#exerciseTable .exercise-row");
-
-  rows.forEach(row => {
-    const cells = row.querySelectorAll("span");
-
-    exercises.push({
-      exercise_name: cells[0]?.textContent.trim() || "",
-      sets: cells[1]?.textContent.trim() || "",
-      reps_time: cells[2]?.textContent.trim() || "",
-      load: cells[3]?.textContent.trim() || ""
-    });
-  });
-
-  const payload = {
-    routine_type: document.getElementById("tipo-rutina")?.value || "",
-    technical_notes: document.getElementById("notas-rutina")?.value || "",
-    student_message: "Entrená a tu ritmo, cuidá la técnica y avisame si necesitás adaptar algún ejercicio.",
-    exercises: exercises
-  };
-
-  const response = await fetch(`${API_BASE}/api/classes/${activeBackendClassId}/routine`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (!response.ok) {
-    throw new Error("No se pudo guardar la rutina en D1");
-  }
-
-  console.log("Rutina enviada a D1:", activeBackendClassId, exercises.length, exercises);
-
-  return await response.json();
-}
-
-  const payload = {
-    routine_type: document.getElementById("tipo-rutina")?.value || "",
-    technical_notes: document.getElementById("notas-rutina")?.value || "",
-    student_message: "Entrená a tu ritmo, cuidá la técnica y avisame si necesitás adaptar algún ejercicio.",
-    exercises
-  };
-
-  const response = await fetch(`${API_BASE}/api/classes/${activeBackendClassId}/routine`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (!response.ok) {
-    throw new Error("No se pudo guardar la rutina en D1");
-  }
-
-  return await response.json();
-}
     if (workoutSaveButton) {
       const originalWorkoutText = workoutSaveButton.textContent;
 
       workoutSaveButton.addEventListener("click", async () => {
-        saveCurrentRoutineToLocalStorage();
-        await saveRoutineToBackend();
-        workoutSaveButton.textContent = "✓ Guardado";
-        workoutSaveButton.classList.add("is-saved");
+        try {
+          saveCurrentRoutineToLocalStorage();
+          await saveRoutineToBackend();
 
-        setTimeout(() => {
-          workoutSaveButton.textContent = originalWorkoutText;
-          workoutSaveButton.classList.remove("is-saved");
-        }, 2200);
+          workoutSaveButton.textContent = "✓ Guardado";
+          workoutSaveButton.classList.add("is-saved");
+
+          setTimeout(() => {
+            workoutSaveButton.textContent = originalWorkoutText;
+            workoutSaveButton.classList.remove("is-saved");
+          }, 2200);
+        } catch (error) {
+          console.error(error);
+          alert("No se pudo guardar la rutina en D1. Revisá la consola.");
+        }
       });
     }
 
     document.querySelectorAll(".pdf-link").forEach(link => {
-  link.addEventListener("click", async (event) => {
-    event.preventDefault();
+      link.addEventListener("click", async event => {
+        event.preventDefault();
 
-    saveCurrentRoutineToLocalStorage();
-    await saveRoutineToBackend();
-
-    window.open(`rutina-pdf.html?classId=${activeBackendClassId}`, "_blank");
-  });
-});
-
-    addDeleteButtonToExistingRows();
-  document.querySelectorAll(".timeline-day.has-class").forEach(classCard => {
-  classCard.addEventListener("click", () => {
-    document.querySelectorAll(".timeline-day.has-class").forEach(card => {
-      card.classList.remove("is-active");
+        try {
+          saveCurrentRoutineToLocalStorage();
+          await saveRoutineToBackend();
+          window.open(`rutina-pdf.html?classId=${activeBackendClassId}`, "_blank");
+        } catch (error) {
+          console.error(error);
+          alert("No se pudo guardar la rutina antes de generar el PDF.");
+        }
+      });
     });
 
-    classCard.classList.add("is-active");
-    
-    activeClassId = classCard.dataset.classId || "mar-14";
-    activeBackendClassId = classCard.dataset.backendClassId || "1";
-    const selectedDay = classCard.dataset.day || "";
-    const selectedType = classCard.dataset.type || "";
-const routinesByClass = JSON.parse(localStorage.getItem("yaninaRoutinesByClass") || "{}");
-const savedClassRoutine = routinesByClass[activeClassId];
+    document.querySelectorAll(".timeline-day.has-class").forEach(classCard => {
+      classCard.addEventListener("click", async () => {
+        document.querySelectorAll(".timeline-day.has-class").forEach(card => {
+          card.classList.remove("is-active");
+        });
 
-if (savedClassRoutine) {
-  loadRoutineData(savedClassRoutine);
-}
-    loadRoutineFromBackend(activeBackendClassId);
-    const daySelect = document.getElementById("dia-rutina");
-    const typeSelect = document.getElementById("tipo-rutina");
+        classCard.classList.add("is-active");
 
-    if (daySelect && selectedDay) {
-      [...daySelect.options].forEach(option => {
-        option.selected = option.textContent.trim() === selectedDay;
+        activeClassId = classCard.dataset.classId || "mar-14";
+        activeBackendClassId = classCard.dataset.backendClassId || "1";
+
+        const selectedDay = classCard.dataset.day || "";
+        const selectedType = classCard.dataset.type || "";
+
+        setSelectValueByText("dia-rutina", selectedDay);
+        setSelectValueByText("tipo-rutina", selectedType);
+
+        const routinesByClass = JSON.parse(localStorage.getItem("yaninaRoutinesByClass") || "{}");
+        const savedClassRoutine = routinesByClass[activeClassId];
+
+        if (savedClassRoutine) {
+          loadRoutineData(savedClassRoutine);
+        }
+
+        await loadRoutineFromBackend(activeBackendClassId);
       });
-    }
+    });
 
-    if (typeSelect && selectedType) {
-      [...typeSelect.options].forEach(option => {
-        option.selected = option.textContent.trim() === selectedType;
-      });
-    }
-  });
-});
- const studentNameInput = document.getElementById("nombre");
-const navStudentName = document.getElementById("navStudentName");
-const studentPhoto = document.querySelector(".student-photo");
-const studentAvatar = document.querySelector(".student-avatar");
-
-function getInitials(name) {
-  return name
-    .trim()
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map(part => part[0]?.toUpperCase())
-    .join("") || "NA";
-}
-
-function updateStudentIdentity() {
-  const currentName = studentNameInput?.value || "";
-  const initials = getInitials(currentName);
-
-  if (navStudentName) {
-    navStudentName.textContent = currentName || "Nuevo alumno";
-  }
-
-  if (studentPhoto) {
-    studentPhoto.textContent = initials;
-  }
-
-  if (studentAvatar) {
-    studentAvatar.textContent = initials;
-  }
-}
-
-if (studentNameInput) {
-  updateStudentIdentity();
-
-  studentNameInput.addEventListener("input", () => {
+    addDeleteButtonToExistingRows();
     updateStudentIdentity();
-  });
-}
-  const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
 
-async function loadStudentFromBackend() {
-  try {
-    const response = await fetch(`${API_BASE}/api/students/1`);
-    const student = await response.json();
-
-    document.getElementById("nombre").value = student.full_name || "";
-    document.getElementById("edad").value = student.age || "";
-    document.getElementById("telefono").value = student.phone || "";
-    document.getElementById("domicilio").value = student.address || "";
-    document.getElementById("fecha").value = student.start_date || "";
-    document.getElementById("peso").value = student.initial_weight || "";
-    document.getElementById("ultimas-mediciones").value = student.last_measurements_date || "";
-    document.getElementById("objetivo").value = student.goal || "";
-    document.getElementById("limitaciones").value = student.limitations || "";
-    document.getElementById("notas").value = student.trainer_notes || "";
-
-    const dias = document.getElementById("dias");
-    if (dias && student.frequency) {
-      [...dias.options].forEach(option => {
-        option.selected = option.textContent.trim() === student.frequency;
-      });
+    if (isNewStudent) {
+      resetForNewStudent();
+    } else {
+      loadStudentFromBackend();
+      loadRoutineFromBackend(activeBackendClassId);
     }
-
-    const modalidad = document.getElementById("modalidad");
-    if (modalidad && student.modality) {
-      [...modalidad.options].forEach(option => {
-        option.selected = option.textContent.trim() === student.modality;
-      });
-    }
-
-    if (typeof updateStudentIdentity === "function") {
-      updateStudentIdentity();
-    }
-  } catch (error) {
-    console.error("No se pudo cargar el alumno desde D1", error);
-  }
-}
-
-loadStudentFromBackend();
   </script>
 </body>
 </html>
