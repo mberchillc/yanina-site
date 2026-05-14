@@ -1072,5 +1072,46 @@
 
   addDeleteButtonToExistingRows();
 </script>
+<script>
+  function saveCurrentRoutineToLocalStorage() {
+    const exercises = [];
+
+    document.querySelectorAll(".exercise-row").forEach(row => {
+      const cells = row.querySelectorAll("span");
+
+      exercises.push({
+        ejercicio: cells[0]?.textContent.trim() || "",
+        series: cells[1]?.textContent.trim() || "",
+        reps: cells[2]?.textContent.trim() || "",
+        carga: cells[3]?.textContent.trim() || ""
+      });
+    });
+
+    localStorage.setItem("yaninaRoutineData", JSON.stringify({
+      rutina: {
+        dia: document.getElementById("dia-rutina")?.value || "",
+        tipo: document.getElementById("tipo-rutina")?.value || "",
+        observaciones: document.getElementById("notas-rutina")?.value || "",
+        ejercicios: exercises
+      }
+    }));
+  }
+
+  const workoutSaveButton = document.getElementById("saveWorkoutBtn");
+
+  if (workoutSaveButton) {
+    workoutSaveButton.addEventListener("click", () => {
+      saveCurrentRoutineToLocalStorage();
+
+      workoutSaveButton.textContent = "✓ Guardado";
+      workoutSaveButton.classList.add("is-saved");
+
+      setTimeout(() => {
+        workoutSaveButton.textContent = "Guardar rutina";
+        workoutSaveButton.classList.remove("is-saved");
+      }, 2200);
+    });
+  }
+</script>
 </body>
 </html>
