@@ -428,7 +428,7 @@
 .exercise-head,
 .exercise-row {
   display: grid;
-  grid-template-columns: 2fr 0.7fr 1fr 1fr;
+  grid-template-columns: 2fr 0.7fr 1fr 1fr 110px;
   gap: 12px;
   align-items: center;
 }
@@ -516,10 +516,6 @@
   font-weight: 800;
   padding: 8px 10px;
   cursor: pointer;
-}
-
-.exercise-row {
-  grid-template-columns: 2fr 0.7fr 1fr 1fr auto;
 }
 
 .exercise-row span[contenteditable="true"] {
@@ -796,12 +792,13 @@
         </div>
 
         <div class="exercise-table" id="exerciseTable">
-          <div class="exercise-head">
-            <span>Ejercicio</span>
-            <span>Series</span>
-            <span>Reps / Tiempo</span>
-            <span>Carga</span>
-          </div>
+<div class="exercise-head">
+  <span>Ejercicio</span>
+  <span>Series</span>
+  <span>Reps / Tiempo</span>
+  <span>Carga</span>
+  <span></span>
+</div>
 
           <div class="exercise-row">
             <span>Calentamiento y movilidad articular</span>
