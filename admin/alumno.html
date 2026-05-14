@@ -476,7 +476,41 @@
   box-shadow: 0 12px 34px rgba(24, 63, 53, 0.12);
   width: fit-content;
 }
+.student-nav-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 6px 6px;
+  border-radius: 999px;
+  background: var(--green-dark);
+  color: var(--white);
+}
 
+.student-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--green-main);
+  color: var(--green-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.student-nav-profile strong {
+  display: block;
+  font-size: 14px;
+  line-height: 1.1;
+}
+
+.student-nav-profile span {
+  display: block;
+  color: rgba(255,255,255,0.7);
+  font-size: 11px;
+  margin-top: 2px;
+}
 .student-tab {
   text-decoration: none;
   border-radius: 999px;
@@ -680,6 +714,14 @@
       </p>
     </section>
 <nav class="student-tabs">
+  <div class="student-nav-profile">
+    <div class="student-avatar">MG</div>
+    <div>
+      <strong id="navStudentName">María González</strong>
+      <span>Alumno activo</span>
+    </div>
+  </div>
+
   <a href="#datos" class="student-tab active">Datos del alumno</a>
   <a href="#calendario" class="student-tab">Calendario de clases</a>
   <a href="#plan" class="student-tab">Plan de entrenamiento</a>
@@ -1301,6 +1343,16 @@ if (savedClassRoutine) {
     }
   });
 });
+ const studentNameInput = document.getElementById("nombre");
+const navStudentName = document.getElementById("navStudentName");
+
+if (studentNameInput && navStudentName) {
+  navStudentName.textContent = studentNameInput.value || "Nuevo alumno";
+
+  studentNameInput.addEventListener("input", () => {
+    navStudentName.textContent = studentNameInput.value || "Nuevo alumno";
+  });
+}
   </script>
 </body>
 </html>
