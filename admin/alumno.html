@@ -1229,8 +1229,18 @@
 
     function renderClassList() {
       if (!classList) return;
+const todayKey = toISODate(startOfToday());
 
-      if (!allClasses.length) {
+const visibleClasses = allClasses
+  .filter(item => String(item.class_date || "") >= todayKey)
+  .sort((a, b) => {
+    return String(a.class_date || "").localeCompare(String(b.class_date || "")) ||
+           String(a.class_time || "").localeCompare(String(b.class_time || ""));
+  })
+  .slice(0, 4);
+
+if (!visibleClasses.length) {
+    
         classList.innerHTML = `
           <div class="empty-state">
             Todavía no hay clases cargadas para este alumno. Usá <strong>+ Agregar clase</strong>.
@@ -1239,7 +1249,7 @@
         return;
       }
 
-      classList.innerHTML = allClasses.map(item => {
+      classList.innerHTML = visibleClasses.map(item => {
         const label = formatDateShort(item.class_date);
         const isCompleted = normalizeStatus(item.status) === "completed";
 
