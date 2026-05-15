@@ -198,6 +198,17 @@
       color: var(--white);
     }
 
+    .status-pill.cancelled,
+    .status-pill.pending {
+      background: rgba(24, 63, 53, 0.12);
+      color: var(--green-dark);
+    }
+
+    .status-pill.draft {
+      background: rgba(217, 242, 203, 0.72);
+      color: var(--green-dark);
+    }
+
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -997,11 +1008,80 @@
     }
 
     function normalizeStatus(status) {
-      return String(status || "scheduled").toLowerCase();
+      return String(status || "draft").toLowerCase();
     }
 
-    function statusLabel(status) {
-      return normalizeStatus(status) === "completed" ? "Realizada" : "Programada";
+    function getClassState(item) {
+      const todayKey = toISODate(startOfToday());
+      const dateKey = String(item.class_date || "");
+      const status = normalizeStatus(item.status);
+
+      const isFuture = dateKey > todayKey;
+      const isToday = dateKey === todayKey;
+      const isPast = dateKey && dateKey < todayKey;
+
+      if (status === "completed") {
+        return {
+          key: "completed",
+          label: isFuture ? "Error: futura realizada" : "Realizada",
+          className: "completed",
+          canEdit: true,
+          canComplete: false,
+          canOther: false,
+          canDelete: false,
+          canPdf: true
+        };
+      }
+
+      if (status === "cancelled") {
+        return {
+          key: "cancelled",
+          label: "Suspendida",
+          className: "cancelled",
+          canEdit: true,
+          canComplete: false,
+          canOther: false,
+          canDelete: false,
+          canPdf: false
+        };
+      }
+
+      if (isPast) {
+        return {
+          key: "pending",
+          label: "Pendiente",
+          className: "pending",
+          canEdit: true,
+          canComplete: true,
+          canOther: true,
+          canDelete: false,
+          canPdf: false
+        };
+      }
+
+      if (status === "draft") {
+        return {
+          key: "draft",
+          label: isToday ? "Hoy · falta planificar" : "Falta planificar",
+          className: "draft",
+          canEdit: true,
+          canComplete: isToday,
+          canOther: isToday,
+          canDelete: true,
+          canPdf: false
+        };
+      }
+
+      return {
+        key: "scheduled",
+        label: isToday ? "Hoy · programada" : "Programada",
+        className: "scheduled",
+        canEdit: true,
+        canComplete: isToday,
+        canOther: isToday,
+        canDelete: true,
+        canPdf: true
+      };
     }
 
     function escapeHtml(value) {
@@ -1229,21 +1309,21 @@
 
     function renderClassList() {
       if (!classList) return;
-const todayKey = toISODate(startOfToday());
 
-const visibleClasses = allClasses
-  .filter(item => String(item.class_date || "") >= todayKey)
-  .sort((a, b) => {
-    return String(a.class_date || "").localeCompare(String(b.class_date || "")) ||
-           String(a.class_time || "").localeCompare(String(b.class_time || ""));
-  })
-  .slice(0, 4);
+      const todayKey = toISODate(startOfToday());
 
-if (!visibleClasses.length) {
-    
+      const visibleClasses = allClasses
+        .filter(item => String(item.class_date || "") >= todayKey)
+        .sort((a, b) => {
+          return String(a.class_date || "").localeCompare(String(b.class_date || "")) ||
+                 String(a.class_time || "").localeCompare(String(b.class_time || ""));
+        })
+        .slice(0, 4);
+
+      if (!visibleClasses.length) {
         classList.innerHTML = `
           <div class="empty-state">
-            Todavía no hay clases cargadas para este alumno. Usá <strong>+ Agregar clase</strong>.
+            Todavía no hay próximas clases cargadas para este alumno. Usá <strong>+ Agregar clase</strong>.
           </div>
         `;
         return;
@@ -1251,7 +1331,7 @@ if (!visibleClasses.length) {
 
       classList.innerHTML = visibleClasses.map(item => {
         const label = formatDateShort(item.class_date);
-        const isCompleted = normalizeStatus(item.status) === "completed";
+        const state = getClassState(item);
 
         return `
           <article class="class-item">
@@ -1263,18 +1343,18 @@ if (!visibleClasses.length) {
             <div class="class-info">
               <div class="class-topline">
                 <strong>${escapeHtml(item.class_time || "Sin hora")} · ${escapeHtml(item.routine_type || "Clase")}</strong>
-                <span class="status-pill ${isCompleted ? "completed" : ""}">${statusLabel(item.status)}</span>
+                <span class="status-pill ${state.className}">${state.label}</span>
               </div>
 
               <p><strong>Criterio:</strong> ${escapeHtml(item.planning_criteria || "Sin criterio cargado.")}</p>
               <p><strong>Fecha:</strong> ${escapeHtml(formatDateReadable(item.class_date))}</p>
 
               <div class="class-actions">
-                <button type="button" class="btn btn-form-secondary" data-action="edit-class" data-id="${item.id}">Editar clase</button>
-                <button type="button" class="btn btn-form-secondary" data-action="complete-class" data-id="${item.id}">
-                 ${isCompleted ? "Realizada" : "Marcar realizada"}
-                </button>
-                <a class="btn btn-primary pdf-link-list" href="rutina-pdf.html?classId=${item.id}" target="_blank" data-id="${item.id}">Descargar rutina PDF</a>
+                ${state.canEdit ? `<button type="button" class="btn btn-form-secondary" data-action="edit-class" data-id="${item.id}">Editar clase</button>` : ""}
+                ${state.canComplete ? `<button type="button" class="btn btn-form-secondary" data-action="complete-class" data-id="${item.id}">Marcar realizada</button>` : ""}
+                ${state.canOther ? `<button type="button" class="btn btn-form-secondary" data-action="other-class" data-id="${item.id}">Otro</button>` : ""}
+                ${state.canDelete ? `<button type="button" class="btn btn-form-secondary" data-action="delete-class" data-id="${item.id}">Eliminar</button>` : ""}
+                ${state.canPdf ? `<a class="btn btn-primary pdf-link-list" href="rutina-pdf.html?classId=${item.id}" target="_blank" data-id="${item.id}">Descargar rutina PDF</a>` : ""}
               </div>
             </div>
           </article>
@@ -1287,6 +1367,14 @@ if (!visibleClasses.length) {
 
       classList.querySelectorAll("[data-action='complete-class']").forEach(btn => {
         btn.addEventListener("click", () => markClassCompleted(btn.dataset.id));
+      });
+
+      classList.querySelectorAll("[data-action='other-class']").forEach(btn => {
+        btn.addEventListener("click", () => handleOtherClass(btn.dataset.id));
+      });
+
+      classList.querySelectorAll("[data-action='delete-class']").forEach(btn => {
+        btn.addEventListener("click", () => deleteClass(btn.dataset.id));
       });
 
       classList.querySelectorAll(".pdf-link-list").forEach(link => {
@@ -1340,7 +1428,7 @@ if (!visibleClasses.length) {
         class_date: document.getElementById("classDateInput").value || "",
         class_time: document.getElementById("classTimeInput").value || "",
         routine_type: document.getElementById("classRoutineInput").value || "Nueva clase",
-        status: statusOverride || selectedClass?.status || "scheduled",
+        status: statusOverride || selectedClass?.status || "draft",
         planning_criteria: document.getElementById("classCriteriaInput").value || ""
       };
     }
@@ -1358,7 +1446,7 @@ if (!visibleClasses.length) {
           class_date: toISODate(startOfToday()),
           class_time: "",
           routine_type: "Nueva clase",
-          status: "scheduled",
+          status: "draft",
           planning_criteria: ""
         })
       });
@@ -1394,7 +1482,60 @@ if (!visibleClasses.length) {
       return updated;
     }
 
+    async function deleteClass(classId) {
+      const confirmed = confirm("¿Eliminar esta clase futura? Esta acción no se puede deshacer.");
+      if (!confirmed) return;
+
+      const response = await fetch(`${API_BASE}/api/classes/${classId}`, {
+        method: "DELETE"
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        alert(errorData.error || "No se pudo eliminar la clase.");
+        return;
+      }
+
+      allClasses = allClasses.filter(item => Number(item.id) !== Number(classId));
+
+      if (selectedClass && Number(selectedClass.id) === Number(classId)) {
+        selectedClass = null;
+        activeBackendClassId = null;
+        clearExerciseRows();
+        addBlankExerciseRow();
+      }
+
+      renderCalendarAndClasses();
+
+      if (allClasses.length) {
+        await selectClass(allClasses[0].id, false);
+      }
+    }
+
+    async function handleOtherClass(classId) {
+      await selectClass(classId, true);
+
+      const action = prompt("Escribí 1 para marcar Suspendida, o 2 para Recuperar/Reprogramar.");
+
+      if (action === "1") {
+        await saveSelectedClass("cancelled");
+        return;
+      }
+
+      if (action === "2") {
+        scrollToPlan();
+      }
+    }
+
     async function markClassCompleted(classId) {
+      const found = allClasses.find(item => Number(item.id) === Number(classId));
+      const todayKey = toISODate(startOfToday());
+
+      if (found && String(found.class_date || "") > todayKey) {
+        alert("Una clase futura no puede marcarse como realizada.");
+        return;
+      }
+
       await selectClass(classId, false);
       await saveSelectedClass("completed");
     }
@@ -1513,7 +1654,7 @@ if (!visibleClasses.length) {
     }
 
     async function saveClassAndRoutine() {
-      await saveSelectedClass();
+      await saveSelectedClass("scheduled");
       return await saveRoutineToBackend();
     }
 
