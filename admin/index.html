@@ -26,13 +26,11 @@
       --border: rgba(24, 63, 53, 0.14);
       --shadow: 0 18px 50px rgba(24, 63, 53, 0.12);
       --radius: 22px;
+      --danger: #d92d20;
+      --danger-dark: #9f1f17;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: Arial, sans-serif;
@@ -41,11 +39,7 @@
       min-height: 100vh;
     }
 
-    .admin-shell {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 24px;
-    }
+    .admin-shell { max-width: 1180px; margin: 0 auto; padding: 24px; }
 
     .topbar {
       background: var(--green-dark);
@@ -60,33 +54,10 @@
       margin-bottom: 26px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-
-    .brand img {
-      width: 300px;
-      height: 100px;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-    }
-
-    .brand-text small {
-      display: block;
-      color: rgba(255,255,255,0.72);
-      font-size: 13px;
-      margin-top: 3px;
-    }
-
-    .top-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
+    .brand { display: flex; align-items: center; gap: 18px; }
+    .brand img { width: 300px; height: 100px; object-fit: cover; object-position: center; display: block; }
+    .brand-text small { display: block; color: rgba(255,255,255,0.72); font-size: 13px; margin-top: 3px; }
+    .top-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 
     .btn {
       border: none;
@@ -101,113 +72,25 @@
       justify-content: center;
       gap: 8px;
       transition: transform 0.18s ease, opacity 0.18s ease;
+      font-family: inherit;
     }
 
-    .btn:hover {
-      transform: translateY(-1px);
-      opacity: 0.92;
-    }
+    .btn:hover { transform: translateY(-1px); opacity: 0.92; }
+    .btn-primary { background: var(--green-main); color: var(--green-dark); }
+    .btn-secondary { background: rgba(255,255,255,0.1); color: var(--white); border: 1px solid rgba(255,255,255,0.24); }
+    .btn-soft { background: var(--green-soft); color: var(--green-dark); }
 
-    .btn-primary {
-      background: var(--green-main);
-      color: var(--green-dark);
-    }
+    .page-header { margin-bottom: 22px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: 0.12em; color: var(--green-dark); font-size: 12px; font-weight: 800; margin-bottom: 8px; }
+    h1 { font-size: clamp(30px, 4vw, 48px); line-height: 1.05; color: var(--green-dark); margin-bottom: 8px; }
+    .subtitle { color: var(--muted); font-size: 17px; max-width: 720px; line-height: 1.5; }
 
-    .btn-secondary {
-      background: rgba(255,255,255,0.1);
-      color: var(--white);
-      border: 1px solid rgba(255,255,255,0.24);
-    }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 22px; }
+    .stat-card { background: var(--green-dark); color: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+    .stat-card span { display: block; color: rgba(255,255,255,0.72); font-size: 13px; margin-bottom: 8px; }
+    .stat-card strong { display: block; font-size: 28px; color: var(--green-soft); }
 
-    .btn-soft {
-      background: var(--green-soft);
-      color: var(--green-dark);
-    }
-
-    .page-header {
-      margin-bottom: 22px;
-    }
-
-    .eyebrow {
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--green-dark);
-      font-size: 12px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    h1 {
-      font-size: clamp(30px, 4vw, 48px);
-      line-height: 1.05;
-      color: var(--green-dark);
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 17px;
-      max-width: 720px;
-      line-height: 1.5;
-    }
-
-    .dashboard-tools {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 14px;
-      align-items: center;
-      margin-bottom: 22px;
-    }
-
-    .search-box {
-      background: rgba(255,255,255,0.9);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 14px 18px;
-      font-size: 15px;
-      width: 100%;
-      outline: none;
-      box-shadow: 0 10px 30px rgba(24, 63, 53, 0.06);
-    }
-
-    .search-box:focus {
-      border-color: var(--green-main);
-      box-shadow: 0 0 0 4px rgba(126, 200, 69, 0.18);
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 22px;
-    }
-
-    .stat-card {
-      background: var(--green-dark);
-      color: var(--white);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow);
-    }
-
-    .stat-card span {
-      display: block;
-      color: rgba(255,255,255,0.72);
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .stat-card strong {
-      display: block;
-      font-size: 28px;
-      color: var(--green-soft);
-    }
-
-    .students-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
+    .students-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 
     .student-card {
       background: rgba(255,255,255,0.9);
@@ -217,43 +100,15 @@
       padding: 22px;
       display: grid;
       gap: 14px;
+      position: relative;
+      min-height: 285px;
     }
 
-    .student-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .student-name {
-      color: var(--green-dark);
-      font-size: 22px;
-      font-weight: 900;
-      line-height: 1.1;
-    }
-
-    .student-pill {
-      background: var(--green-soft);
-      color: var(--green-dark);
-      border-radius: 999px;
-      padding: 7px 11px;
-      font-size: 12px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-
-    .student-meta {
-      display: grid;
-      gap: 9px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.35;
-    }
-
-    .student-meta strong {
-      color: var(--green-dark);
-    }
+    .student-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding-right: 8px; }
+    .student-name { color: var(--green-dark); font-size: 22px; font-weight: 900; line-height: 1.1; }
+    .student-pill { background: var(--green-soft); color: var(--green-dark); border-radius: 999px; padding: 7px 11px; font-size: 12px; font-weight: 900; white-space: nowrap; }
+    .student-meta { display: grid; gap: 9px; color: var(--muted); font-size: 14px; line-height: 1.35; }
+    .student-meta strong { color: var(--green-dark); }
 
     .next-class {
       background: rgba(217, 242, 203, 0.65);
@@ -265,74 +120,57 @@
       line-height: 1.4;
     }
 
-    .card-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 2px;
+    .card-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; padding-right: 48px; }
+
+    .delete-student-btn {
+      position: absolute;
+      right: 22px;
+      bottom: 22px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: var(--danger);
+      color: var(--white);
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(217, 45, 32, 0.28);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
     }
 
+    .delete-student-btn:hover { transform: translateY(-1px); opacity: 0.94; background: var(--danger-dark); }
+    .delete-student-btn:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
 
-    .empty-state {
+    .empty-state, .loading-state {
       grid-column: 1 / -1;
       background: rgba(255,255,255,0.9);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 24px;
-      color: var(--muted);
       line-height: 1.5;
     }
 
-    .loading-state {
-      grid-column: 1 / -1;
-      background: rgba(255,255,255,0.9);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 24px;
-      color: var(--green-dark);
-      font-weight: 800;
-    }
-
-    .btn-link-reset {
-      font-family: inherit;
-    }
+    .empty-state { color: var(--muted); }
+    .loading-state { color: var(--green-dark); font-weight: 800; }
+    .btn-link-reset { font-family: inherit; }
 
     @media (max-width: 900px) {
-      .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .top-actions {
-        justify-content: flex-start;
-      }
-
-      .dashboard-tools {
-        grid-template-columns: 1fr;
-      }
-
-      .stats-grid,
-      .students-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .brand img {
-        width: 240px;
-        height: 86px;
-      }
-
-      .admin-shell {
-        padding: 16px;
-      }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .top-actions { justify-content: flex-start; }
+      .stats-grid, .students-grid { grid-template-columns: 1fr; }
+      .brand img { width: 240px; height: 86px; }
+      .admin-shell { padding: 16px; }
     }
   </style>
 </head>
 
 <body>
   <main class="admin-shell">
-
     <header class="topbar">
       <div class="brand">
         <img src="../assets/logo-transp.png" alt="Yanina Trainer" />
@@ -352,38 +190,23 @@
     <section class="page-header">
       <div class="eyebrow">Plataforma Yanina Trainer</div>
       <h1>Panel Admin</h1>
-      <p class="subtitle">
-        Buscá alumnos, abrí sus fichas y gestioná datos, clases y planes de entrenamiento desde una sola plataforma.
-      </p>
+      <p class="subtitle">Abrí la ficha de cada alumno para gestionar datos, clases y planes de entrenamiento.</p>
     </section>
 
     <section class="stats-grid">
-      <div class="stat-card">
-        <span>Alumnos cargados</span>
-        <strong id="studentsCount">—</strong>
-      </div>
-
-      <div class="stat-card">
-        <span>Clases esta semana</span>
-        <strong id="classesCount">—</strong>
-      </div>
-
-      <div class="stat-card">
-        <span>Rutinas listas</span>
-        <strong id="routinesCount">—</strong>
-      </div>
+      <div class="stat-card"><span>Alumnos cargados</span><strong id="studentsCount">—</strong></div>
+      <div class="stat-card"><span>Clases esta semana</span><strong id="classesCount">—</strong></div>
+      <div class="stat-card"><span>Rutinas listas</span><strong id="routinesCount">—</strong></div>
     </section>
 
     <section class="students-grid" id="studentsGrid">
       <div class="loading-state">Cargando alumnos desde D1…</div>
     </section>
-
   </main>
 
   <script>
     const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
     const studentsGrid = document.getElementById("studentsGrid");
-    const studentSearch = document.getElementById("studentSearch");
     const studentsCount = document.getElementById("studentsCount");
     const classesCount = document.getElementById("classesCount");
     const routinesCount = document.getElementById("routinesCount");
@@ -391,69 +214,47 @@
 
     let allStudents = [];
 
-    function normalizeText(value) {
-      return String(value || "").trim().toLowerCase();
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
     function formatDate(value) {
       if (!value) return "Sin datos";
-
       const date = new Date(value + "T00:00:00");
       if (Number.isNaN(date.getTime())) return value;
-
-      return date.toLocaleDateString("es-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-      });
+      return date.toLocaleDateString("es-US", { day: "2-digit", month: "2-digit", year: "numeric" });
     }
 
-    function getStudentId(student) {
-      return student.id || student.student_id || student.studentId || "1";
-    }
-
-    function getStudentName(student) {
-      return student.full_name || student.name || "Alumno sin nombre";
-    }
-
-    function getStudentGoal(student) {
-      return student.goal || student.objective || "Sin objetivo cargado";
-    }
-
-    function getStudentFrequency(student) {
-      return student.frequency || "Sin frecuencia cargada";
-    }
-
-    function getStudentModality(student) {
-      return student.modality || "Sin modalidad";
-    }
-
-    function getLastMeasurements(student) {
-      return student.last_measurements_date || student.lastMeasurementsDate || "";
-    }
+    function getStudentId(student) { return student.id || student.student_id || student.studentId || "1"; }
+    function getStudentName(student) { return student.full_name || student.name || "Alumno sin nombre"; }
+    function getStudentGoal(student) { return student.goal || student.objective || "Sin objetivo cargado"; }
+    function getStudentFrequency(student) { return student.frequency || "Sin frecuencia cargada"; }
+    function getStudentModality(student) { return student.modality || "Sin modalidad"; }
+    function getLastMeasurements(student) { return student.last_measurements_date || student.lastMeasurementsDate || ""; }
 
     function renderStudents(students) {
       if (!studentsGrid) return;
 
       if (!students.length) {
-        studentsGrid.innerHTML = `
-          <div class="empty-state">
-            No hay alumnos para mostrar. Usá <strong>+ Crear alumno</strong> para cargar el primero.
-          </div>
-        `;
+        studentsGrid.innerHTML = `<div class="empty-state">No hay alumnos para mostrar. Usá <strong>+ Nuevo alumno</strong> para cargar el primero.</div>`;
         return;
       }
 
       studentsGrid.innerHTML = students.map(student => {
         const id = getStudentId(student);
-        const name = getStudentName(student);
-        const modality = getStudentModality(student);
-        const goal = getStudentGoal(student);
-        const frequency = getStudentFrequency(student);
-        const lastMeasurements = formatDate(getLastMeasurements(student));
+        const name = escapeHtml(getStudentName(student));
+        const modality = escapeHtml(getStudentModality(student));
+        const goal = escapeHtml(getStudentGoal(student));
+        const frequency = escapeHtml(getStudentFrequency(student));
+        const lastMeasurements = escapeHtml(formatDate(getLastMeasurements(student)));
 
         return `
-          <article class="student-card">
+          <article class="student-card" data-student-id="${id}">
             <div class="student-top">
               <div class="student-name">${name}</div>
               <div class="student-pill">${modality}</div>
@@ -474,9 +275,15 @@
               <a href="alumno.html?id=${id}" class="btn btn-soft">Ver ficha</a>
               <a href="alumno.html?id=${id}#calendario" class="btn btn-soft">Calendario</a>
             </div>
+
+            <button type="button" class="delete-student-btn" data-student-id="${id}" data-student-name="${name}" aria-label="Eliminar alumno ${name}" title="Eliminar alumno">E</button>
           </article>
         `;
       }).join("");
+
+      studentsGrid.querySelectorAll(".delete-student-btn").forEach(button => {
+        button.addEventListener("click", () => deleteStudent(button.dataset.studentId, button.dataset.studentName, button));
+      });
     }
 
     function updateStats(students) {
@@ -485,55 +292,38 @@
       if (routinesCount) routinesCount.textContent = "—";
     }
 
-    function applySearch() {
-      const query = normalizeText(studentSearch?.value || "");
-
-      if (!query) {
-        renderStudents(allStudents);
-        return;
-      }
-
-      const filtered = allStudents.filter(student => {
-        const haystack = [
-          getStudentName(student),
-          getStudentGoal(student),
-          getStudentFrequency(student),
-          getStudentModality(student),
-          student.phone,
-          student.address
-        ].map(normalizeText).join(" ");
-
-        return haystack.includes(query);
-      });
-
-      renderStudents(filtered);
+    async function loadStudentsFromBackend() {
+      const response = await fetch(`${API_BASE}/api/students?cache=${Date.now()}`);
+      if (!response.ok) throw new Error("No se pudieron cargar los alumnos desde D1");
+      const data = await response.json();
+      if (Array.isArray(data)) return data;
+      if (Array.isArray(data.students)) return data.students;
+      return [];
     }
 
-    async function loadStudentsFromBackend() {
+    async function deleteStudent(studentId, studentName, button) {
+      const confirmed = confirm(`¿Eliminar la ficha de ${studentName}? También se eliminarán sus clases, rutinas y ejercicios. Esta acción no se puede deshacer.`);
+      if (!confirmed) return;
+
+      button.disabled = true;
+      button.textContent = "…";
+
       try {
-        const response = await fetch(`${API_BASE}/api/students`);
+        const response = await fetch(`${API_BASE}/api/students/${studentId}`, { method: "DELETE" });
 
         if (!response.ok) {
-          throw new Error("GET /api/students todavía no está disponible");
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "No se pudo eliminar el alumno.");
         }
 
-        const data = await response.json();
-
-        if (Array.isArray(data)) return data;
-        if (Array.isArray(data.students)) return data.students;
-
-        return [];
+        allStudents = allStudents.filter(student => String(getStudentId(student)) !== String(studentId));
+        updateStats(allStudents);
+        renderStudents(allStudents);
       } catch (error) {
-        console.warn("No se pudo cargar la lista completa. Se usa fallback del alumno 1.", error);
-
-        const fallbackResponse = await fetch(`${API_BASE}/api/students/1`);
-
-        if (!fallbackResponse.ok) {
-          throw new Error("No se pudo cargar ningún alumno desde D1");
-        }
-
-        const student = await fallbackResponse.json();
-        return student ? [student] : [];
+        console.error(error);
+        alert(error.message || "No se pudo eliminar el alumno.");
+        button.disabled = false;
+        button.textContent = "E";
       }
     }
 
@@ -544,21 +334,11 @@
         renderStudents(allStudents);
       } catch (error) {
         console.error(error);
-
         if (studentsGrid) {
-          studentsGrid.innerHTML = `
-            <div class="empty-state">
-              No se pudieron cargar los alumnos desde D1. Revisá el Worker o probá nuevamente.
-            </div>
-          `;
+          studentsGrid.innerHTML = `<div class="empty-state">No se pudieron cargar los alumnos desde D1. Revisá el Worker o probá nuevamente.</div>`;
         }
-
         updateStats([]);
       }
-    }
-
-    if (studentSearch) {
-      studentSearch.addEventListener("input", applySearch);
     }
 
     if (logoutBtn) {
