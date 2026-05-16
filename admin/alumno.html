@@ -1691,10 +1691,19 @@ async function markClassCompleted(classId) {
     }
 
     async function saveClassAndRoutine() {
-      await saveSelectedClass("scheduled");
-      return await saveRoutineToBackend();
-    }
+  const currentStatus = normalizeStatus(selectedClass?.status);
 
+  const statusToSave = currentStatus === "rescheduled"
+    ? "rescheduled"
+    : currentStatus === "completed"
+      ? "completed"
+      : currentStatus === "cancelled"
+        ? "cancelled"
+        : "scheduled";
+
+  await saveSelectedClass(statusToSave);
+  return await saveRoutineToBackend();
+}
     if (saveStudentBtn && saveMessage) {
       saveStudentBtn.addEventListener("click", async () => {
         try {
