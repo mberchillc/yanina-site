@@ -663,7 +663,10 @@
       color: var(--muted);
       line-height: 1.5;
     }
-
+.status-pill.rescheduled {
+  background: #d8ecff;
+  color: #174a78;
+}
     @media (max-width: 840px) {
       .topbar {
         align-items: flex-start;
@@ -1057,7 +1060,7 @@ if (status === "rescheduled") {
   return {
     key: "rescheduled",
     label: isToday ? "Hoy · Repro" : "Repro",
-    className: "scheduled",
+    className: "rescheduled",
     canEdit: true,
     canComplete: isToday,
     canOther: isToday,
@@ -1443,14 +1446,27 @@ return {
     }
 
     function selectedClassPayload(statusOverride) {
-      return {
-        class_date: document.getElementById("classDateInput").value || "",
-        class_time: document.getElementById("classTimeInput").value || "",
-        routine_type: document.getElementById("classRoutineInput").value || "Nueva clase",
-        status: statusOverride || selectedClass?.status || "draft",
-        planning_criteria: document.getElementById("classCriteriaInput").value || ""
-      };
-    }
+  const originalDate = String(selectedClass?.class_date || "");
+  const newDate = document.getElementById("classDateInput").value || "";
+  const todayKey = toISODate(startOfToday());
+
+  let nextStatus = statusOverride || selectedClass?.status || "draft";
+
+  const wasTodayOrPast = originalDate && originalDate <= todayKey;
+  const movedToFuture = newDate && newDate > todayKey;
+
+  if (!statusOverride && wasTodayOrPast && movedToFuture) {
+    nextStatus = "rescheduled";
+  }
+
+  return {
+    class_date: newDate,
+    class_time: document.getElementById("classTimeInput").value || "",
+    routine_type: document.getElementById("classRoutineInput").value || "Nueva clase",
+    status: nextStatus,
+    planning_criteria: document.getElementById("classCriteriaInput").value || ""
+  };
+}
 
     async function createClassForStudent() {
       if (!studentId) {
