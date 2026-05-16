@@ -347,7 +347,12 @@
       color: var(--green-dark);
       border-color: rgba(126, 200, 69, 0.6);
     }
-
+.student-tab-arrow {
+  width: 46px;
+  padding: 12px 0;
+  font-size: 20px;
+  line-height: 1;
+}
     #datos,
     #calendario,
     #plan {
@@ -732,6 +737,7 @@
       <a href="#datos" class="student-tab active">Datos del alumno</a>
       <a href="#calendario" class="student-tab">Calendario de clases</a>
       <a href="#plan" class="student-tab">Plan de entrenamiento</a>
+      <button type="button" class="student-tab student-tab-arrow" id="backToTopBtn">↑</button>
     </nav>
 
     <section class="layout">
@@ -1821,7 +1827,16 @@
         }
       }
     }
+const backToTopBtn = document.getElementById("backToTopBtn");
 
+if (backToTopBtn) {
+  backToTopBtn.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+}
     initializeStudentPage();
   </script>
 </body>
