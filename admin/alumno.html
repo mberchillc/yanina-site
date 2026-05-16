@@ -1028,43 +1028,31 @@
       const isPast = dateKey && dateKey < todayKey;
 
       if (status === "completed") {
-        return {
-          key: "completed",
-          label: isFuture ? "Error: futura realizada" : "Realizada",
-          className: "completed",
-          canEdit: true,
-          canComplete: false,
-          canOther: false,
-          canDelete: false,
-          canPdf: true
-        };
-      }
+  return {
+    key: "completed",
+    label: isFuture ? "Error: futura realizada" : "Realizada",
+    className: "completed",
+    canEdit: true,
+    canComplete: false,
+    canOther: false,
+    canDelete: false,
+    canPdf: true
+  };
+}
 
-      if (status === "cancelled") {
-        return {
-          key: "cancelled",
-          label: "Suspendida",
-          className: "cancelled",
-          canEdit: true,
-          canComplete: false,
-          canOther: false,
-          canDelete: false,
-          canPdf: false
-        };
-      }
+if (status === "cancelled") {
+  return {
+    key: "cancelled",
+    label: "Suspendida",
+    className: "cancelled",
+    canEdit: true,
+    canComplete: false,
+    canOther: false,
+    canDelete: false,
+    canPdf: false
+  };
+}
 
-      if (isPast) {
-        return {
-          key: "pending",
-          label: "Pendiente",
-          className: "pending",
-          canEdit: true,
-          canComplete: true,
-          canOther: true,
-          canDelete: false,
-          canPdf: false
-        };
-      }
 if (status === "rescheduled") {
   return {
     key: "rescheduled",
@@ -1077,31 +1065,44 @@ if (status === "rescheduled") {
     canPdf: true
   };
 }
-      if (status === "draft") {
-        return {
-          key: "draft",
-          label: isToday ? "Hoy · falta planificar" : "Falta planificar",
-          className: "draft",
-          canEdit: true,
-          canComplete: isToday,
-          canOther: isToday,
-          canDelete: true,
-          canPdf: false
-        };
-      }
 
-      return {
-        key: "scheduled",
-        label: isToday ? "Hoy · programada" : "Programada",
-        className: "scheduled",
-        canEdit: true,
-        canComplete: isToday,
-        canOther: isToday,
-        canDelete: true,
-        canPdf: true
-      };
-    }
+if (isPast) {
+  return {
+    key: "pending",
+    label: "Pendiente",
+    className: "pending",
+    canEdit: true,
+    canComplete: true,
+    canOther: true,
+    canDelete: false,
+    canPdf: false
+  };
+}
 
+if (status === "draft") {
+  return {
+    key: "draft",
+    label: isToday ? "Hoy · falta planificar" : "Falta planificar",
+    className: "draft",
+    canEdit: true,
+    canComplete: isToday,
+    canOther: isToday,
+    canDelete: true,
+    canPdf: false
+  };
+}
+
+return {
+  key: "scheduled",
+  label: isToday ? "Hoy · programada" : "Programada",
+  className: "scheduled",
+  canEdit: true,
+  canComplete: isToday,
+  canOther: isToday,
+  canDelete: true,
+  canPdf: true
+};
+}
     function escapeHtml(value) {
       return String(value || "")
         .replaceAll("&", "&amp;")
