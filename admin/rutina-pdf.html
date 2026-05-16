@@ -385,6 +385,10 @@
       <strong id="pdfClassRoutine">—</strong>
     </div>
     <div class="info-row">
+  <span>Estado</span>
+  <strong id="pdfClassStatus">—</strong>
+</div>
+    <div class="info-row">
       <span>Criterio</span>
       <strong id="pdfClassCriteria">—</strong>
     </div>
@@ -474,7 +478,17 @@
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
   }
+function formatClassStatus(status) {
+  const value = String(status || "").toLowerCase();
 
+  if (value === "rescheduled") return "Repro";
+  if (value === "completed") return "Realizada";
+  if (value === "cancelled") return "Suspendida";
+  if (value === "draft") return "Falta planificar";
+  if (value === "scheduled") return "Programada";
+
+  return "—";
+}
   function formatDate(value) {
     if (!value) return "—";
 
@@ -534,7 +548,7 @@
       const classTime = document.getElementById("pdfClassTime");
       const classRoutine = document.getElementById("pdfClassRoutine");
       const classCriteria = document.getElementById("pdfClassCriteria");
-
+      const classStatus = document.getElementById("pdfClassStatus");
       const routineType = classData.routine_type || routine.routine_type || "Rutina de entrenamiento";
 
       if (title) title.textContent = routineType;
@@ -549,6 +563,7 @@
       if (classDate) classDate.textContent = formatDate(classData.class_date || classData.date || "");
       if (classTime) classTime.textContent = classData.class_time || classData.time || classData.hour || "—";
       if (classRoutine) classRoutine.textContent = routineType;
+      if (classStatus) classStatus.textContent = formatClassStatus(classData.status);
       if (classCriteria) classCriteria.textContent = classData.criteria || classData.notes || "Plan personalizado";
 
       if (exerciseBody) {
