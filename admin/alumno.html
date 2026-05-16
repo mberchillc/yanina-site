@@ -1690,16 +1690,22 @@ async function markClassCompleted(classId) {
       return await response.json();
     }
 
-    async function saveClassAndRoutine() {
+   async function saveClassAndRoutine() {
   const currentStatus = normalizeStatus(selectedClass?.status);
 
-  const statusToSave = currentStatus === "rescheduled"
-    ? "rescheduled"
-    : currentStatus === "completed"
-      ? "completed"
-      : currentStatus === "cancelled"
-        ? "cancelled"
-        : "scheduled";
+  let statusToSave = "scheduled";
+
+  if (currentStatus === "rescheduled") {
+    statusToSave = "rescheduled";
+  }
+
+  if (currentStatus === "completed") {
+    statusToSave = "completed";
+  }
+
+  if (currentStatus === "cancelled") {
+    statusToSave = "cancelled";
+  }
 
   await saveSelectedClass(statusToSave);
   return await saveRoutineToBackend();
