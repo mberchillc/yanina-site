@@ -1545,7 +1545,9 @@ if (status === "rescheduled") {
   scrollToPlan();
 }
 
-    async function markClassCompleted(classId) {
+}
+
+async function markClassCompleted(classId) {
       const found = allClasses.find(item => Number(item.id) === Number(classId));
       const todayKey = toISODate(startOfToday());
 
