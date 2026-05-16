@@ -1065,7 +1065,18 @@
           canPdf: false
         };
       }
-
+if (status === "rescheduled") {
+  return {
+    key: "rescheduled",
+    label: isToday ? "Hoy · Repro" : "Repro",
+    className: "scheduled",
+    canEdit: true,
+    canComplete: isToday,
+    canOther: isToday,
+    canDelete: true,
+    canPdf: true
+  };
+}
       if (status === "draft") {
         return {
           key: "draft",
@@ -1529,10 +1540,10 @@
         return;
       }
 
-      if (action === "2") {
-        scrollToPlan();
-      }
-    }
+     if (action === "2") {
+  await saveSelectedClass("rescheduled");
+  scrollToPlan();
+}
 
     async function markClassCompleted(classId) {
       const found = allClasses.find(item => Number(item.id) === Number(classId));
