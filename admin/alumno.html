@@ -1469,13 +1469,31 @@ return {
     planning_criteria: document.getElementById("classCriteriaInput").value || ""
   };
 }
-      if (!response.ok) throw new Error("No se pudo crear la clase");
 
-      const created = await response.json();
-      await loadClassesFromBackend();
-      await selectClass(created.id, true);
-    }
+async function createClassForStudent() {
+  if (!studentId) {
+    alert("Primero guardá los datos del alumno para crear su ficha.");
+    return;
+  }
 
+  const response = await fetch(`${API_BASE}/api/students/${studentId}/classes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      class_date: "",
+      class_time: "",
+      routine_type: "Nueva clase",
+      status: "draft",
+      planning_criteria: ""
+    })
+  });
+
+  if (!response.ok) throw new Error("No se pudo crear la clase");
+
+  const created = await response.json();
+  await loadClassesFromBackend();
+  await selectClass(created.id, true);
+}    
     async function saveSelectedClass(statusOverride) {
       if (!selectedClass || !activeBackendClassId) {
         alert("Seleccioná o agregá una clase primero.");
