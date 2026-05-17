@@ -1449,13 +1449,15 @@ return {
   const originalDate = String(selectedClass?.class_date || "");
   const newDate = document.getElementById("classDateInput").value || "";
   const todayKey = toISODate(startOfToday());
+  const currentStatus = normalizeStatus(selectedClass?.status);
 
-  let nextStatus = statusOverride || selectedClass?.status || "draft";
+  let nextStatus = statusOverride || currentStatus || "draft";
 
-  const wasTodayOrPast = originalDate && originalDate <= todayKey;
+  const wasPast = originalDate && originalDate < todayKey;
+  const wasTodayAndAlreadyProgrammed = originalDate === todayKey && currentStatus !== "draft";
   const movedToFuture = newDate && newDate > todayKey;
 
-  if (!statusOverride && wasTodayOrPast && movedToFuture) {
+  if (!statusOverride && movedToFuture && (wasPast || wasTodayAndAlreadyProgrammed)) {
     nextStatus = "rescheduled";
   }
 
@@ -1467,25 +1469,6 @@ return {
     planning_criteria: document.getElementById("classCriteriaInput").value || ""
   };
 }
-
-    async function createClassForStudent() {
-      if (!studentId) {
-        alert("Primero guardá los datos del alumno para crear su ficha.");
-        return;
-      }
-
-      const response = await fetch(`${API_BASE}/api/students/${studentId}/classes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          class_date: toISODate(startOfToday()),
-          class_time: "",
-          routine_type: "Nueva clase",
-          status: "draft",
-          planning_criteria: ""
-        })
-      });
-
       if (!response.ok) throw new Error("No se pudo crear la clase");
 
       const created = await response.json();
