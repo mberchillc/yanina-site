@@ -765,9 +765,8 @@
 </div>
 
             <div class="field">
-  <label for="edad">Fecha de nacimiento</label>
-  <input id="edad" type="text" placeholder="dd/mm/aaaa" inputmode="numeric" maxlength="10" value="" />
-</div>
+ <label for="edad">Fecha de nacimiento</label>
+<input id="edad" type="text" placeholder="aaaa-mm-dd" inputmode="numeric" maxlength="10" value="" />
 
             <div class="field">
               <label for="telefono">Teléfono</label>
@@ -1880,22 +1879,7 @@ if (backToTopBtn) {
       behavior: "smooth"
     });
   });
-}
-    const birthDateInput = document.getElementById("edad");
 
-if (birthDateInput) {
-  birthDateInput.addEventListener("input", () => {
-    let value = birthDateInput.value.replace(/\D/g, "").slice(0, 8);
-
-    if (value.length >= 5) {
-      value = value.replace(/^(\d{2})(\d{2})(\d{1,4}).*/, "$1/$2/$3");
-    } else if (value.length >= 3) {
-      value = value.replace(/^(\d{2})(\d{1,2}).*/, "$1/$2");
-    }
-
-    birthDateInput.value = value;
-  });
-}
     initializeStudentPage();
   </script>
 </body>
