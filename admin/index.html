@@ -158,7 +158,22 @@
     .empty-state { color: var(--muted); }
     .loading-state { color: var(--green-dark); font-weight: 800; }
     .btn-link-reset { font-family: inherit; }
+.birthday-alerts {
+  display: none;
+  margin-bottom: 22px;
+}
 
+.birthday-alert {
+  background: #fff;
+  border: 2px solid var(--green-main);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px 22px;
+  color: var(--green-dark);
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.4;
+}
     @media (max-width: 900px) {
       .topbar { align-items: flex-start; flex-direction: column; }
       .top-actions { justify-content: flex-start; }
@@ -198,7 +213,7 @@
       <div class="stat-card"><span>Clases esta semana</span><strong id="classesCount">—</strong></div>
       <div class="stat-card"><span>Rutinas listas</span><strong id="routinesCount">—</strong></div>
     </section>
-
+    <section class="birthday-alerts" id="birthdayAlerts"></section>
     <section class="students-grid" id="studentsGrid">
       <div class="loading-state">Cargando alumnos desde D1…</div>
     </section>
@@ -210,6 +225,7 @@
     const studentsCount = document.getElementById("studentsCount");
     const classesCount = document.getElementById("classesCount");
     const routinesCount = document.getElementById("routinesCount");
+    const birthdayAlerts = document.getElementById("birthdayAlerts");
     const logoutBtn = document.getElementById("logoutBtn");
 
     let allStudents = [];
@@ -236,7 +252,42 @@
     function getStudentFrequency(student) { return student.frequency || "Sin frecuencia cargada"; }
     function getStudentModality(student) { return student.modality || "Sin modalidad"; }
     function getLastMeasurements(student) { return student.last_measurements_date || student.lastMeasurementsDate || ""; }
+function getBirthDate(student) {
+  return student.birth_date || "";
+}
 
+function isBirthdayTomorrow(birthDate) {
+  if (!birthDate) return false;
+
+  const parts = String(birthDate).split("-");
+  if (parts.length !== 3) return false;
+
+  const month = Number(parts[1]);
+  const day = Number(parts[2]);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  return tomorrow.getMonth() + 1 === month && tomorrow.getDate() === day;
+}
+
+function renderBirthdayAlerts(students) {
+  if (!birthdayAlerts) return;
+
+  const birthdayStudents = students.filter(student => isBirthdayTomorrow(getBirthDate(student)));
+
+  if (!birthdayStudents.length) {
+    birthdayAlerts.style.display = "none";
+    birthdayAlerts.innerHTML = "";
+    return;
+  }
+
+  birthdayAlerts.style.display = "block";
+  birthdayAlerts.innerHTML = birthdayStudents.map(student => {
+    const name = escapeHtml(getStudentName(student));
+    return `<div class="birthday-alert">🎂 Mañana cumple ${name}</div>`;
+  }).join("");
+}
     function renderStudents(students) {
       if (!studentsGrid) return;
 
@@ -318,6 +369,7 @@
 
         allStudents = allStudents.filter(student => String(getStudentId(student)) !== String(studentId));
         updateStats(allStudents);
+        renderBirthdayAlerts(allStudents);
         renderStudents(allStudents);
       } catch (error) {
         console.error(error);
