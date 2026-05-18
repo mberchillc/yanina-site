@@ -1157,7 +1157,8 @@ return {
     function getStudentPayload() {
       return {
         full_name: document.getElementById("nombre")?.value || "",
-        age: document.getElementById("edad")?.value || "",
+        age: "",
+        birth_date: document.getElementById("edad")?.value || "",
         phone: document.getElementById("telefono")?.value || "",
         address: document.getElementById("domicilio")?.value || "",
         start_date: document.getElementById("fecha")?.value || "",
@@ -1173,7 +1174,7 @@ return {
 
     function fillStudentForm(student) {
       document.getElementById("nombre").value = student.full_name || "";
-      document.getElementById("edad").value = student.age || "";
+      document.getElementById("edad").value = student.birth_date || "";
       document.getElementById("telefono").value = student.phone || "";
       document.getElementById("domicilio").value = student.address || "";
       document.getElementById("fecha").value = student.start_date || "";
