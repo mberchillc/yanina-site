@@ -382,8 +382,9 @@ function renderBirthdayAlerts(students) {
     async function initDashboard() {
       try {
         allStudents = await loadStudentsFromBackend();
-        updateStats(allStudents);
-        renderStudents(allStudents);
+updateStats(allStudents);
+renderBirthdayAlerts(allStudents);
+renderStudents(allStudents);
       } catch (error) {
         console.error(error);
         if (studentsGrid) {
