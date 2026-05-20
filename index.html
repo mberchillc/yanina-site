@@ -64,91 +64,18 @@
       filter:drop-shadow(0 10px 18px rgba(0,0,0,.24));
     }
 
-    .main-nav{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:14px;
-      flex:1;
-    }
+    .main-nav{display:flex;align-items:center;justify-content:center;gap:14px;flex:1}
+    .main-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;border-radius:999px;padding:12px 22px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.035em;border:2px solid rgba(120,173,35,.55);color:var(--green-dark);background:#fff;box-shadow:0 10px 22px rgba(120,173,35,.10);transition:background .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease}
+    .main-nav a:hover{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;border-color:transparent;transform:translateY(-1px);box-shadow:0 12px 25px rgba(120,173,35,.23)}
 
-    .main-nav a{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height:44px;
-      border-radius:999px;
-      padding:12px 22px;
-      font-size:12px;
-      font-weight:800;
-      text-transform:uppercase;
-      letter-spacing:.035em;
-      border:2px solid rgba(120,173,35,.55);
-      color:var(--green-dark);
-      background:#fff;
-      box-shadow:0 10px 22px rgba(120,173,35,.10);
-      transition:background .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease;
-    }
-
-    .main-nav a:hover{
-      background:linear-gradient(135deg,var(--green),var(--green-dark));
-      color:#fff;
-      border-color:transparent;
-      transform:translateY(-1px);
-      box-shadow:0 12px 25px rgba(120,173,35,.23);
-    }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:999px;
-      padding:15px 28px;
-      font-size:13px;
-      font-weight:800;
-      text-transform:uppercase;
-      letter-spacing:.02em;
-    }
-
+    .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:15px 28px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.02em}
     .btn-primary{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;box-shadow:0 10px 22px rgba(120,173,35,.25)}
     .btn-outline{border:2px solid var(--green);color:var(--green-dark);background:#fff}
     .header-cta{min-height:48px;padding:14px 30px;flex:0 0 auto}
 
-    .hero{
-      min-height:720px;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      align-items:end;
-      gap:40px;
-      position:relative;
-      overflow:hidden;
-      padding-bottom:0;
-    }
-
-    .hero:before{
-      content:"";
-      position:absolute;
-      right:8%;
-      top:18%;
-      width:420px;
-      height:420px;
-      background:#e9f7fb;
-      border-radius:50%;
-      z-index:0;
-    }
-
-    .hero:after{
-      content:"";
-      position:absolute;
-      right:-8%;
-      bottom:0;
-      width:58%;
-      height:36%;
-      background:linear-gradient(135deg,#cdebdc,#83c8b7);
-      border-radius:70% 0 0 0;
-      z-index:0;
-    }
-
+    .hero{min-height:720px;display:grid;grid-template-columns:1fr 1fr;align-items:end;gap:40px;position:relative;overflow:hidden;padding-bottom:0}
+    .hero:before{content:"";position:absolute;right:8%;top:18%;width:420px;height:420px;background:#e9f7fb;border-radius:50%;z-index:0}
+    .hero:after{content:"";position:absolute;right:-8%;bottom:0;width:58%;height:36%;background:linear-gradient(135deg,#cdebdc,#83c8b7);border-radius:70% 0 0 0;z-index:0}
     .hero-copy{position:relative;z-index:2;align-self:center;padding-bottom:54px}
     .eyebrow{font-weight:800;color:#77b8d8;margin:0 0 24px}
     .eyebrow:before{content:"🍃";margin-right:8px;color:var(--green)}
@@ -157,92 +84,24 @@
     h1 span,h2 span{color:var(--green)}
     .hero-text{font-size:21px;line-height:1.65;max-width:600px}
     .hero-actions{display:flex;gap:22px;flex-wrap:wrap;margin-top:34px}
+    .hero-image{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:center;align-self:end;min-height:560px;margin-bottom:-2px;background:transparent}
+    .hero-image:before,.hero-image:after{display:none;content:none}
+    .hero-image img{width:min(520px,46vw);max-height:690px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 22px 35px rgba(20,40,40,.14));background:transparent}
 
-    .hero-image{
-      position:relative;
-      z-index:2;
-      display:flex;
-      align-items:flex-end;
-      justify-content:center;
-      align-self:end;
-      min-height:560px;
-      margin-bottom:-2px;
-      background:transparent;
-    }
-
-    .hero-image:before,
-    .hero-image:after{display:none;content:none}
-
-    .hero-image img{
-      width:min(520px,46vw);
-      max-height:690px;
-      object-fit:contain;
-      object-position:center bottom;
-      filter:drop-shadow(0 22px 35px rgba(20,40,40,.14));
-      background:transparent;
-    }
-
-    .pillars{
-      width:min(1380px,88vw);
-      margin:-2px auto 0;
-      background:#fff;
-      border-radius:22px;
-      box-shadow:var(--shadow);
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      position:relative;
-      z-index:5;
-      overflow:hidden;
-    }
-
-    .pillars article{
-      min-height:260px;
-      padding:34px 28px 32px;
-      border-right:1px solid #e5ece8;
-      display:grid;
-      grid-template-rows:112px 56px 1fr;
-      justify-items:center;
-      text-align:center;
-      align-content:start;
-      gap:14px;
-    }
-
+    .pillars{width:min(1380px,88vw);margin:-2px auto 0;background:#fff;border-radius:22px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(4,1fr);position:relative;z-index:5;overflow:hidden}
+    .pillars article{min-height:260px;padding:34px 28px 32px;border-right:1px solid #e5ece8;display:grid;grid-template-rows:112px 56px 1fr;justify-items:center;text-align:center;align-content:start;gap:14px}
     .pillars article:last-child{border-right:0}
-
-    .pillars article > img{
-      width:104px;
-      height:104px;
-      object-fit:contain;
-      object-position:center;
-      padding:12px;
-      border-radius:28px;
-      background:linear-gradient(180deg,#f5fbff 0%,#e7f2f1 100%);
-      box-shadow:0 10px 22px rgba(31,50,68,.08);
-    }
-
-    .pillars h3{
-      font-size:17px;
-      line-height:1.22;
-      text-transform:uppercase;
-      color:var(--navy);
-      margin:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height:46px;
-    }
-
+    .pillars article > img{width:104px;height:104px;object-fit:contain;object-position:center;padding:12px;border-radius:28px;background:linear-gradient(180deg,#f5fbff 0%,#e7f2f1 100%);box-shadow:0 10px 22px rgba(31,50,68,.08)}
+    .pillars h3{font-size:17px;line-height:1.22;text-transform:uppercase;color:var(--navy);margin:0;display:flex;align-items:center;justify-content:center;min-height:46px}
     .pillars p{line-height:1.58;margin:0;max-width:280px}
 
     .section-head{max-width:760px;margin-bottom:46px}
     .section-head h2,.contact h2{font-size:clamp(34px,4vw,54px);line-height:1.15}
-
     .about{display:grid;grid-template-columns:.9fr 1fr .8fr;gap:60px;align-items:center}
     .about-photo img{border-radius:18px;box-shadow:var(--shadow)}
     .about h2{font-size:clamp(34px,4vw,54px);line-height:1.15}
     .yanina-brand{font-family:Pacifico,cursive;font-weight:400;color:var(--green)}
     .quote{background:linear-gradient(135deg,#f2f6df,#fff);border-radius:20px;padding:45px;font-size:28px;line-height:1.35;color:var(--green-dark)}
-
     .plans,.testimonials{background:var(--soft)}
     .plan-grid,.testimonial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
     .plan-grid article,.testimonial-grid blockquote{margin:0;background:#fff;border-radius:20px;padding:36px;box-shadow:var(--shadow);line-height:1.65}
@@ -256,169 +115,43 @@
     .about-story-note{position:relative;z-index:2;margin-top:-34px;margin-left:24px;max-width:280px;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;border-radius:22px;padding:18px 20px;box-shadow:0 16px 36px rgba(95,148,25,.26)}
     .about-story-note strong{display:block;font-size:15px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;margin-bottom:6px}
     .about-story-note span{display:block;font-size:15px;line-height:1.45}
-
     .contact{text-align:center;background:linear-gradient(135deg,#f5f8e6,#fff)}
-    .contact p{font-size:20px}
-    .contact .btn{margin-top:24px}
+    .contact p{font-size:20px}.contact .btn{margin-top:24px}
 
-    @media(max-width:980px){
-      .about,.about-story{grid-template-columns:1fr;gap:34px}
-      .about-story-visual{order:-1;padding-top:0}
-      .about-story-photo-shell{margin:0 auto;max-width:520px}
-      .about-story-note{margin-left:auto;margin-right:auto;margin-top:-28px}
-    }
-
-    @media(max-width:900px){
-      .site-header{min-height:auto;padding:0 5vw 18px;gap:16px;flex-wrap:wrap;align-items:flex-start}
-      .brand{width:220px;min-height:105px;margin-left:-5vw;padding:18px 24px 24px 50px;border-radius:0 0 105px 0 / 0 0 95px 0}
-      .brand img{width:165px}
-      .main-nav{order:3;width:100%;flex:0 0 100%;flex-wrap:wrap;gap:10px}
-      .main-nav a{min-height:40px;padding:10px 16px;font-size:11px}
-      .hero{grid-template-columns:1fr;min-height:auto;padding-top:50px}
-      .hero-copy{padding-bottom:20px}
-      .hero-image{min-height:auto;padding-top:20px}
-      .hero-image img{width:min(360px,86vw)}
-      .pillars,.plan-grid,.testimonial-grid{grid-template-columns:1fr}
-      .pillars article{border-right:0;border-bottom:1px solid #e5ece8;min-height:auto;grid-template-rows:auto auto auto;padding:32px 26px}
-      .pillars article:last-child{border-bottom:0}
-    }
-
-    @media(max-width:700px){
-      .site-header{flex-direction:column;padding:0 6vw 28px;gap:22px}
-      .brand{width:100vw;max-width:340px;min-height:150px;margin-left:-6vw;padding:24px 34px 30px 56px;border-radius:0 0 130px 0 / 0 0 115px 0}
-      .brand img{width:215px}
-      .header-cta{order:2;margin:0 auto;width:min(310px,86vw)}
-      .main-nav{justify-content:center;row-gap:18px;column-gap:14px;margin-top:8px;margin-bottom:28px}
-      h1{font-size:clamp(44px,15vw,68px)}
-      .hero-actions{flex-direction:column;gap:18px;align-items:flex-start}
-      .hero-actions .btn{width:min(420px,100%)}
-      .pillars{margin:0 auto}
-    }
+    @media(max-width:980px){.about,.about-story{grid-template-columns:1fr;gap:34px}.about-story-visual{order:-1;padding-top:0}.about-story-photo-shell{margin:0 auto;max-width:520px}.about-story-note{margin-left:auto;margin-right:auto;margin-top:-28px}}
+    @media(max-width:900px){.site-header{min-height:auto;padding:0 5vw 18px;gap:16px;flex-wrap:wrap;align-items:flex-start}.brand{width:220px;min-height:105px;margin-left:-5vw;padding:18px 24px 24px 50px;border-radius:0 0 105px 0 / 0 0 95px 0}.brand img{width:165px}.main-nav{order:3;width:100%;flex:0 0 100%;flex-wrap:wrap;gap:10px}.main-nav a{min-height:40px;padding:10px 16px;font-size:11px}.hero{grid-template-columns:1fr;min-height:auto;padding-top:50px}.hero-copy{padding-bottom:20px}.hero-image{min-height:auto;padding-top:20px}.hero-image img{width:min(360px,86vw)}.pillars,.plan-grid,.testimonial-grid{grid-template-columns:1fr}.pillars article{border-right:0;border-bottom:1px solid #e5ece8;min-height:auto;grid-template-rows:auto auto auto;padding:32px 26px}.pillars article:last-child{border-bottom:0}}
+    @media(max-width:700px){.site-header{flex-direction:column;padding:0 6vw 28px;gap:22px}.brand{width:100vw;max-width:340px;min-height:150px;margin-left:-6vw;padding:24px 34px 30px 56px;border-radius:0 0 130px 0 / 0 0 115px 0}.brand img{width:215px}.header-cta{order:2;margin:0 auto;width:min(310px,86vw)}.main-nav{justify-content:center;row-gap:18px;column-gap:14px;margin-top:8px;margin-bottom:28px}h1{font-size:clamp(44px,15vw,68px)}.hero-actions{flex-direction:column;gap:18px;align-items:flex-start}.hero-actions .btn{width:min(420px,100%)}.pillars{margin:0 auto}}
   </style>
 </head>
-
 <body>
   <header class="site-header">
-    <a class="brand" href="#home" aria-label="Yanina Trainer & Nutrition Coach">
-      <img src="assets/logo-cropped.png" alt="Yanina Trainer & Nutrition Coach" />
-    </a>
-
-    <nav class="main-nav" aria-label="Navegación principal">
-      <a href="#servicios">Servicios</a>
-      <a href="#planes">Planes</a>
-      <a href="#testimonios">Testimonios</a>
-      <a href="#sobre-mi">Sobre mí</a>
-      <a href="/admin/login.html">Plataforma</a>
-    </nav>
-
+    <a class="brand" href="#home" aria-label="Yanina Trainer & Nutrition Coach"><img src="assets/logo-cropped.png" alt="Yanina Trainer & Nutrition Coach" /></a>
+    <nav class="main-nav" aria-label="Navegación principal"><a href="#servicios">Servicios</a><a href="#planes">Planes</a><a href="#testimonios">Testimonios</a><a href="#sobre-mi">Sobre mí</a><a href="/admin/login.html">Plataforma</a></nav>
     <a class="btn btn-primary header-cta" href="mailto:yanina.volpe@icloud.com?subject=Consulta%20desde%20yaninatrainer.net">Comencemos</a>
   </header>
-
   <main id="home">
     <section class="hero section-pad">
-      <div class="hero-copy">
-        <p class="eyebrow">Entrenamiento y alimentación consciente</p>
-        <h1>Haz lo que <span>te hace bien</span></h1>
-        <p class="hero-text">Te ayudo a construir hábitos saludables y sostenibles para que te sientas bien, por dentro y por fuera.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#servicios">Conocé mis servicios</a>
-          <a class="btn btn-outline" href="https://www.instagram.com/yaninatrainer/" target="_blank" rel="noreferrer">Seguíme en Instagram</a>
-        </div>
-      </div>
-
-      <div class="hero-image" aria-label="Yanina Trainer">
-        <img src="assets/yani-hero-transparent.png" alt="Yanina Trainer">
-      </div>
+      <div class="hero-copy"><p class="eyebrow">Entrenamiento y alimentación consciente</p><h1>Haz lo que <span>te hace bien</span></h1><p class="hero-text">Te ayudo a construir hábitos saludables y sostenibles para que te sientas bien, por dentro y por fuera.</p><div class="hero-actions"><a class="btn btn-primary" href="#servicios">Conocé mis servicios</a><a class="btn btn-outline" href="https://www.instagram.com/yaninatrainer/" target="_blank" rel="noreferrer">Seguíme en Instagram</a></div></div>
+      <div class="hero-image" aria-label="Yanina Trainer"><img src="assets/yani-hero-transparent.png" alt="Yanina Trainer"></div>
     </section>
-
     <section id="servicios" class="pillars" aria-label="Áreas de trabajo">
-      <article>
-        <img src="assets/icon-mediciones.png" alt="Mediciones y monitoreo">
-        <h3>Mediciones y monitoreo</h3>
-        <p>Evaluamos tu estado físico y composición corporal para planificar estrategias efectivas y hacer seguimiento de tu progreso.</p>
-      </article>
-
-      <article>
-        <img src="assets/icon-entrenamiento.png" alt="Entrenamiento personal">
-        <h3>Entrenamiento personal</h3>
-        <p>Rutinas personalizadas y funcionales, adaptadas a tu nivel, tus objetivos y tu estilo de vida.</p>
-      </article>
-
-      <article>
-        <img src="assets/icon-alimentacion.png" alt="Planes de alimentación">
-        <h3>Planes de alimentación</h3>
-        <p>Planes flexibles y realistas, sin dietas restrictivas. Aprendé a comer mejor, disfrutar y nutrir tu cuerpo con conciencia.</p>
-      </article>
-
-      <article>
-        <img src="assets/icon-seguimiento.png" alt="Seguimiento">
-        <h3>Seguimiento</h3>
-        <p>Acompañamiento continuo, ajustes y motivación para que te mantengas enfocada y alcances tus objetivos.</p>
-      </article>
+      <article><img src="assets/icon-mediciones.png" alt="Mediciones y monitoreo"><h3>Mediciones y monitoreo</h3><p>Evaluamos tu estado físico y composición corporal para planificar estrategias efectivas y hacer seguimiento de tu progreso.</p></article>
+      <article><img src="assets/icon-entrenamiento.png" alt="Entrenamiento personal"><h3>Entrenamiento personal</h3><p>Rutinas personalizadas y funcionales, adaptadas a tu nivel, tus objetivos y tu estilo de vida.</p></article>
+      <article><img src="assets/icon-alimentacion.png" alt="Planes de alimentación"><h3>Planes de alimentación</h3><p>Planes flexibles y realistas, sin dietas restrictivas. Aprendé a comer mejor, disfrutar y nutrir tu cuerpo con conciencia.</p></article>
+      <article><img src="assets/icon-seguimiento.png" alt="Seguimiento"><h3>Seguimiento</h3><p>Acompañamiento continuo, ajustes y motivación para que te mantengas enfocada y alcances tus objetivos.</p></article>
     </section>
-
     <section id="presentacion" class="about section-pad">
-      <div>
-        <h2>Soy <span class="yanina-brand">Yanina</span>, tu entrenadora y aliada</h2>
-        <p>Mi objetivo es ayudarte a construir un estilo de vida saludable y sostenible, que se adapte a vos y te permita sentirte bien todos los días.</p>
-        <p>Creo en el equilibrio, en el disfrute y en el poder de pequeños hábitos que generan grandes cambios.</p>
-        <a class="btn btn-outline" href="#sobre-mi">Mi visión</a>
-      </div>
-      <div class="about-photo">
-        <img src="assets/about-yanina.png" alt="Yanina Trainer" />
-      </div>
+      <div><h2>Soy <span class="yanina-brand">Yanina</span>, tu entrenadora y aliada</h2><p>Mi objetivo es ayudarte a construir un estilo de vida saludable y sostenible, que se adapte a vos y te permita sentirte bien todos los días.</p><p>Creo en el equilibrio, en el disfrute y en el poder de pequeños hábitos que generan grandes cambios.</p><a class="btn btn-outline" href="#sobre-mi">Mi visión</a></div>
+      <div class="about-photo"><img src="assets/about-yanina.png" alt="Yanina Trainer" /></div>
       <div class="quote">Entrenar también es una forma de cuidarte.</div>
     </section>
-
-    <section id="planes" class="section-pad plans">
-      <div class="section-head">
-        <h2>Planes</h2>
-        <p>Elegí el formato que mejor se adapte a tu estilo de vida.</p>
-      </div>
-
-      <div class="plan-grid">
-        <article><h3>Online</h3><p>Entrenamiento y seguimiento remoto.</p></article>
-        <article><h3>Presencial</h3><p>Sesiones personalizadas en Miami.</p></article>
-        <article><h3>Mixto</h3><p>Combinación de entrenamiento presencial y online.</p></article>
-      </div>
-    </section>
-
-    <section id="testimonios" class="section-pad testimonials">
-      <div class="section-head"><h2>Testimonios</h2></div>
-      <div class="testimonial-grid">
-        <blockquote>“Logré cambiar mis hábitos sin presión. Me siento mejor que nunca.”</blockquote>
-        <blockquote>“Entrenar dejó de ser una obligación y pasó a ser parte de mi vida.”</blockquote>
-        <blockquote>“Resultados reales, sostenibles y acompañamiento constante.”</blockquote>
-      </div>
-    </section>
-
+    <section id="planes" class="section-pad plans"><div class="section-head"><h2>Planes</h2><p>Elegí el formato que mejor se adapte a tu estilo de vida.</p></div><div class="plan-grid"><article><h3>Online</h3><p>Entrenamiento y seguimiento remoto.</p></article><article><h3>Presencial</h3><p>Sesiones personalizadas en Miami.</p></article><article><h3>Mixto</h3><p>Combinación de entrenamiento presencial y online.</p></article></div></section>
+    <section id="testimonios" class="section-pad testimonials"><div class="section-head"><h2>Testimonios</h2></div><div class="testimonial-grid"><blockquote>“Logré cambiar mis hábitos sin presión. Me siento mejor que nunca.”</blockquote><blockquote>“Entrenar dejó de ser una obligación y pasó a ser parte de mi vida.”</blockquote><blockquote>“Resultados reales, sostenibles y acompañamiento constante.”</blockquote></div></section>
     <section id="sobre-mi" class="section-pad scroll-target about-story">
-      <div class="about-story-copy">
-        <h2>Sobre mí</h2>
-        <p>Hace más de 20 años que tengo la misma motivación: acompañar a quienes deciden vivir mejor. Desde que me formé en Isalud, en Argentina, de la mano del Dr. Alberto Cormillot, entendí que el ejercicio físico y la alimentación son dos aspectos complementarios y fundamentales para cambiar la forma en que vivimos.</p>
-        <p>Con la industrialización de los alimentos y la vida sedentaria de la sociedad actual, sentirnos bien se volvió un desafío. Necesitamos tener presente que nuestro cuerpo es nuestra casa, y que requiere cuidado. Ocuparnos de nuestra salud empieza cuando mantenemos esa casa en buenas condiciones.</p>
-        <p>Al incorporar los nutrientes que verdaderamente necesitamos, empezamos a sentirnos mejor. Y cuando sumamos movimiento —aunque al principio nos cueste, como todo cambio— en poco tiempo vemos resultados.</p>
-        <p>Mi enfoque trabaja sobre un concepto amplio de salud, vinculado con el bienestar. Si nos alimentamos bien y hacemos ejercicio de acuerdo con nuestras necesidades, podemos prevenir enfermedades y vivir una vida más plena.</p>
-        <p>Llevar una vida saludable no significa agrandar músculos ni privarnos del placer de comer lo que nos gusta. Tiene que ver con ser conscientes de lo que realmente necesitamos para vivir mejor todos los días.</p>
-        <p>Además, el acompañamiento profesional es fundamental para que cada persona que inicia este camino no se sienta sola. Por eso quienes me eligen desde hace tanto tiempo expresan su gratitud, y ese es mi combustible para seguir capacitándome.</p>
-      </div>
-
-      <div class="about-story-visual">
-        <div class="about-story-photo-shell">
-          <img src="assets/about-yanina.png" alt="Yanina sonriendo" />
-        </div>
-        <div class="about-story-note">
-          <strong>Más de 20 años</strong>
-          <span>Acompañando procesos reales de cambio, salud y bienestar.</span>
-        </div>
-      </div>
+      <div class="about-story-copy"><h2>Sobre mí</h2><p>Hace más de 20 años que tengo la misma motivación: acompañar a quienes deciden vivir mejor. Desde que me formé en Isalud, en Argentina, de la mano del Dr. Alberto Cormillot, entendí que el ejercicio físico y la alimentación son dos aspectos complementarios y fundamentales para cambiar la forma en que vivimos.</p><p>Con la industrialización de los alimentos y la vida sedentaria de la sociedad actual, sentirnos bien se volvió un desafío. Necesitamos tener presente que nuestro cuerpo es nuestra casa, y que requiere cuidado. Ocuparnos de nuestra salud empieza cuando mantenemos esa casa en buenas condiciones.</p><p>Al incorporar los nutrientes que verdaderamente necesitamos, empezamos a sentirnos mejor. Y cuando sumamos movimiento —aunque al principio nos cueste, como todo cambio— en poco tiempo vemos resultados.</p><p>Mi enfoque trabaja sobre un concepto amplio de salud, vinculado con el bienestar. Si nos alimentamos bien y hacemos ejercicio de acuerdo con nuestras necesidades, podemos prevenir enfermedades y vivir una vida más plena.</p><p>Llevar una vida saludable no significa agrandar músculos ni privarnos del placer de comer lo que nos gusta. Tiene que ver con ser conscientes de lo que realmente necesitamos para vivir mejor todos los días.</p><p>Además, el acompañamiento profesional es fundamental para que cada persona que inicia este camino no se sienta sola. Por eso quienes me eligen desde hace tanto tiempo expresan su gratitud, y ese es mi combustible para seguir capacitándome.</p></div>
+      <div class="about-story-visual"><div class="about-story-photo-shell"><img src="assets/Yani-pasto.png" alt="Yanina sonriendo al aire libre" /></div><div class="about-story-note"><strong>Más de 20 años</strong><span>Acompañando procesos reales de cambio, salud y bienestar.</span></div></div>
     </section>
-
-    <section id="contacto" class="section-pad contact">
-      <h2>Empecemos</h2>
-      <p>Escribime y armamos un plan para vos.</p>
-      <a class="btn btn-primary" href="mailto:yanina.volpe@icloud.com?subject=Consulta%20desde%20yaninatrainer.net">Comencemos hoy</a>
-    </section>
+    <section id="contacto" class="section-pad contact"><h2>Empecemos</h2><p>Escribime y armamos un plan para vos.</p><a class="btn btn-primary" href="mailto:yanina.volpe@icloud.com?subject=Consulta%20desde%20yaninatrainer.net">Comencemos hoy</a></section>
   </main>
 </body>
 </html>
