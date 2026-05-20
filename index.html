@@ -609,37 +609,22 @@
 
 <style>
   /* AJUSTE FINAL — SOLO AGRANDA LA MARCA, NO EL BLOB */
-  /* AJUSTE FINAL — MARCA PROPORCIONADA, UN SOLO BLOB */
-.site-header .brand{
-  overflow:hidden !important;
-}
-
-.site-header .brand::before{
+  /* ELIMINAR DOBLE BLOB — mantener tamaño actual */
+.site-header .brand::before,
+.site-header .brand::after,
+.brand::before,
+.brand::after{
+  content:none !important;
   display:none !important;
+  background:none !important;
+  border:0 !important;
+  box-shadow:none !important;
 }
 
-.site-header .brand img{
-  width:170px !important;
-  max-width:none !important;
-  height:auto !important;
-  transform:none !important;
-  filter:drop-shadow(0 8px 14px rgba(0,0,0,.22)) !important;
-  mix-blend-mode:normal !important;
-}
-
-@media(max-width:900px){
-  .site-header .brand{
-    width:220px !important;
-    min-height:105px !important;
-    padding:18px 24px 24px 50px !important;
-    overflow:hidden !important;
-  }
-
-  .site-header .brand img{
-    width:120px !important;
-    max-width:none !important;
-    transform:none !important;
-  }
+.site-header .brand{
+  outline:0 !important;
+  border:0 !important;
+  background:radial-gradient(circle at 35% 28%, #1f6f48 0%, #14555b 48%, #083a40 100%) !important;
 }
 /* Blog home */
 .blog-grid {
