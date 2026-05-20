@@ -609,26 +609,38 @@
 
 <style>
   /* AJUSTE FINAL — SOLO AGRANDA LA MARCA, NO EL BLOB */
+  /* AJUSTE FINAL — MARCA PROPORCIONADA, UN SOLO BLOB */
+.site-header .brand{
+  overflow:hidden !important;
+}
+
+.site-header .brand::before{
+  display:none !important;
+}
+
+.site-header .brand img{
+  width:170px !important;
+  max-width:none !important;
+  height:auto !important;
+  transform:none !important;
+  filter:drop-shadow(0 8px 14px rgba(0,0,0,.22)) !important;
+  mix-blend-mode:normal !important;
+}
+
+@media(max-width:900px){
   .site-header .brand{
-    overflow:visible !important;
+    width:220px !important;
+    min-height:105px !important;
+    padding:18px 24px 24px 50px !important;
+    overflow:hidden !important;
   }
 
   .site-header .brand img{
-    width:245px !important;
+    width:120px !important;
     max-width:none !important;
-    height:auto !important;
-    transform:scale(2.05) !important;
-    transform-origin:center center !important;
-    filter:drop-shadow(0 10px 18px rgba(0,0,0,.24)) !important;
-    mix-blend-mode:normal !important;
+    transform:none !important;
   }
-
-  @media(max-width:900px){
-    .site-header .brand img{
-      width:165px !important;
-      transform:scale(1.85) !important;
-    }
-  }
+}
 /* Blog home */
 .blog-grid {
   display: grid;
