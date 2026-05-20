@@ -772,6 +772,49 @@
     width:min(420px, 100%) !important;
   }
 }
+/* ICONOS PILLARS / SERVICIOS */
+.pillars article{
+  display:grid !important;
+  grid-template-columns:130px 1fr !important;
+  column-gap:28px !important;
+  align-items:center !important;
+  text-align:left !important;
+}
+
+.pillars article > img{
+  width:96px !important;
+  height:96px !important;
+  object-fit:contain !important;
+  object-position:center !important;
+  display:block !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  background:transparent !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+
+.pillars article h3{
+  margin:0 0 10px !important;
+}
+
+.pillars article p{
+  margin:0 !important;
+}
+
+@media(max-width:900px){
+  .pillars article{
+    grid-template-columns:1fr !important;
+    text-align:center !important;
+    justify-items:center !important;
+    row-gap:16px !important;
+  }
+
+  .pillars article > img{
+    width:90px !important;
+    height:90px !important;
+  }
+}
 </style>
 
 </head>
