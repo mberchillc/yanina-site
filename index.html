@@ -408,6 +408,44 @@
     transform-origin: center center !important;
   }
 }
+/* HERO — círculo celeste + un solo blob verde */
+.hero::before{
+  display:block !important;
+  content:"" !important;
+  position:absolute !important;
+  right:8% !important;
+  top:18% !important;
+  width:420px !important;
+  height:420px !important;
+  background:#e9f7fb !important;
+  border-radius:50% !important;
+  z-index:0 !important;
+}
+
+.hero::after{
+  display:block !important;
+  content:"" !important;
+  position:absolute !important;
+  right:-8% !important;
+  bottom:7% !important;
+  width:58% !important;
+  height:36% !important;
+  background:linear-gradient(135deg,#cdebdc,#83c8b7) !important;
+  border-radius:70% 0 0 0 !important;
+  z-index:0 !important;
+}
+
+.hero-copy,
+.hero-image{
+  position:relative !important;
+  z-index:2 !important;
+}
+
+.hero-image::before,
+.hero-image::after{
+  display:none !important;
+  content:none !important;
+}
 </style>
 
 
