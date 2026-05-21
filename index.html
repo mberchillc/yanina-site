@@ -71,6 +71,119 @@
     font-size:10.5px !important;
   }
 }
+  /* VIDEO TESTIMONIALS */
+.video-testimonials{
+  position:relative;
+  z-index:1;
+  margin-top:58px;
+  padding:34px;
+  border-radius:32px;
+  background:linear-gradient(135deg,#f3f8ef 0%,#ffffff 100%);
+  border:1px solid #e2eedc;
+  box-shadow:0 18px 44px rgba(31,50,68,.08);
+}
+
+.video-testimonials-head{
+  max-width:760px;
+  margin-bottom:28px;
+}
+
+.video-testimonials-head h3{
+  font-size:clamp(28px,3vw,42px);
+  line-height:1.12;
+}
+
+.video-testimonials-head p{
+  font-size:18px;
+  line-height:1.6;
+  margin:12px 0 0;
+}
+
+.video-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+  align-items:start;
+}
+
+.video-card{
+  background:#fff;
+  border-radius:28px;
+  padding:14px 14px 20px;
+  box-shadow:0 16px 38px rgba(31,50,68,.10);
+  border:1px solid rgba(115,173,19,.18);
+}
+
+.video-frame{
+  overflow:hidden;
+  border-radius:22px;
+  background:#0f172a;
+  aspect-ratio:9/16;
+}
+
+.video-frame video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.video-card h4{
+  margin:16px 4px 6px;
+  font-size:18px;
+  color:var(--navy);
+}
+
+.video-card p{
+  margin:0 4px;
+  font-size:15px;
+  line-height:1.5;
+}
+
+.video-note{
+  display:inline-flex;
+  margin-top:12px;
+  padding:7px 11px;
+  border-radius:999px;
+  background:#eef7ea;
+  color:var(--green-dark);
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+@media(max-width:980px){
+  .video-grid{
+    grid-template-columns:1fr;
+    max-width:430px;
+    margin:0 auto;
+  }
+
+  .video-testimonials{
+    padding:24px;
+  }
+}
+
+@media(max-width:700px){
+  .video-testimonials{
+    margin-top:42px;
+    padding:20px;
+    border-radius:24px;
+  }
+
+  .video-testimonials-head p{
+    font-size:16px;
+  }
+
+  .video-card{
+    border-radius:24px;
+  }
+
+  .video-frame{
+    border-radius:19px;
+  }
+}
   </style>
 </head>
 <body>
@@ -80,6 +193,50 @@
     <section id="servicios" class="pillars" aria-label="Áreas de trabajo"><article><img src="assets/icon-mediciones.png" alt="Mediciones y monitoreo"><h3>Mediciones y monitoreo</h3><p>Evaluamos tu estado físico y composición corporal para planificar estrategias efectivas y hacer seguimiento de tu progreso.</p></article><article><img src="assets/icon-entrenamiento.png" alt="Entrenamiento personal"><h3>Entrenamiento personal</h3><p>Rutinas personalizadas y funcionales, adaptadas a tu nivel, tus objetivos y tu estilo de vida.</p></article><article><img src="assets/icon-alimentacion.png" alt="Planes de alimentación"><h3>Planes de alimentación</h3><p>Planes flexibles y realistas, sin dietas restrictivas. Aprendé a comer mejor, disfrutar y nutrir tu cuerpo con conciencia.</p></article><article><img src="assets/icon-seguimiento.png" alt="Seguimiento"><h3>Seguimiento</h3><p>Acompañamiento continuo, ajustes y motivación para que te mantengas enfocada y alcances tus objetivos.</p></article></section>
     <section id="presentacion" class="about section-pad"><div><h2>Soy <span class="yanina-brand">Yanina</span>, tu entrenadora y aliada</h2><p>Mi objetivo es ayudarte a construir un estilo de vida saludable y sostenible, que se adapte a vos y te permita sentirte bien todos los días.</p><p>Creo en el equilibrio, en el disfrute y en el poder de pequeños hábitos que generan grandes cambios.</p><a class="btn btn-outline" href="#sobre-mi">Mi visión</a></div><div class="about-photo"><img src="assets/about-yanina.png" alt="Yanina Trainer" /></div><div class="quote">Entrenar también es una forma de cuidarte.</div></section>
     <section id="testimonios" class="section-pad testimonials"><div class="section-head"><h2>Resultados reales, en palabras de quienes entrenaron conmigo</h2><p>Historias de alumnas y alumnos que encontraron acompañamiento, constancia y cambios sostenibles.</p></div><div class="testimonial-grid"><article class="testimonial-card featured"><span class="testimonial-mark">“</span><div class="testimonial-top"><img src="assets/testimonio-oscar-teran.png" alt="Oscar Teran"><div><h3>Oscar Teran</h3><span class="testimonial-tag">Acompañamiento y motivación</span></div></div><p class="testimonial-text">Lo que distingue a Yanina es su capacidad para motivar de una manera no intimidante, lo que realmente facilita el proceso de ponerse en forma. Con ella, te sientes apoyado y guiado en cada paso del camino. Si estás buscando un cambio en tu estilo de vida o simplemente quieres sentirte mejor, Yanina es la mejor entrenadora personal que puedes tener.</p><p class="testimonial-text">Quiero recomendar a Yanina a cualquier persona que busque ponerse en forma o mejorar su salud, sin importar su nivel físico actual. Después de que mi esposa y yo tuvimos a nuestro primer hijo, trabajamos con Yanina, y su calidad humana y profesional nos impresionó profundamente. Su compromiso, puntualidad, energía y actitud positiva hicieron que cada sesión fuera no solo efectiva, sino también agradable.</p><p class="testimonial-text"><strong>¡Altamente recomendada!</strong></p></article><article class="testimonial-card"><span class="testimonial-mark">“</span><div class="testimonial-top"><img src="assets/testimonio-natalia-baffetti.png" alt="Natalia Baffetti"><div><h3>Natalia Baffetti</h3><span class="testimonial-tag">Energía y dinámica</span></div></div><p class="testimonial-text">Puedo decir que mi experiencia de entrenamiento con Yanina es excelente. Siempre está atenta a la necesidad de cada una y a cómo implementar diferentes ejercicios para que las clases sean dinámicas y entretenidas. Desde que tomo sus clases me siento mucho mejor y con más energía después de cada entrenamiento. La súper recomiendo.</p></article><article class="testimonial-card"><span class="testimonial-mark">“</span><div class="testimonial-top"><img src="assets/testimonio-nazareth.png" alt="Nazareth Stessens"><div><h3>Nazareth Stessens</h3><span class="testimonial-tag">Cambio de hábitos</span></div></div><p class="testimonial-text">Para mí, el entrenamiento con Yanina ha marcado un antes y un después en mi vida. Nunca me había gustado el ejercicio, pero ahora se ha convertido en algo que realmente necesito. Lo que más valoro es que, aunque trabaja en grupo, siempre se toma el tiempo para que cada una de nosotras pueda avanzar a su propio ritmo.</p></article></div><h3 class="testimonial-more-heading">Más experiencias de alumnas</h3><div class="testimonial-more-grid"><article class="testimonial-card secondary"><span class="testimonial-mark">“</span><div class="testimonial-top"><img src="assets/testimonio-anto.png" alt="Antonella Mangiaterra"><div><h3>Antonella Mangiaterra</h3><span class="testimonial-tag">A distancia</span></div></div><p class="testimonial-text">En total entrené e hice un plan de alimentación con Yani durante muchos años. Al inicio todo comenzó con un plan de cambios de hábitos con el objetivo de mejorar mi calidad de vida y bajar de peso. Logré cambiar mi manera de alimentarme, aumentar la actividad física y bajar 10 kg. Luego Yani me acompañó en distintos momentos ayudándome a mantener eso hasta que retomamos el mismo plan luego de tener a mi bebé y en plena pandemia. Logramos bajar colesterol, bajar de peso y el nivel de estrés que todo ese momento implicaba. Amo a Yani, y ahora ella en Miami y yo en Italia, sigo entrenando con ella a distancia, no la cambio por nada.</p></article><article class="testimonial-card secondary"><span class="testimonial-mark">“</span><div class="testimonial-top"><img src="assets/testimonio-josefina-cordoba.png" alt="Josefina Córdoba"><div><h3>Josefina Córdoba</h3><span class="testimonial-tag">Entrenamiento virtual</span></div></div><p class="testimonial-text">Hola Yani querida, el año que entrené con vos fue la primera vez que pude sostener tanto tiempo ese tipo de gimnasia con pesas y ejercicio personalizado. Al principio me costaba, pero vi los resultados tan rápido en mi cuerpo y mi energía que eso me enganchó y motivó. Sumado a tu plus de buena onda y carisma para hacer súper disfrutable cada clase, esperaba la hora del encuentro virtual con ansias. De solo recordarlo me dan ganas de retomar. Sos grosa como personal trainer y divina como persona, transmitís tu pasión poniendo lo mejor en cada clase. Amé ese año de entrenamiento funcional con vos.</p></article><article class="testimonial-card secondary"><span class="testimonial-mark">“</span><div class="testimonial-top"><img src="assets/testimonio-bel.png" alt="Belén"><div><h3>Belén</h3><span class="testimonial-tag">Acompañamiento</span></div></div><p class="testimonial-text">Lo que más destaco de ser alumna de Yani es su acompañamiento personalizado a domicilio. Fue la única vez que pude sostener un entrenamiento, ya que no es de mi agrado, pero Yani es única, con paciencia de oro. Con sus clases me sentía ágil y vital. Siempre marcando los movimientos adecuados, motivándome cuando sentía que ya no podía. Te extraño Yani.</p></article><article class="testimonial-card secondary"><span class="testimonial-mark">“</span><div class="testimonial-top"><img src="assets/testimonio-florencia.png" alt="Florencia"><div><h3>Florencia</h3><span class="testimonial-tag">Resultados</span></div></div><p class="testimonial-text">Yani fue una gran profesora. Mientras entrené con ella me ayudó a fortalecer todo el cuerpo y enseguida empecé a notar diferencia. Aparte me ayudó en mi alimentación para poder acompañar el entrenamiento y obtener los mejores resultados. Siempre con una sonrisa. La extrañamos en Argentina.</p></article></div></section>
+    <div class="video-testimonials">
+  <div class="video-testimonials-head">
+    <h3>Acompañamiento + motivación</h3>
+    <p>Videos reales de alumnas: recomendaciones, seguimiento y momentos cotidianos que muestran el vínculo detrás del entrenamiento.</p>
+  </div>
+
+  <div class="video-grid">
+    <article class="video-card">
+      <div class="video-frame">
+        <video controls playsinline preload="metadata">
+          <source src="assets/testimonio-video-1.mp4" type="video/mp4">
+          Tu navegador no puede reproducir este video.
+        </video>
+      </div>
+      <h4>Recomendación en video</h4>
+      <p>Una alumna comparte su experiencia entrenando con Yanina.</p>
+      <span class="video-note">Testimonio real</span>
+    </article>
+
+    <article class="video-card">
+      <div class="video-frame">
+        <video controls playsinline preload="metadata">
+          <source src="assets/testimonio-video-2.mp4" type="video/mp4">
+          Tu navegador no puede reproducir este video.
+        </video>
+      </div>
+      <h4>Experiencia personal</h4>
+      <p>La voz directa de quienes encontraron constancia y acompañamiento.</p>
+      <span class="video-note">En primera persona</span>
+    </article>
+
+    <article class="video-card">
+      <div class="video-frame">
+        <video controls playsinline preload="metadata">
+          <source src="assets/testimonio-entrenamiento-1.mp4" type="video/mp4">
+          Tu navegador no puede reproducir este video.
+        </video>
+      </div>
+      <h4>Seguimiento cotidiano</h4>
+      <p>Una muestra simple del trabajo a distancia y la motivación diaria.</p>
+      <span class="video-note">Acompañamiento</span>
+    </article>
+  </div>
+</div>
     <section id="planes" class="section-pad plans"><div class="section-head"><h2>Planes</h2><p>Elegí el formato que mejor se adapte a tu estilo de vida.</p></div><div class="plan-grid"><article><h3>Online</h3><p>Entrenamiento y seguimiento remoto.</p></article><article><h3>Presencial</h3><p>Sesiones personalizadas en Miami.</p></article><article><h3>Mixto</h3><p>Combinación de entrenamiento presencial y online.</p></article></div></section>
     <section id="sobre-mi" class="section-pad scroll-target about-story"><div class="about-story-copy"><h2>Sobre mí</h2><p>Hace más de 20 años que tengo la misma motivación: acompañar a quienes deciden vivir mejor. Desde que me formé en Isalud, en Argentina, de la mano del Dr. Alberto Cormillot, entendí que el ejercicio físico y la alimentación son dos aspectos complementarios y fundamentales para cambiar la forma en que vivimos.</p><p>Con la industrialización de los alimentos y la vida sedentaria de la sociedad actual, sentirnos bien se volvió un desafío. Necesitamos tener presente que nuestro cuerpo es nuestra casa, y que requiere cuidado. Ocuparnos de nuestra salud empieza cuando mantenemos esa casa en buenas condiciones.</p><p>Al incorporar los nutrientes que verdaderamente necesitamos, empezamos a sentirnos mejor. Y cuando sumamos movimiento —aunque al principio nos cueste, como todo cambio— en poco tiempo vemos resultados.</p><p>Mi enfoque trabaja sobre un concepto amplio de salud, vinculado con el bienestar. Si nos alimentamos bien y hacemos ejercicio de acuerdo con nuestras necesidades, podemos prevenir enfermedades y vivir una vida más plena.</p><p>Llevar una vida saludable no significa agrandar músculos ni privarnos del placer de comer lo que nos gusta. Tiene que ver con ser conscientes de lo que realmente necesitamos para vivir mejor todos los días.</p><p>Además, el acompañamiento profesional es fundamental para que cada persona que inicia este camino no se sienta sola. Por eso quienes me eligen desde hace tanto tiempo expresan su gratitud, y ese es mi combustible para seguir capacitándome.</p></div><div class="about-story-visual"><div class="about-story-photo-shell"><img src="assets/Yani-pasto.png" alt="Yanina sonriendo al aire libre" /></div><div class="about-story-note"><strong>Más de 20 años</strong><span>Acompañando procesos reales de cambio, salud y bienestar.</span></div></div></section>
     <section id="contacto" class="section-pad contact"><h2>Empecemos</h2><p>Escribime y armamos un plan para vos.</p><a class="btn btn-primary" href="mailto:yanina.volpe@icloud.com?subject=Consulta%20desde%20yaninatrainer.net">Comencemos hoy</a></section>
