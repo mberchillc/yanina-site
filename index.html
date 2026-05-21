@@ -35,6 +35,42 @@
     @media(max-width:980px){.about,.about-story{grid-template-columns:1fr;gap:34px}.about-story-visual{order:-1;padding-top:0}.about-story-photo-shell{margin:0 auto;max-width:520px}.about-story-note{margin-left:auto;margin-right:auto;margin-top:-28px}}
     @media(max-width:900px){.site-header{min-height:auto;padding:0 5vw 18px;gap:16px;flex-wrap:wrap;align-items:flex-start}.brand{width:220px;min-height:105px;margin-left:-5vw;padding:18px 24px 24px 50px;border-radius:0 0 105px 0/0 0 95px 0}.brand img{width:165px}.main-nav{order:3;width:100%;flex:0 0 100%;flex-wrap:wrap;gap:10px}.main-nav a{min-height:40px;padding:10px 16px;font-size:11px}.hero{grid-template-columns:1fr;min-height:auto;padding-top:50px}.hero-copy{padding-bottom:20px}.hero-image{min-height:auto;padding-top:20px}.hero-image img{width:min(360px,86vw)}.pillars,.plan-grid{grid-template-columns:1fr}.pillars article{border-right:0;border-bottom:1px solid #e5ece8;min-height:auto;grid-template-rows:auto auto auto;padding:32px 26px}.pillars article:last-child{border-bottom:0}}
     @media(max-width:700px){.site-header{flex-direction:column;padding:0 6vw 28px;gap:22px}.brand{width:100vw;max-width:340px;min-height:150px;margin-left:-6vw;padding:24px 34px 30px 56px;border-radius:0 0 130px 0/0 0 115px 0}.brand img{width:215px}.header-cta{order:2;margin:0 auto;width:min(310px,86vw)}.main-nav{justify-content:center;row-gap:18px;column-gap:14px;margin-top:8px;margin-bottom:28px}h1{font-size:clamp(44px,15vw,68px)}.hero-actions{flex-direction:column;gap:18px;align-items:flex-start}.hero-actions .btn{width:min(420px,100%)}.pillars{margin:0 auto}.testimonial-card{padding:24px}.testimonial-top{align-items:flex-start}.testimonial-top img{width:66px;height:66px;flex-basis:66px}.testimonial-text,.testimonial-card.featured .testimonial-text{font-size:16px;line-height:1.62}.testimonial-more-grid{grid-template-columns:1fr}.testimonial-card.secondary .testimonial-text{font-size:15.5px}}
+  /* MOBILE HEADER — más compacto */
+@media(max-width:700px){
+  .site-header{
+    padding:0 6vw 16px !important;
+    gap:14px !important;
+  }
+
+  .brand{
+    max-width:300px !important;
+    min-height:112px !important;
+    padding:16px 26px 22px 48px !important;
+    border-radius:0 0 105px 0 / 0 0 92px 0 !important;
+  }
+
+  .brand img{
+    width:190px !important;
+  }
+
+  .header-cta{
+    min-height:44px !important;
+    padding:12px 24px !important;
+  }
+
+  .main-nav{
+    row-gap:12px !important;
+    column-gap:12px !important;
+    margin-top:0 !important;
+    margin-bottom:12px !important;
+  }
+
+  .main-nav a{
+    min-height:36px !important;
+    padding:8px 14px !important;
+    font-size:10.5px !important;
+  }
+}
   </style>
 </head>
 <body>
