@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi espacio | Yanina Trainer</title>
+  <style>
+    body{margin:0;font-family:Arial,sans-serif;background:#f7fbf7;color:#354056}.shell{max-width:1100px;margin:0 auto;padding:24px}.top{background:#183f35;color:white;border-radius:24px;padding:20px;display:flex;justify-content:space-between;align-items:center;gap:16px}.top img{width:220px;height:74px;object-fit:cover}.btn{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:white;border-radius:999px;padding:11px 16px;font-weight:800;text-decoration:none}.hero,.card{background:white;border:1px solid #dfead9;border-radius:26px;padding:24px;margin-top:20px;box-shadow:0 14px 34px rgba(24,34,61,.07)}h1,h2,h3{color:#18223d}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.routine{display:grid;gap:12px}.item{display:grid;grid-template-columns:72px 1fr auto;gap:14px;align-items:center;background:#f8fcf6;border:1px solid #edf4e9;border-radius:20px;padding:12px}.item img{width:72px;height:72px;object-fit:contain;background:white;border-radius:16px}.tag{background:#eef7ea;color:#5f9419;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:900;text-transform:uppercase}.note{border-left:5px solid #73ad13;background:#fbfff8}@media(max-width:800px){.grid{grid-template-columns:1fr}.top{flex-direction:column;align-items:flex-start}.item{grid-template-columns:58px 1fr}.item img{width:58px;height:58px}.item .tag{grid-column:2}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top">
+      <div><img src="../assets/logo-transp.png" alt="Yanina Trainer"><div>Mi espacio personal</div></div>
+      <a class="btn" href="login.html">Salir</a>
+    </header>
+    <section class="hero">
+      <div>Seguimiento personal</div>
+      <h1>Marcela Stepaniuk</h1>
+      <p>Vista de alumna: rutina, indicaciones, check-ins y evolución asociados únicamente a Marcela.S.</p>
+    </section>
+    <section class="grid">
+      <div>
+        <section class="card">
+          <h2>Mi rutina actual</h2>
+          <div class="routine">
+            <article class="item"><img src="../assets/icono-ejercicio-1.png?v=icons-2" alt=""><div><h3>Sentadilla a banco</h3><p>3 series · 12 repeticiones · descanso 45s</p></div><span class="tag">Técnica</span></article>
+            <article class="item"><img src="../assets/icono-ejercicio-2.png?v=icons-2" alt=""><div><h3>Movilidad de cadera</h3><p>2 bloques · 40 segundos por lado</p></div><span class="tag">Suave</span></article>
+            <article class="item"><img src="../assets/icono-ejercicio-3.png?v=icons-2" alt=""><div><h3>Remo con banda</h3><p>3 series · 15 repeticiones · controlando postura</p></div><span class="tag">Fuerza</span></article>
+          </div>
+        </section>
+        <section class="card note"><h2>Indicación de Yanina</h2><p>Marcela, esta semana priorizamos técnica y control. Si sentís carga en rodillas, reducí rango y registralo en el check-in.</p></section>
+      </div>
+      <aside>
+        <section class="card"><h2>Mis datos</h2><p><strong>Objetivo:</strong> Fortalecer piernas, mejorar movilidad y sostener constancia.</p><p><strong>Frecuencia:</strong> 2 veces por semana.</p><p><strong>Mediciones:</strong> Pendiente de cargar.</p></section>
+        <section class="card"><h2>Check-in</h2><p>Después de entrenar, Marcela registra energía, esfuerzo percibido y molestias si aparecen.</p></section>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>
