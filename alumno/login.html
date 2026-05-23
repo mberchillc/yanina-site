@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso Alumno | Yanina Trainer</title>
+  <style>
+    :root{--green-dark:#183f35;--green-main:#7ec845;--green-soft:#d9f2cb;--cream:#f7f3ea;--white:#fff;--text:#24332e;--muted:#6f7d78;--border:rgba(24,63,53,.14);--shadow:0 18px 50px rgba(24,63,53,.14)}
+    *{box-sizing:border-box;margin:0;padding:0}body{min-height:100vh;font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--cream),#eef7ea);color:var(--text);display:flex;align-items:center;justify-content:center;padding:24px}.login-card{width:100%;max-width:460px;background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow);padding:34px}.brand-block{background:var(--green-dark);border-radius:24px;padding:28px;text-align:center;margin-bottom:28px}.brand-block img{width:260px;height:92px;object-fit:cover;object-position:center;display:block;margin:0 auto}.eyebrow{color:var(--green-dark);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}h1{color:var(--green-dark);font-size:34px;line-height:1.08;margin-bottom:10px}.subtitle{color:var(--muted);line-height:1.5;font-size:16px;margin-bottom:24px}.field{display:grid;gap:7px;margin-bottom:16px}label{color:var(--muted);font-size:13px;font-weight:800}input{width:100%;border:1px solid var(--border);background:var(--white);color:var(--text);border-radius:14px;padding:14px;font-size:15px;outline:none}input:focus{border-color:var(--green-main);box-shadow:0 0 0 4px rgba(126,200,69,.18)}.btn{width:100%;border:none;border-radius:999px;padding:14px 18px;font-size:15px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;justify-content:center;align-items:center;margin-top:8px}.btn-primary{background:var(--green-main);color:var(--green-dark)}.back-link{display:block;text-align:center;margin-top:18px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:700}.login-error{display:none;margin:0 0 16px;padding:12px 14px;border-radius:16px;background:rgba(180,48,48,.1);color:#8f2525;font-size:13px;font-weight:800;line-height:1.4}.note{margin-top:18px;padding:13px 14px;border-radius:16px;background:var(--green-soft);color:var(--green-dark);font-size:13px;line-height:1.45}@media(max-width:520px){.login-card{padding:24px}.brand-block img{width:220px;height:82px}h1{font-size:30px}}
+  </style>
+</head>
+<body>
+  <main class="login-card">
+    <div class="brand-block"><img src="../assets/logo-transp.png" alt="Yanina Trainer"></div>
+    <div class="eyebrow">Plataforma Yanina Trainer</div>
+    <h1>Acceso alumno</h1>
+    <p class="subtitle">Ingresá para ver tu rutina, tus indicaciones y tu seguimiento personal.</p>
+    <div class="login-error" id="loginError">Usuario o contraseña incorrectos.</div>
+    <form id="loginForm">
+      <div class="field"><label for="username">Usuario</label><input id="username" type="text" placeholder="Usuario" autocomplete="username"></div>
+      <div class="field"><label for="password">Contraseña</label><input id="password" type="password" placeholder="Contraseña" autocomplete="current-password"></div>
+      <button type="submit" class="btn btn-primary">Entrar a mi espacio</button>
+    </form>
+    <div class="note"><strong>MVP:</strong> esta pantalla prepara el flujo alumno. La contraseña real debe validarse desde el Worker, no desde el HTML público.</div>
+    <a class="back-link" href="../index.html">← Volver al sitio</a>
+  </main>
+  <script>
+    const STUDENT_SESSION_KEY = "yaninaStudentSession";
+    const DEMO_STUDENTS = [{ username:"marcela.stepaniuk", password:"demo123", studentId:"marcela-stepaniuk", name:"Marcela Stepaniuk" }];
+    const loginForm = document.getElementById("loginForm");
+    const loginError = document.getElementById("loginError");
+    loginForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const username = document.getElementById("username")?.value.trim().toLowerCase() || "";
+      const password = document.getElementById("password")?.value || "";
+      const student = DEMO_STUDENTS.find(item => item.username === username && item.password === password);
+      if (!student) { if (loginError) loginError.style.display = "block"; return; }
+      localStorage.setItem(STUDENT_SESSION_KEY, JSON.stringify({ role:"student", studentId:student.studentId, name:student.name, username:student.username, loggedIn:true, createdAt:new Date().toISOString() }));
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
