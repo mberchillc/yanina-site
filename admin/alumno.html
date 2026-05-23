@@ -740,6 +740,7 @@
       <a href="#datos" class="student-tab active">Datos del alumno</a>
       <a href="#calendario" class="student-tab">Calendario de clases</a>
       <a href="#plan" class="student-tab">Plan de entrenamiento</a>
+      <a href="mediciones-starfit.html" class="student-tab" id="starfitMeasurementsTab">Mediciones Starfit</a>
       <button type="button" class="student-tab student-tab-arrow" id="backToTopBtn">↑</button>
     </nav>
 
@@ -833,6 +834,7 @@
           <div class="bottom-actions">
             <button type="button" class="btn btn-form-primary" id="saveStudentBtn">Guardar datos</button>
             <a href="#plan" class="btn btn-form-secondary">Crear plan de entrenamiento</a>
+            <a class="btn btn-form-secondary" id="starfitMeasurementsBtn" href="mediciones-starfit.html">Cargar medición Starfit</a>
             <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">Descargar rutina PDF</a>
           </div>
 
@@ -943,6 +945,23 @@
     const params = new URLSearchParams(window.location.search);
     const isNewStudent = params.get("new") === "1";
     let studentId = isNewStudent ? null : (params.get("id") || "1");
+    const starfitMeasurementsBtn = document.getElementById("starfitMeasurementsBtn");
+    const starfitMeasurementsTab = document.getElementById("starfitMeasurementsTab");
+
+    function updateStarfitLinks() {
+      const targets = [starfitMeasurementsBtn, starfitMeasurementsTab].filter(Boolean);
+      targets.forEach(link => {
+        if (studentId) {
+          link.href = `mediciones-starfit.html?studentId=${encodeURIComponent(studentId)}`;
+        } else {
+          link.href = "#";
+          link.addEventListener("click", event => {
+            event.preventDefault();
+            alert("Primero guardá la ficha del alumno para cargar mediciones.");
+          }, { once: true });
+        }
+      });
+    }
 
     let allClasses = [];
     let selectedClass = null;
@@ -1854,6 +1873,7 @@ async function markClassCompleted(classId) {
 
     async function initializeStudentPage() {
       try {
+        updateStarfitLinks();
         updateStudentIdentity();
 
         if (isNewStudent) {
@@ -1863,6 +1883,7 @@ async function markClassCompleted(classId) {
 
         await loadStudentFromBackend();
         await loadClassesFromBackend();
+        updateStarfitLinks();
       } catch (error) {
         console.error(error);
         if (saveMessage) {
