@@ -48,7 +48,108 @@
     document.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',render));
     $('starfitFile').addEventListener('change',()=>{const file=$('starfitFile').files[0];if(!file)return;selectedFile=file;clearFields();const url=URL.createObjectURL(file);$('previewBox').classList.add('has-file');$('previewBox').innerHTML=`<div><strong>Captura cargada:</strong><br>${esc(file.name)}<br><br><img src="${url}" alt="Captura Starfit" style="max-width:100%;border-radius:18px;border:1px solid #dfead9"></div>`;$('fileStatus').textContent='Captura lista para extracción.';setExtractState('Lista para extraer datos.', 'ready')});
     $('removeFileBtn').addEventListener('click',()=>{selectedFile=null;$('starfitFile').value='';$('previewBox').classList.remove('has-file');$('previewBox').innerHTML='Seleccioná una captura del informe Starfit / Runstar.';$('fileStatus').textContent='Sin archivo seleccionado.';clearFields();setExtractState('Esperando captura.','waiting')});
-    $('extractBtn').addEventListener('click',async()=>{if(!selectedFile)return;setExtractState('Extrayendo datos desde la imagen...', 'loading');const fd=new FormData();fd.append('image',selectedFile);fd.append('student_id',studentId);try{const r=await fetch(`${API_BASE}/api/starfit/extract`,{method:'POST',body:fd});if(!r.ok)throw new Error('Endpoint de extracción no disponible todavía.');const payload=await r.json();fillFromPayload(payload);setExtractState('Datos extraídos. Revisar y corregir antes de guardar.','ready')}catch(e){console.error(e);clearFields();setExtractState('La extracción real todavía no está conectada al Worker. Los campos quedaron vacíos para evitar datos falsos.','error')}});
+    async function makeStarfitExtractionImage(file) {
+  const img = await new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = URL.createObjectURL(file);
+  });
+
+  const regions = [
+    {
+      label: "FECHA MEDICION - leer fecha junto a Hora de la prueba",
+      x: 0.63, y: 0.04, w: 0.33, h: 0.035
+    },
+    {
+      label: "PESO KG - fila Peso, columna Medicion(kg)",
+      x: 0.04, y: 0.115, w: 0.52, h: 0.05
+    },
+    {
+      label: "MUSCULO ESQUELETICO KG - fila Musculo esqueletico, NO fila Musculo",
+      x: 0.04, y: 0.235, w: 0.56, h: 0.045
+    },
+    {
+      label: "PUNTUACION CORPORAL - score sobre 100",
+      x: 0.61, y: 0.105, w: 0.34, h: 0.085
+    },
+    {
+      label: "OBJETIVO STARFIT KG - Peso objetivo",
+      x: 0.61, y: 0.215, w: 0.34, h: 0.045
+    },
+    {
+      label: "IMC BMI - valor IMC",
+      x: 0.61, y: 0.345, w: 0.34, h: 0.07
+    },
+    {
+      label: "GRASA CORPORAL PORCENTAJE - Tasa de grasa corporal, NO IMC",
+      x: 0.61, y: 0.405, w: 0.34, h: 0.075
+    },
+    {
+      label: "GRASA VISCERAL - Grado de grasa visceral, NO Obesidad",
+      x: 0.61, y: 0.845, w: 0.34, h: 0.055
+    }
+  ];
+
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  const outputWidth = 1100;
+  const labelHeight = 34;
+  const cropHeight = 110;
+  const gap = 18;
+  const padding = 28;
+
+  canvas.width = outputWidth;
+  canvas.height = padding + regions.length * (labelHeight + cropHeight + gap);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.font = "bold 22px Arial";
+  ctx.fillStyle = "#18223d";
+  ctx.fillText("STARFIT EXTRACTION SHEET - CAMPOS FIJOS", padding, 28);
+
+  let y = 56;
+
+  for (const region of regions) {
+    const sx = region.x * img.naturalWidth;
+    const sy = region.y * img.naturalHeight;
+    const sw = region.w * img.naturalWidth;
+    const sh = region.h * img.naturalHeight;
+
+    ctx.fillStyle = "#eef7ea";
+    ctx.fillRect(padding, y, outputWidth - padding * 2, labelHeight);
+
+    ctx.fillStyle = "#5f9419";
+    ctx.font = "bold 18px Arial";
+    ctx.fillText(region.label, padding + 12, y + 23);
+
+    y += labelHeight;
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(padding, y, outputWidth - padding * 2, cropHeight);
+
+    ctx.drawImage(
+      img,
+      sx, sy, sw, sh,
+      padding, y,
+      outputWidth - padding * 2,
+      cropHeight
+    );
+
+    ctx.strokeStyle = "#dfead9";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(padding, y, outputWidth - padding * 2, cropHeight);
+
+    y += cropHeight + gap;
+  }
+
+  return await new Promise(resolve => {
+    canvas.toBlob(blob => resolve(blob), "image/jpeg", 0.95);
+  });
+}
+    $('extractBtn').addEventListener('click',async()=>{if(!selectedFile)return;setExtractState('Extrayendo datos desde la imagen...', 'loading');const fd = new FormData(); const extractionImage = await makeStarfitExtractionImage(selectedFile);  fd.append('image', extractionImage, `starfit-crops-${Date.now()}.jpg`); fd.append('original_image', selectedFile); fd.append('student_id', studentId);try{const r=await fetch(`${API_BASE}/api/starfit/extract`,{method:'POST',body:fd});if(!r.ok)throw new Error('Endpoint de extracción no disponible todavía.');const payload=await r.json();fillFromPayload(payload);setExtractState('Datos extraídos. Revisar y corregir antes de guardar.','ready')}catch(e){console.error(e);clearFields();setExtractState('La extracción real todavía no está conectada al Worker. Los campos quedaron vacíos para evitar datos falsos.','error')}});
     $('saveBtn').addEventListener('click',async()=>{const payload={student_id:studentId,measured_at:$('measuredAt').value,weight_kg:$('weight').value,bmi:$('bmi').value,body_fat_percent:$('fat').value,skeletal_muscle_kg:$('skeletal').value,visceral_fat:$('visceral').value,body_score:$('score').value,starfit_goal_kg:$('goal').value,trainer_note:$('trainerNote').value,source_image_url:extractedImageUrl};try{const r=await fetch(`${API_BASE}/api/students/${encodeURIComponent(studentId)}/measurements`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!r.ok)throw new Error('Endpoint de guardado no disponible todavía.');$('saveMsg').innerHTML='<strong>Medición guardada.</strong>'; $('saveMsg').classList.remove('hidden')}catch(e){console.error(e);$('saveMsg').innerHTML='<strong>La pantalla ya no guarda datos falsos.</strong> Falta conectar el endpoint D1/R2 real.';$('saveMsg').classList.remove('hidden')}});
     render();
   </script>
