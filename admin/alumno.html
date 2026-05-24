@@ -811,7 +811,7 @@
       <a href="#datos" class="student-tab active">Datos del alumno</a>
       <a href="#calendario" class="student-tab">Calendario de clases</a>
       <a href="#plan" class="student-tab">Plan de entrenamiento</a>
-      <a href="#mediciones" class="student-tab">Mediciones Starfit</a>
+      <a href="#mediciones" class="student-tab">Hist. Mediciones</a>
       <button type="button" class="student-tab student-tab-arrow" id="backToTopBtn">↑</button>
     </nav>
 
@@ -1078,7 +1078,7 @@ function renderMeasurements(measurements) {
   }
 
   measurementList.innerHTML = measurements.map(item => {
-    const imageUrl = measurementImageUrl(item.source_image_url);
+    
 
     return `
       <article class="measurement-card">
@@ -1101,13 +1101,7 @@ function renderMeasurements(measurements) {
           <div class="measurement-metric"><span>Guardado</span><strong>${escapeHtml(item.created_at || "—")}</strong></div>
         </div>
 
-        <div class="measurement-actions">
-          ${
-            imageUrl
-              ? `<a class="btn measurement-image-link" href="${imageUrl}" target="_blank">Ver captura</a>`
-              : `<span class="status-pill pending">Sin captura</span>`
-          }
-        </div>
+        
       </article>
     `;
   }).join("");
