@@ -705,7 +705,7 @@
 
 .measurement-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
@@ -1225,23 +1225,44 @@ function toNumber(value) {
   return Number.isFinite(number) ? number : null;
 }
 
+
+function measurementSortKey(item) {
+  return String(item?.measured_at || item?.created_at || '');
+}
+
+function sortedMeasurementsByDate(measurements) {
+  return [...(measurements || [])].sort((a, b) => measurementSortKey(a).localeCompare(measurementSortKey(b)));
+}
+
+function formatMeasurementCardDate(value) {
+  if (!value) return 'Sin fecha';
+  const clean = String(value).slice(0, 10);
+  const parts = clean.split('-');
+  if (parts.length !== 3) return clean;
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const year = parts[0].slice(-2);
+  const month = months[Math.max(0, Math.min(11, Number(parts[1]) - 1))] || parts[1];
+  return `${month} ${parts[2]}, ${year}`;
+}
+
 function shortMeasurementDate(value) {
   if (!value) return '—';
   const clean = String(value).slice(0, 10);
   const parts = clean.split('-');
-  if (parts.length === 3) return `${parts[2]}/${parts[1]}`;
-  return clean;
+  if (parts.length !== 3) return clean;
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = months[Math.max(0, Math.min(11, Number(parts[1]) - 1))] || parts[1];
+  return `${month} ${parts[2]}, ${parts[0].slice(-2)}`;
 }
 
 function metricPoints(measurements, key) {
-  return (measurements || [])
+  return sortedMeasurementsByDate(measurements)
     .map(item => ({
       date: item.measured_at || item.created_at || '',
       label: shortMeasurementDate(item.measured_at || item.created_at || ''),
       value: toNumber(item[key])
     }))
-    .filter(item => item.value !== null)
-    .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    .filter(item => item.value !== null);
 }
 
 function renderMetricChart(config, points) {
@@ -1326,9 +1347,10 @@ function renderMeasurementTrackingCharts(measurements) {
 
 function renderMeasurements(measurements) {
   if (!measurementList) return;
-  renderMeasurementTrackingCharts(measurements);
+  const orderedMeasurements = sortedMeasurementsByDate(measurements);
+  renderMeasurementTrackingCharts(orderedMeasurements);
 
-  if (!measurements.length) {
+  if (!orderedMeasurements.length) {
     measurementList.innerHTML = `
       <div class="empty-state">
         Todavía no hay mediciones Starfit guardadas para esta alumna.
@@ -1337,12 +1359,12 @@ function renderMeasurements(measurements) {
     return;
   }
 
-  measurementList.innerHTML = measurements.map(item => {
+  measurementList.innerHTML = orderedMeasurements.map(item => {
     return `
       <article class="measurement-card">
         <div class="measurement-top">
           <div>
-            <div class="measurement-date">${escapeHtml(item.measured_at || "Sin fecha")}</div>
+            <div class="measurement-date">${escapeHtml(formatMeasurementCardDate(item.measured_at || item.created_at || ""))}</div>
             <p class="measurement-note">${escapeHtml(item.trainer_note || "Sin nota privada.")}</p>
           </div>
           <div class="measurement-actions">
@@ -1358,7 +1380,6 @@ function renderMeasurements(measurements) {
           <div class="measurement-metric"><span>Músculo esquelético %</span><strong>${escapeHtml(item.skeletal_muscle_kg || "—")}%</strong></div>
           <div class="measurement-metric"><span>Grasa visceral</span><strong>${escapeHtml(item.visceral_fat || "—")}</strong></div>
           <div class="measurement-metric"><span>Puntuación</span><strong>${escapeHtml(item.body_score || "—")}</strong></div>
-          <div class="measurement-metric"><span>Objetivo</span><strong>${escapeHtml(item.starfit_goal_kg || "—")} kg</strong></div>
           <div class="measurement-metric"><span>Guardado</span><strong>${escapeHtml(item.created_at || "—")}</strong></div>
         </div>
       </article>
