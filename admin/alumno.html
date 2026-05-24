@@ -1087,8 +1087,33 @@ function renderMeasurements(measurements) {
             <div class="measurement-date">${escapeHtml(item.measured_at || "Sin fecha")}</div>
             <p class="measurement-note">${escapeHtml(item.trainer_note || "Sin nota privada.")}</p>
           </div>
-          <div class="measurement-actions">   <button type="button" class="delete-measurement-btn" data-id="${item.id}">E</button>   <span class="status-pill completed">Medición guardada</span> </div>
-        </div>
+          .delete-measurement-btn {
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 999px;
+  background: #e34b2f;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(227, 75, 47, 0.28);
+  flex: 0 0 56px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.delete-measurement-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(227, 75, 47, 0.34);
+}
+
+.delete-measurement-btn:active {
+  transform: translateY(0);
+}
 
         <div class="measurement-grid">
           <div class="measurement-metric"><span>Peso</span><strong>${escapeHtml(item.weight_kg || "—")} kg</strong></div>
