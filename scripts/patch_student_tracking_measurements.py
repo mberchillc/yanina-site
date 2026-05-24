@@ -4,24 +4,19 @@ path = Path('alumno/index.html')
 text = path.read_text(encoding='utf-8')
 original = text
 
+# Re-run marker: student tracking measurements module.
+
 css_marker = '.video-limit{font-weight:900;color:var(--green-dark)}'
 css_insert = r'''.student-measurements{display:grid;gap:16px}.student-measurements-intro{background:linear-gradient(135deg,#f4fbef,#fff);border:1px solid var(--line);border-radius:28px;padding:24px}.student-measurements-intro h3{margin:0 0 8px;color:var(--navy);font-size:24px}.student-measurements-intro p{margin:0;color:var(--muted);line-height:1.5}.measurement-chart-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.measurement-chart-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:0 12px 28px rgba(24,34,61,.07)}.measurement-chart-title{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}.measurement-chart-title strong{color:var(--navy);font-size:17px}.measurement-chart-title span{color:var(--muted);font-size:12px;font-weight:900}.measurement-chart-svg{width:100%;height:190px;display:block;overflow:visible}.measurement-chart-area{fill:rgba(115,173,19,.16)}.measurement-chart-line{fill:none;stroke:#173f35;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.measurement-chart-point{fill:var(--green);stroke:#fff;stroke-width:3}.measurement-chart-label,.measurement-chart-date{fill:#173f35;font-size:11px;font-weight:900}.measurement-chart-date{fill:var(--muted);font-size:10px}.measurement-chart-empty{background:#f8fcf6;border:1px dashed rgba(115,173,19,.35);border-radius:18px;padding:18px;color:var(--muted);line-height:1.45}.measurements-list{display:grid;gap:14px}.measurement-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:18px;display:grid;gap:14px;box-shadow:0 12px 28px rgba(24,34,61,.06)}.measurement-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}.measurement-date{color:var(--navy);font-size:22px;font-weight:900}.measurement-note{color:var(--muted);margin:4px 0 0;line-height:1.45}.measurement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.measurement-metric{background:#f4fbef;border:1px solid #e1efd7;border-radius:16px;padding:13px}.measurement-metric span{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:6px}.measurement-metric strong{color:#173f35;font-size:19px}'''
 if css_insert not in text:
     text = text.replace(css_marker, css_marker + css_insert)
 
-# Make responsive CSS include measurement grids.
 text = text.replace('@media(max-width:1060px){.hero,.app{grid-template-columns:1fr}', '@media(max-width:1060px){.hero,.app,.measurement-chart-grid,.measurement-grid{grid-template-columns:1fr}')
 
 old_tracking = '''<section class="panel" id="tracking"><div class="panel-head"><div><h2>Tracking</h2><p>Mediciones y datos útiles para seguir evolución.</p></div></div><div class="card"><div class="data-grid" id="trackingGrid"></div></div></section>'''
 new_tracking = '''<section class="panel" id="tracking"><div class="panel-head"><div><h2>Tracking</h2><p>Mediciones y evolución registradas por Yanina.</p></div><span class="tag">Histórico Starfit</span></div><div class="student-measurements"><div class="student-measurements-intro"><h3>Evolución</h3><p>Peso, grasa corporal y músculo esquelético según tus mediciones guardadas.</p></div><div class="measurement-chart-grid" id="studentMeasurementCharts"><div class="measurement-chart-empty">Cargando gráficos de evolución...</div></div><div class="measurements-list" id="studentMeasurementList"><div class="empty">Cargando histórico de mediciones...</div></div></div></section>'''
-if old_tracking in text:
-    text = text.replace(old_tracking, new_tracking)
-else:
-    print('tracking block not found or already replaced')
-
-# Remove old trackingGrid write in loadStudent.
-old_tracking_grid = "$('trackingGrid').innerHTML=[data('Peso inicial',s.initial_weight),data('Últimas mediciones',fmtDate(s.last_measurements_date)),data('Días por semana',s.frequency),data('Estado','Seguimiento activo')].join('')"
-text = text.replace(old_tracking_grid, "")
+text = text.replace(old_tracking, new_tracking)
+text = text.replace("$('trackingGrid').innerHTML=[data('Peso inicial',s.initial_weight),data('Últimas mediciones',fmtDate(s.last_measurements_date)),data('Días por semana',s.frequency),data('Estado','Seguimiento activo')].join('')", "")
 
 helper = r'''
     const studentMeasurementCharts=document.getElementById('studentMeasurementCharts');const studentMeasurementList=document.getElementById('studentMeasurementList');
