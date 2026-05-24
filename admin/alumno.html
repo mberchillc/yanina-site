@@ -1226,8 +1226,57 @@ function toNumber(value) {
 }
 
 
+function normalizeMeasurementDateValue(value) {
+  if (!value) return '';
+  const raw = String(value).trim();
+  if (!raw) return '';
+
+  const iso = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) {
+    return `${iso[1]}-${String(iso[2]).padStart(2, '0')}-${String(iso[3]).padStart(2, '0')}`;
+  }
+
+  const monthMap = {
+    jan: '01', january: '01', ene: '01', enero: '01',
+    feb: '02', february: '02', febrero: '02',
+    mar: '03', march: '03', marzo: '03',
+    apr: '04', april: '04', abr: '04', abril: '04',
+    may: '05', mayo: '05',
+    jun: '06', june: '06', junio: '06',
+    jul: '07', july: '07', julio: '07',
+    aug: '08', august: '08', ago: '08', agosto: '08',
+    sep: '09', sept: '09', september: '09', septiembre: '09', set: '09',
+    oct: '10', october: '10', octubre: '10',
+    nov: '11', november: '11', noviembre: '11',
+    dec: '12', december: '12', dic: '12', diciembre: '12'
+  };
+
+  const textMatch = raw.match(/^([A-Za-zÁÉÍÓÚáéíóúñÑ]+)\s+(\d{1,2}),?\s+(\d{2,4})$/);
+  if (textMatch) {
+    const monthKey = textMatch[1].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const month = monthMap[monthKey.slice(0, 3)] || monthMap[monthKey];
+    const day = String(textMatch[2]).padStart(2, '0');
+    let year = String(textMatch[3]);
+    if (year.length === 2) year = Number(year) >= 70 ? `19${year}` : `20${year}`;
+    if (month) return `${year}-${month}-${day}`;
+  }
+
+  const slash = raw.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+  if (slash) {
+    let year = String(slash[3]);
+    if (year.length === 2) year = Number(year) >= 70 ? `19${year}` : `20${year}`;
+    return `${year}-${String(slash[1]).padStart(2, '0')}-${String(slash[2]).padStart(2, '0')}`;
+  }
+
+  return raw;
+}
+
+function measurementDateValue(item) {
+  return item?.measured_at || item?.measuredAt || item?.measurement_date || item?.date || item?.created_at || '';
+}
+
 function measurementSortKey(item) {
-  return String(item?.measured_at || item?.created_at || '');
+  return normalizeMeasurementDateValue(measurementDateValue(item));
 }
 
 function sortedMeasurementsByDate(measurements) {
@@ -1235,31 +1284,24 @@ function sortedMeasurementsByDate(measurements) {
 }
 
 function formatMeasurementCardDate(value) {
-  if (!value) return 'Sin fecha';
-  const clean = String(value).slice(0, 10);
-  const parts = clean.split('-');
-  if (parts.length !== 3) return clean;
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const year = parts[0].slice(-2);
-  const month = months[Math.max(0, Math.min(11, Number(parts[1]) - 1))] || parts[1];
-  return `${month} ${parts[2]}, ${year}`;
-}
-
-function shortMeasurementDate(value) {
-  if (!value) return '—';
-  const clean = String(value).slice(0, 10);
-  const parts = clean.split('-');
-  if (parts.length !== 3) return clean;
+  const normalized = normalizeMeasurementDateValue(value);
+  if (!normalized) return 'Sin fecha';
+  const parts = normalized.slice(0, 10).split('-');
+  if (parts.length !== 3) return normalized;
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const month = months[Math.max(0, Math.min(11, Number(parts[1]) - 1))] || parts[1];
   return `${month} ${parts[2]}, ${parts[0].slice(-2)}`;
 }
 
+function shortMeasurementDate(value) {
+  return formatMeasurementCardDate(value);
+}
+
 function metricPoints(measurements, key) {
   return sortedMeasurementsByDate(measurements)
     .map(item => ({
-      date: item.measured_at || item.created_at || '',
-      label: shortMeasurementDate(item.measured_at || item.created_at || ''),
+      date: measurementDateValue(item),
+      label: shortMeasurementDate(measurementDateValue(item)),
       value: toNumber(item[key])
     }))
     .filter(item => item.value !== null);
@@ -1364,7 +1406,7 @@ function renderMeasurements(measurements) {
       <article class="measurement-card">
         <div class="measurement-top">
           <div>
-            <div class="measurement-date">${escapeHtml(formatMeasurementCardDate(item.measured_at || item.created_at || ""))}</div>
+            <div class="measurement-date">${escapeHtml(formatMeasurementCardDate(measurementDateValue(item)))}</div>
             <p class="measurement-note">${escapeHtml(item.trainer_note || "Sin nota privada.")}</p>
           </div>
           <div class="measurement-actions">
