@@ -25,7 +25,7 @@
           <div class="field"><label>Peso kg</label><input id="weight" value=""></div>
           <div class="field"><label>IMC / BMI</label><input id="bmi" value=""></div>
           <div class="field"><label>Grasa corporal %</label><input id="fat" value=""></div>
-          <div class="field"><label>Músculo esquelético kg</label><input id="skeletal" value=""></div>
+          <div class="field"><label>Músculo esquelético %</label><input id="skeletal" value=""></div>
           <div class="field"><label>Grasa visceral</label><input id="visceral" value=""></div>
           <div class="field"><label>Puntuación corporal</label><input id="score" value=""></div>
           <div class="field"><label>Objetivo Starfit kg</label><input id="goal" value=""></div>
@@ -41,7 +41,7 @@
     const $=id=>document.getElementById(id);let selectedFile=null;let extractedImageUrl='';
     if(studentId&&$('backLink')) $('backLink').href=`alumno.html?id=${encodeURIComponent(studentId)}`;
     function esc(v){return String(v||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}
-    function render(){const rows=[['Peso',$('weight').value,'kg','Tracking'],['IMC / BMI',$('bmi').value,'kg/m²','Tracking'],['Grasa corporal',$('fat').value,'%','Tracking'],['Músculo esquelético',$('skeletal').value,'kg','Tracking'],['Grasa visceral',$('visceral').value,'nivel','Tracking']];$('studentPreview').innerHTML='<div class="row header"><span>Indicador</span><span>Valor</span><span>Unidad</span><span>Evaluación</span></div>'+rows.map(r=>`<div class="row"><strong>${esc(r[0])}</strong><span>${esc(r[1]||'—')}</span><span>${esc(r[2])}</span><span class="pill">${esc(r[3])}</span></div>`).join('')}
+    function render(){const rows=[['Peso',$('weight').value,'kg','Tracking'],['IMC / BMI',$('bmi').value,'kg/m²','Tracking'],['Grasa corporal',$('fat').value,'%','Tracking'],['Músculo esquelético',$('skeletal').value,'%','Tracking'],['Grasa visceral',$('visceral').value,'nivel','Tracking']];$('studentPreview').innerHTML='<div class="row header"><span>Indicador</span><span>Valor</span><span>Unidad</span><span>Evaluación</span></div>'+rows.map(r=>`<div class="row"><strong>${esc(r[0])}</strong><span>${esc(r[1]||'—')}</span><span>${esc(r[2])}</span><span class="pill">${esc(r[3])}</span></div>`).join('')}
     function clearFields(){['measuredAt','weight','bmi','fat','skeletal','visceral','score','goal','trainerNote'].forEach(id=>{if($(id))$(id).value=''});extractedImageUrl='';$('dataState').textContent='Pendiente de extracción';$('dataState').classList.add('pill-warn');$('saveMsg').classList.add('hidden');render()}
     function setExtractState(text,state){$('extractStatus').textContent=text;$('extractStatus').classList.toggle('waiting',state!=='ready');$('extractStatus').classList.toggle('error',state==='error');$('extractBtn').disabled=!selectedFile||state==='loading'}
     function fillFromPayload(payload){   let data = payload || {};    if (payload && payload.ai_raw_response) {     if (typeof payload.ai_raw_response === 'object') {       data = { ...payload, ...payload.ai_raw_response };     } else if (typeof payload.ai_raw_response === 'string') {       try {         const parsed = JSON.parse(payload.ai_raw_response);         data = { ...payload, ...parsed };       } catch (_) {         data = payload;       }     }   }    $('measuredAt').value = data.measured_at || data.measuredAt || '';   $('weight').value = data.weight_kg || data.weight || '';   $('bmi').value = data.bmi || '';   $('fat').value = data.body_fat_percent || data.fat || '';   $('skeletal').value = data.skeletal_muscle_kg || data.skeletal || '';   $('visceral').value = data.visceral_fat || data.visceral || '';   $('score').value = data.body_score || data.score || '';   $('goal').value = data.starfit_goal_kg || data.goal || '';   $('trainerNote').value = data.trainer_note || data.trainerNote || $('trainerNote').value || '';    extractedImageUrl = payload.source_image_url || data.source_image_url || payload.image_url || data.image_url || '';    $('dataState').textContent = 'Extraído · revisar';   $('dataState').classList.remove('pill-warn');    render(); }
@@ -66,7 +66,7 @@
       x: 0.04, y: 0.115, w: 0.52, h: 0.05
     },
     {
-      label: "MUSCULO ESQUELETICO KG - fila Musculo esqueletico, NO fila Musculo",
+      label: "MUSCULO ESQUELETICO % - fila Musculo esqueletico, columna gris Proporcion de peso (%), NO columna Medicion(kg), NO fila Musculo",
       x: 0.04, y: 0.235, w: 0.56, h: 0.045
     },
     {
