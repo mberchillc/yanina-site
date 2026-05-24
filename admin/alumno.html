@@ -738,11 +738,6 @@
   color: var(--green-dark);
 }
 
-@media (max-width: 840px) {
-  .measurement-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
     @media (max-width: 840px) {
       .topbar {
         align-items: flex-start;
@@ -917,7 +912,21 @@
           <div class="save-message" id="saveMessage">Datos guardados correctamente.</div>
         </form>
       </article>
+<article class="card" id="mediciones">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Mediciones Starfit</div>
+      <p class="card-subtitle">Historial de capturas, datos extraídos y notas de seguimiento.</p>
+    </div>
+    <a class="btn btn-form-primary" id="starfitMeasurementsHistoryBtn" href="mediciones-starfit.html">
+      + Nueva medición
+    </a>
+  </div>
 
+  <div class="measurements-list" id="measurementList">
+    <div class="empty-state">Cargando mediciones Starfit...</div>
+  </div>
+</article>
       <article class="card calendar-card" id="calendario">
         <div class="card-header">
           <div>
@@ -1038,7 +1047,93 @@
         }
       });
     }
+const starfitMeasurementsHistoryBtn = document.getElementById("starfitMeasurementsHistoryBtn");
+const measurementList = document.getElementById("measurementList");
 
+function updateStarfitHistoryLink() {
+  if (!starfitMeasurementsHistoryBtn) return;
+
+  if (studentId) {
+    starfitMeasurementsHistoryBtn.href = `mediciones-starfit.html?studentId=${encodeURIComponent(studentId)}`;
+  } else {
+    starfitMeasurementsHistoryBtn.href = "#";
+  }
+}
+
+function measurementImageUrl(key) {
+  if (!key) return "";
+  return `${API_BASE}/api/starfit/image?key=${encodeURIComponent(key)}`;
+}
+
+function renderMeasurements(measurements) {
+  if (!measurementList) return;
+
+  if (!measurements.length) {
+    measurementList.innerHTML = `
+      <div class="empty-state">
+        Todavía no hay mediciones Starfit guardadas para esta alumna.
+      </div>
+    `;
+    return;
+  }
+
+  measurementList.innerHTML = measurements.map(item => {
+    const imageUrl = measurementImageUrl(item.source_image_url);
+
+    return `
+      <article class="measurement-card">
+        <div class="measurement-top">
+          <div>
+            <div class="measurement-date">${escapeHtml(item.measured_at || "Sin fecha")}</div>
+            <p class="measurement-note">${escapeHtml(item.trainer_note || "Sin nota privada.")}</p>
+          </div>
+          <span class="status-pill completed">Medición guardada</span>
+        </div>
+
+        <div class="measurement-grid">
+          <div class="measurement-metric"><span>Peso</span><strong>${escapeHtml(item.weight_kg || "—")} kg</strong></div>
+          <div class="measurement-metric"><span>IMC / BMI</span><strong>${escapeHtml(item.bmi || "—")}</strong></div>
+          <div class="measurement-metric"><span>Grasa corporal</span><strong>${escapeHtml(item.body_fat_percent || "—")}%</strong></div>
+          <div class="measurement-metric"><span>Músculo esquelético</span><strong>${escapeHtml(item.skeletal_muscle_kg || "—")} kg</strong></div>
+          <div class="measurement-metric"><span>Grasa visceral</span><strong>${escapeHtml(item.visceral_fat || "—")}</strong></div>
+          <div class="measurement-metric"><span>Puntuación</span><strong>${escapeHtml(item.body_score || "—")}</strong></div>
+          <div class="measurement-metric"><span>Objetivo</span><strong>${escapeHtml(item.starfit_goal_kg || "—")} kg</strong></div>
+          <div class="measurement-metric"><span>Guardado</span><strong>${escapeHtml(item.created_at || "—")}</strong></div>
+        </div>
+
+        <div class="measurement-actions">
+          ${
+            imageUrl
+              ? `<a class="btn measurement-image-link" href="${imageUrl}" target="_blank">Ver captura</a>`
+              : `<span class="status-pill pending">Sin captura</span>`
+          }
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+async function loadMeasurementsFromBackend() {
+  if (!studentId || !measurementList) return;
+
+  try {
+    const response = await fetch(`${API_BASE}/api/students/${studentId}/measurements?cache=${Date.now()}`);
+
+    if (!response.ok) {
+      throw new Error("No se pudieron cargar las mediciones Starfit");
+    }
+
+    const data = await response.json();
+    renderMeasurements(Array.isArray(data) ? data : []);
+  } catch (error) {
+    console.error(error);
+    measurementList.innerHTML = `
+      <div class="empty-state">
+        No se pudieron cargar las mediciones Starfit.
+      </div>
+    `;
+  }
+}
     let allClasses = [];
     let selectedClass = null;
     let activeBackendClassId = null;
@@ -1958,8 +2053,10 @@ async function markClassCompleted(classId) {
         }
 
         await loadStudentFromBackend();
-        await loadClassesFromBackend();
-        updateStarfitLinks();
+await loadMeasurementsFromBackend();
+await loadClassesFromBackend();
+updateStarfitLinks();
+updateStarfitHistoryLink();
       } catch (error) {
         console.error(error);
         if (saveMessage) {
