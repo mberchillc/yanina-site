@@ -1087,7 +1087,7 @@ function renderMeasurements(measurements) {
             <div class="measurement-date">${escapeHtml(item.measured_at || "Sin fecha")}</div>
             <p class="measurement-note">${escapeHtml(item.trainer_note || "Sin nota privada.")}</p>
           </div>
-          <span class="status-pill completed">Medición guardada</span>
+          <div class="measurement-actions">   <button type="button" class="delete-measurement-btn" data-id="${item.id}">E</button>   <span class="status-pill completed">Medición guardada</span> </div>
         </div>
 
         <div class="measurement-grid">
