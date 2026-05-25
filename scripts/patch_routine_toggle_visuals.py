@@ -4,10 +4,9 @@ path = Path('alumno/index.html')
 text = path.read_text(encoding='utf-8')
 original = text
 
-# Remove global illustrated routine button/toolbar from the routine section.
+# Re-run marker: toggle illustrated exercise cards individually.
 text = text.replace('<div class="routine-toolbar"><button type="button" class="ghost-action" id="viewFullRoutineBtn">Ver rutina ilustrada completa</button></div>', '')
 
-# Replace helper block: individual toggles only, multiple opened exercises accumulate.
 start = text.find('function getExerciseAssetPath(path)')
 end = text.find('function videoKey(){')
 if start != -1 and end != -1:
@@ -15,14 +14,11 @@ if start != -1 and end != -1:
 '''
     text = text[:start] + helpers + text[end:]
 
-# Replace list render binding so every button toggles and no global button exists.
 old = "$('routineList').innerHTML=ex.length?ex.map((e,i)=>renderRoutineRow(e,i)).join(''):'<div class=\"empty\">Esta clase todavía no tiene ejercicios cargados.</div>';if($('routineVisualPanel'))$('routineVisualPanel').innerHTML='';document.querySelectorAll('[data-view-exercise]').forEach(btn=>btn.addEventListener('click',()=>showRoutineVisual(ex,btn.dataset.viewExercise)));if($('viewFullRoutineBtn'))$('viewFullRoutineBtn').onclick=()=>showRoutineVisual(ex,null)"
 new = "$('routineList').innerHTML=ex.length?ex.map((e,i)=>renderRoutineRow(e,i)).join(''):'<div class=\"empty\">Esta clase todavía no tiene ejercicios cargados.</div>';if($('routineVisualPanel'))$('routineVisualPanel').innerHTML='';document.querySelectorAll('[data-view-exercise]').forEach(btn=>btn.addEventListener('click',()=>toggleRoutineVisual(ex,btn.dataset.viewExercise)))"
 text = text.replace(old, new)
-
-# Backward-compatible cleanup if any references survived.
-text = text.replace('if($(' + "'viewFullRoutineBtn'" + "))$(' + "'viewFullRoutineBtn'" + ').onclick=()=>showRoutineVisual(ex,null)', '')
 text = text.replace('showRoutineVisual(ex,btn.dataset.viewExercise)', 'toggleRoutineVisual(ex,btn.dataset.viewExercise)')
+text = text.replace(";if($('viewFullRoutineBtn'))$('viewFullRoutineBtn').onclick=()=>showRoutineVisual(ex,null)", '')
 
 if text != original:
     path.write_text(text, encoding='utf-8')
