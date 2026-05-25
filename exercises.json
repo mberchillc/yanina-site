@@ -1,0 +1,72 @@
+[
+  {
+    "id": "sentadilla-libre",
+    "name": "Sentadilla libre",
+    "category": "Tren inferior",
+    "equipment": "Barra o peso corporal",
+    "default_sets": "3",
+    "default_reps": "10",
+    "default_load": "—",
+    "steps": [
+      { "title": "Inicio", "text": "Pies al ancho de hombros, abdomen activo y espalda larga. La carga se mantiene estable y el pecho abierto.", "image": "assets/ejercicio-sentadilla-banco-1.png?v=steps-2" },
+      { "title": "Descenso", "text": "Llevá la cadera hacia atrás y flexioná rodillas con control, sin perder alineación de pies y rodillas.", "image": "assets/ejercicio-sentadilla-banco-2.png?v=steps-2" },
+      { "title": "Subida", "text": "Empujá el suelo, activá glúteos y volvé a la posición inicial sin bloquear la zona lumbar.", "image": "assets/ejercicio-sentadilla-banco-3.png?v=steps-2" }
+    ]
+  },
+  {
+    "id": "prensa-piernas",
+    "name": "Prensa de piernas",
+    "category": "Tren inferior",
+    "equipment": "Leg Press",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      { "title": "Inicio", "text": "Apoyá toda la espalda en el respaldo y ubicá los pies firmes sobre la plataforma.", "image": "assets/icono-ejercicio-1.png?v=icons-2" },
+      { "title": "Flexión", "text": "Bajá la plataforma con control, llevando rodillas hacia el pecho sin despegar la pelvis.", "image": "assets/icono-ejercicio-2.png?v=icons-2" },
+      { "title": "Empuje", "text": "Empujá desde talones y mediopié hasta extender sin trabar completamente las rodillas.", "image": "assets/icono-ejercicio-3.png?v=icons-2" }
+    ]
+  },
+  {
+    "id": "hip-thrust-barra",
+    "name": "Hip thrust con barra",
+    "category": "Tren inferior",
+    "equipment": "Banco + barra",
+    "default_sets": "3",
+    "default_reps": "10",
+    "default_load": "—",
+    "steps": [
+      { "title": "Apoyo", "text": "Apoyá la parte alta de la espalda en el banco, pies firmes y barra sobre la cadera.", "image": "assets/icono-ejercicio-1.png?v=icons-2" },
+      { "title": "Elevación", "text": "Elevá la cadera activando glúteos, con mentón levemente hacia adentro y abdomen firme.", "image": "assets/icono-ejercicio-2.png?v=icons-2" },
+      { "title": "Control", "text": "Bajá lento sin perder tensión y repetí evitando arquear de más la zona lumbar.", "image": "assets/icono-ejercicio-3.png?v=icons-2" }
+    ]
+  },
+  {
+    "id": "jalon-al-pecho",
+    "name": "Polea al pecho / Jalón al pecho",
+    "category": "Tren superior",
+    "equipment": "Polea alta",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      { "title": "Inicio", "text": "Sentate estable, tomá la barra con agarre cómodo y mantené hombros lejos de las orejas.", "image": "assets/icono-ejercicio-1.png?v=icons-2" },
+      { "title": "Tracción", "text": "Llevá la barra hacia el pecho, activando espalda y acercando codos al torso.", "image": "assets/icono-ejercicio-2.png?v=icons-2" },
+      { "title": "Regreso", "text": "Volvé con control hasta extender brazos sin soltar la postura ni elevar hombros.", "image": "assets/icono-ejercicio-3.png?v=icons-2" }
+    ]
+  },
+  {
+    "id": "plancha-abdominal",
+    "name": "Plancha abdominal tradicional",
+    "category": "Core",
+    "equipment": "Mat",
+    "default_sets": "3",
+    "default_reps": "30 segundos",
+    "default_load": "—",
+    "steps": [
+      { "title": "Apoyo", "text": "Apoyá antebrazos y puntas de pies, con codos debajo de hombros.", "image": "assets/icono-ejercicio-1.png?v=icons-2" },
+      { "title": "Alineación", "text": "Mantené cabeza, espalda y cadera en una línea, abdomen activo y glúteos firmes.", "image": "assets/icono-ejercicio-2.png?v=icons-2" },
+      { "title": "Sostén", "text": "Respirá sin perder postura. Si aparece dolor lumbar, bajá rodillas y avisá a Yanina.", "image": "assets/icono-ejercicio-3.png?v=icons-2" }
+    ]
+  }
+]
