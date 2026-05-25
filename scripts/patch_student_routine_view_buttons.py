@@ -4,26 +4,19 @@ path = Path('alumno/index.html')
 text = path.read_text(encoding='utf-8')
 original = text
 
-# Add CSS for table-like routine rows and illustrated detail panel.
+# Re-run marker: routine list stays simple; visual cards open on demand.
 if '.routine-table-row' not in text.split('</style>')[0]:
     text = text.replace(
         '.routine-list,.class-list,.video-list{display:grid;gap:14px}',
         '.routine-list,.class-list,.video-list{display:grid;gap:14px}.routine-toolbar{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:14px}.routine-table-row{display:grid;grid-template-columns:1.5fr .65fr .85fr .75fr auto;gap:12px;align-items:center;padding:14px 16px;border:1px solid #edf4e9;border-radius:20px;background:#f8fcf6}.routine-table-row strong{color:var(--navy)}.routine-table-row span{color:var(--muted);font-weight:800}.routine-view-btn{border:0;border-radius:999px;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;font-weight:900;padding:10px 14px;cursor:pointer}.routine-visual-panel{display:grid;gap:18px;margin-top:18px}.exercise-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.exercise-step-card{background:#fff;border:1px solid var(--line);border-radius:26px;overflow:hidden;box-shadow:0 12px 30px rgba(24,34,61,.07)}.exercise-step-card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#f7fbf8}.exercise-step-body{padding:18px}.exercise-step-body h3{font-size:19px;margin:0 0 8px;color:var(--navy)}.exercise-step-body p{margin:0;color:var(--muted);line-height:1.5;font-size:15px}'
     )
-    text = text.replace(
-        '@media(max-width:1060px){.hero,.app,.measurement-chart-grid,.measurement-grid{grid-template-columns:1fr}',
-        '@media(max-width:1060px){.hero,.app,.measurement-chart-grid,.measurement-grid,.exercise-grid{grid-template-columns:1fr}'
-    )
-    text = text.replace(
-        '@media(max-width:700px){.demo-shell{padding:16px}',
-        '@media(max-width:700px){.routine-table-row{grid-template-columns:1fr}.demo-shell{padding:16px}'
-    )
+    text = text.replace('@media(max-width:1060px){.hero,.app,.measurement-chart-grid,.measurement-grid{grid-template-columns:1fr}', '@media(max-width:1060px){.hero,.app,.measurement-chart-grid,.measurement-grid,.exercise-grid{grid-template-columns:1fr}')
+    text = text.replace('@media(max-width:700px){.demo-shell{padding:16px}', '@media(max-width:700px){.routine-table-row{grid-template-columns:1fr}.demo-shell{padding:16px}')
 
 old_section = '<section class="panel" id="rutina"><div class="panel-head"><div><h2>Rutina seleccionada</h2><p id="selectedClassTitle">Seleccioná una clase.</p></div><span class="tag" id="selectedStatus">Rutina</span></div><div class="card"><div class="routine-list" id="routineList"><div class="empty">Seleccioná una clase del calendario.</div></div></div><div class="card yanina-comment"><h3>Observaciones técnicas</h3><p id="routineNotes">Sin observaciones cargadas.</p></div><div class="card"><h3>Videos de esta clase</h3><p class="muted">Podés enviar hasta 3 videos por clase. Pueden mostrar uno o varios ejercicios.</p><div class="upload-actions"><span class="video-limit" id="routineVideoCounter">0/3 videos enviados</span><button type="button" class="primary-action" id="openVideosBtn">Subir videos</button></div></div></section>'
 new_section = '<section class="panel" id="rutina"><div class="panel-head"><div><h2>Rutina seleccionada</h2><p id="selectedClassTitle">Seleccioná una clase.</p></div><span class="tag" id="selectedStatus">Rutina</span></div><div class="card"><div class="routine-toolbar"><button type="button" class="ghost-action" id="viewFullRoutineBtn">Ver rutina ilustrada completa</button></div><div class="routine-list" id="routineList"><div class="empty">Seleccioná una clase del calendario.</div></div><div class="routine-visual-panel" id="routineVisualPanel"></div></div><div class="card yanina-comment"><h3>Observaciones técnicas</h3><p id="routineNotes">Sin observaciones cargadas.</p></div><div class="card"><h3>Videos de esta clase</h3><p class="muted">Podés enviar hasta 3 videos por clase. Pueden mostrar uno o varios ejercicios.</p><div class="upload-actions"><span class="video-limit" id="routineVideoCounter">0/3 videos enviados</span><button type="button" class="primary-action" id="openVideosBtn">Subir videos</button></div></div></section>'
 text = text.replace(old_section, new_section)
 
-# Replace render helpers with table-row + detail rendering. Existing helper is minified; use robust boundaries.
 start = text.find('function getExerciseAssetPath(path)')
 end = text.find('function videoKey(){')
 if start != -1 and end != -1:
@@ -31,7 +24,6 @@ if start != -1 and end != -1:
 '''
     text = text[:start] + helpers + text[end:]
 
-# Replace routine list rendering line.
 old_render = "$('routineList').innerHTML=ex.length?ex.map((e,i)=>renderRoutineExercise(e,i)).join(''):'<div class=\"empty\">Esta clase todavía no tiene ejercicios cargados.</div>'"
 new_render = "$('routineList').innerHTML=ex.length?ex.map((e,i)=>renderRoutineRow(e,i)).join(''):'<div class=\"empty\">Esta clase todavía no tiene ejercicios cargados.</div>';if($('routineVisualPanel'))$('routineVisualPanel').innerHTML='';document.querySelectorAll('[data-view-exercise]').forEach(btn=>btn.addEventListener('click',()=>showRoutineVisual(ex,btn.dataset.viewExercise)));if($('viewFullRoutineBtn'))$('viewFullRoutineBtn').onclick=()=>showRoutineVisual(ex,null)"
 text = text.replace(old_render, new_render)
