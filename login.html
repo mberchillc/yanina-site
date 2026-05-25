@@ -6,7 +6,7 @@
   <title>Acceso | Yanina Trainer</title>
   <style>
     :root{--green-dark:#183f35;--green-main:#7ec845;--green-soft:#d9f2cb;--cream:#f7f3ea;--white:#fff;--text:#24332e;--muted:#6f7d78;--border:rgba(24,63,53,.14);--shadow:0 18px 50px rgba(24,63,53,.14)}
-    *{box-sizing:border-box;margin:0;padding:0}body{min-height:100vh;font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--cream),#eef7ea);color:var(--text);display:flex;align-items:center;justify-content:center;padding:24px}.login-card{width:100%;max-width:460px;background:rgba(255,255,255,.9);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow);padding:34px}.brand-block{background:var(--green-dark);border-radius:24px;padding:28px;text-align:center;margin-bottom:28px}.brand-block img{width:260px;height:92px;object-fit:cover;object-position:center;display:block;margin:0 auto}.eyebrow{color:var(--green-dark);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}h1{color:var(--green-dark);font-size:34px;line-height:1.08;margin-bottom:24px}.field{display:grid;gap:7px;margin-bottom:16px}label{color:var(--muted);font-size:13px;font-weight:800}input{width:100%;border:1px solid var(--border);background:var(--white);color:var(--text);border-radius:14px;padding:14px;font-size:15px;outline:none}input:focus{border-color:var(--green-main);box-shadow:0 0 0 4px rgba(126,200,69,.18)}.btn{width:100%;border:none;border-radius:999px;padding:14px 18px;font-size:15px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;justify-content:center;align-items:center;margin-top:8px}.btn-primary{background:var(--green-main);color:var(--green-dark)}.back-link{display:block;text-align:center;margin-top:18px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:700}.back-link:hover{color:var(--green-dark)}.note{margin-top:18px;padding:13px 14px;border-radius:16px;background:var(--green-soft);color:var(--green-dark);font-size:13px;line-height:1.45}.login-error,.login-success{display:none;margin:0 0 16px;padding:12px 14px;border-radius:16px;font-size:13px;font-weight:800;line-height:1.4}.login-error{background:rgba(180,48,48,.1);color:#8f2525}.login-success{background:var(--green-soft);color:var(--green-dark)}.hidden{display:none}@media(max-width:520px){.login-card{padding:24px}.brand-block img{width:220px;height:82px}h1{font-size:30px}}
+    *{box-sizing:border-box;margin:0;padding:0}body{min-height:100vh;font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--cream),#eef7ea);color:var(--text);display:flex;align-items:center;justify-content:center;padding:24px}.login-card{width:100%;max-width:460px;background:rgba(255,255,255,.9);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow);padding:34px}.brand-block{background:var(--green-dark);border-radius:24px;padding:28px;text-align:center;margin-bottom:28px}.brand-block img{width:260px;height:92px;object-fit:cover;object-position:center;display:block;margin:0 auto}.eyebrow{color:var(--green-dark);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}h1{color:var(--green-dark);font-size:34px;line-height:1.08;margin-bottom:24px}.field{display:grid;gap:7px;margin-bottom:16px}label{color:var(--muted);font-size:13px;font-weight:800}input{width:100%;border:1px solid var(--border);background:var(--white);color:var(--text);border-radius:14px;padding:14px;font-size:15px;outline:none}input:focus{border-color:var(--green-main);box-shadow:0 0 0 4px rgba(126,200,69,.18)}.btn{width:100%;border:none;border-radius:999px;padding:14px 18px;font-size:15px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;justify-content:center;align-items:center;margin-top:8px}.btn-primary{background:var(--green-main);color:var(--green-dark)}.btn:disabled{opacity:.55;cursor:not-allowed}.back-link{display:block;text-align:center;margin-top:18px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:700}.back-link:hover{color:var(--green-dark)}.note{margin-top:18px;padding:13px 14px;border-radius:16px;background:var(--green-soft);color:var(--green-dark);font-size:13px;line-height:1.45}.login-error,.login-success{display:none;margin:0 0 16px;padding:12px 14px;border-radius:16px;font-size:13px;font-weight:800;line-height:1.4}.login-error{background:rgba(180,48,48,.1);color:#8f2525}.login-success{background:var(--green-soft);color:var(--green-dark)}.hidden{display:none}@media(max-width:520px){.login-card{padding:24px}.brand-block img{width:220px;height:82px}h1{font-size:30px}}
   </style>
 </head>
 <body>
@@ -37,19 +37,14 @@
       <button type="submit" class="btn btn-primary" id="submitBtn">Entrar a plataforma</button>
     </form>
 
-    <div class="note" id="loginNote">Versión MVP: usuario y contraseña fijos. Más adelante se puede conectar con autenticación segura.</div>
+    <div class="note" id="loginNote">Ingresá con tu usuario y contraseña.</div>
     <a class="back-link" href="/">← Volver al sitio</a>
   </main>
 
   <script>
-    const ADMIN_USER = "yanina@yaninatrainer.net";
-    const ADMIN_PASSWORD = "demo123";
+    const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
     const ADMIN_SESSION_KEY = "yaninaAdminSession";
     const STUDENT_SESSION_KEY = "yaninaStudentSession";
-    const STUDENT_PASSWORD_KEY = "yaninaStudentPassword_MarcelaS";
-    const STUDENT_USER = "marcela.s";
-    const STUDENT_ID = "6";
-    const STUDENT_NAME = "Marcela Stepaniuk";
 
     const loginForm = document.getElementById("loginForm");
     const loginError = document.getElementById("loginError");
@@ -57,9 +52,14 @@
     const confirmPasswordField = document.getElementById("confirmPasswordField");
     const submitBtn = document.getElementById("submitBtn");
     const loginNote = document.getElementById("loginNote");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+
+    let setupMode = false;
 
     function normalizeUser(value) {
-      return String(value || "").trim().toLowerCase();
+      return String(value || "").trim();
     }
 
     function showError(message) {
@@ -74,84 +74,114 @@
       loginSuccess.style.display = "block";
     }
 
-    function setStudentSetupMode(active) {
+    function setLoading(active) {
+      submitBtn.disabled = active;
+      submitBtn.textContent = active ? "Validando..." : (setupMode ? "Crear contraseña" : "Entrar a plataforma");
+    }
+
+    function setSetupMode(active) {
+      setupMode = active;
       confirmPasswordField.classList.toggle("hidden", !active);
       submitBtn.textContent = active ? "Crear contraseña" : "Entrar a plataforma";
       loginNote.innerHTML = active
-        ? "Usuario detectado: <strong>Marcela.S</strong>. Creá tu contraseña para entrar a tu espacio."
-        : "Versión MVP: usuario y contraseña fijos. Más adelante se puede conectar con autenticación segura.";
+        ? "Usuario detectado. Creá tu contraseña para activar tu acceso."
+        : "Ingresá con tu usuario y contraseña.";
     }
 
-    function enterAdmin(username) {
+    async function postAuth(path, payload) {
+      const response = await fetch(`${API_BASE}${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || "No se pudo validar el acceso.");
+      }
+      return data;
+    }
+
+    function enterAdmin(payload) {
       localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({
-        user: username,
+        user: payload.username,
         role: "admin",
+        token: payload.token || "",
         loggedIn: true,
         createdAt: new Date().toISOString()
       }));
       window.location.href = "/admin/index.html";
     }
 
-    function enterStudent() {
+    function enterStudent(payload) {
       localStorage.setItem(STUDENT_SESSION_KEY, JSON.stringify({
         role: "student",
-        studentId: STUDENT_ID,
-        name: STUDENT_NAME,
-        username: "Marcela.S",
+        studentId: payload.student_id,
+        name: payload.name || "Alumna",
+        username: payload.username,
+        token: payload.token || "",
         loggedIn: true,
         createdAt: new Date().toISOString()
       }));
       window.location.href = "/alumno/index.html?v=tracking-back";
     }
 
-    document.getElementById("username").addEventListener("input", event => {
-      const username = normalizeUser(event.target.value);
-      const savedPassword = localStorage.getItem(STUDENT_PASSWORD_KEY);
-      setStudentSetupMode(username === STUDENT_USER && !savedPassword);
+    usernameInput.addEventListener("input", () => {
       loginError.style.display = "none";
       loginSuccess.style.display = "none";
+      setSetupMode(false);
     });
 
-    loginForm.addEventListener("submit", event => {
+    loginForm.addEventListener("submit", async event => {
       event.preventDefault();
 
-      const usernameRaw = document.getElementById("username")?.value.trim() || "";
-      const username = normalizeUser(usernameRaw);
-      const password = document.getElementById("password")?.value || "";
-      const confirmPassword = document.getElementById("confirmPassword")?.value || "";
+      const username = normalizeUser(usernameInput.value);
+      const password = passwordInput.value || "";
+      const confirmPassword = confirmPasswordInput.value || "";
 
-      if (username === ADMIN_USER && password === ADMIN_PASSWORD) {
-        enterAdmin(usernameRaw);
+      if (!username || !password) {
+        showError("Completá usuario y contraseña.");
         return;
       }
 
-      if (username === STUDENT_USER) {
-        const savedPassword = localStorage.getItem(STUDENT_PASSWORD_KEY);
-        if (!savedPassword) {
-          setStudentSetupMode(true);
-          if (password.length < 6) {
-            showError("La contraseña debe tener al menos 6 caracteres.");
-            return;
-          }
-          if (password !== confirmPassword) {
-            showError("Las contraseñas no coinciden.");
-            return;
-          }
-          localStorage.setItem(STUDENT_PASSWORD_KEY, password);
+      try {
+        setLoading(true);
+
+        if (setupMode) {
+          if (password.length < 6) throw new Error("La contraseña debe tener al menos 6 caracteres.");
+          if (password !== confirmPassword) throw new Error("Las contraseñas no coinciden.");
+
+          await postAuth("/api/student-auth/setup-password", { username, password });
           showSuccess("Contraseña creada. Ya podés entrar.");
-          setStudentSetupMode(false);
-          document.getElementById("password").value = "";
-          document.getElementById("confirmPassword").value = "";
+          passwordInput.value = "";
+          confirmPasswordInput.value = "";
+          setSetupMode(false);
           return;
         }
 
-        if (password === savedPassword) {
-          enterStudent();
+        const payload = await postAuth("/api/auth/login", { username, password });
+
+        if (payload.role === "admin") {
+          enterAdmin(payload);
           return;
         }
+
+        if (payload.role === "student") {
+          enterStudent(payload);
+          return;
+        }
+
+        throw new Error("Usuario o contraseña incorrectos.");
+      } catch (error) {
+        const message = String(error.message || "No se pudo validar el acceso.");
+        if (message === "PASSWORD_NOT_SET") {
+          setSetupMode(true);
+          showError("Primero creá tu contraseña.");
+        } else {
+          showError(message);
+        }
+      } finally {
+        setLoading(false);
       }
-
-      showError("Usuario o contraseña incorrectos.");
     });
   </script>
 </body>
