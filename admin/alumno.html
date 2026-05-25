@@ -874,6 +874,8 @@
   line-height: 1.45;
 }
 
+    .exercise-library-select { width: 100%; border: 0; background: transparent; color: var(--green-dark); font: inherit; font-weight: 800; outline: none; }
+
     @media (max-width: 840px) {
       .topbar {
         align-items: flex-start;
@@ -1477,6 +1479,7 @@ async function loadMeasurementsFromBackend() {
   }
 }
 
+    let exerciseLibrary = [];
     let allClasses = [];
     let selectedClass = null;
     let activeBackendClassId = null;
@@ -1504,6 +1507,49 @@ async function loadMeasurementsFromBackend() {
     const navStudentName = document.getElementById("navStudentName");
     const studentPhoto = document.querySelector(".student-photo");
     const studentAvatar = document.querySelector(".student-avatar");
+
+
+    async function loadExerciseLibrary() {
+      try {
+        const response = await fetch(`../exercises.json?cache=${Date.now()}`);
+        if (!response.ok) throw new Error("No se pudo cargar la biblioteca");
+        const data = await response.json();
+        exerciseLibrary = Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error(error);
+        exerciseLibrary = [];
+      }
+    }
+
+    function findLibraryExerciseByName(name) {
+      const clean = String(name || "").trim().toLowerCase();
+      if (!clean) return null;
+      return exerciseLibrary.find(item => String(item.name || "").trim().toLowerCase() === clean) || null;
+    }
+
+    function exerciseOptions(selectedName) {
+      const selected = String(selectedName || "").trim();
+      const selectedLower = selected.toLowerCase();
+      const options = [`<option value="">Nuevo ejercicio</option>`];
+      const categories = [...new Set(exerciseLibrary.map(item => item.category || "Biblioteca"))];
+
+      categories.forEach(category => {
+        const items = exerciseLibrary.filter(item => (item.category || "Biblioteca") === category);
+        options.push(`<optgroup label="${escapeHtml(category)}">`);
+        items.forEach(item => {
+          const name = item.name || "";
+          const isSelected = selectedLower && selectedLower === String(name).trim().toLowerCase();
+          options.push(`<option value="${escapeHtml(name)}" ${isSelected ? "selected" : ""}>${escapeHtml(name)}</option>`);
+        });
+        options.push(`</optgroup>`);
+      });
+
+      if (selected && selectedLower !== "nuevo ejercicio" && !findLibraryExerciseByName(selected)) {
+        options.splice(1, 0, `<option value="${escapeHtml(selected)}" selected>${escapeHtml(selected)}</option>`);
+      }
+
+      return options.join("");
+    }
 
     function startOfToday() {
       const d = new Date();
@@ -2114,8 +2160,12 @@ async function markClassCompleted(classId) {
       const row = document.createElement("div");
       row.className = "exercise-row";
 
+      const select = document.createElement("select");
+      select.className = "exercise-library-select";
+      select.innerHTML = exerciseOptions(exercise || "");
+      row.appendChild(select);
+
       const values = [
-        exercise || "Nuevo ejercicio",
         series || "3",
         reps || "10",
         carga || "—"
@@ -2126,6 +2176,15 @@ async function markClassCompleted(classId) {
         cell.contentEditable = "true";
         cell.textContent = value;
         row.appendChild(cell);
+      });
+
+      select.addEventListener("change", () => {
+        const selected = findLibraryExerciseByName(select.value);
+        const cells = row.querySelectorAll("span");
+        if (!selected || cells.length < 3) return;
+        if (!cells[0].textContent.trim() || cells[0].textContent.trim() === "3") cells[0].textContent = selected.default_sets || "3";
+        if (!cells[1].textContent.trim() || cells[1].textContent.trim() === "10") cells[1].textContent = selected.default_reps || "10";
+        if (!cells[2].textContent.trim() || cells[2].textContent.trim() === "—") cells[2].textContent = selected.default_load || "—";
       });
 
       const deleteBtn = document.createElement("button");
@@ -2151,13 +2210,14 @@ async function markClassCompleted(classId) {
       const exercises = [];
 
       document.querySelectorAll("#exerciseTable .exercise-row").forEach(row => {
+        const select = row.querySelector(".exercise-library-select");
         const cells = row.querySelectorAll("span");
 
         const exercise = {
-          exercise_name: cells[0]?.textContent.trim() || "",
-          sets: cells[1]?.textContent.trim() || "",
-          reps_time: cells[2]?.textContent.trim() || "",
-          load: cells[3]?.textContent.trim() || ""
+          exercise_name: select?.value || "",
+          sets: cells[0]?.textContent.trim() || "",
+          reps_time: cells[1]?.textContent.trim() || "",
+          load: cells[2]?.textContent.trim() || ""
         };
 
         if (exercise.exercise_name || exercise.sets || exercise.reps_time || exercise.load) {
@@ -2317,13 +2377,14 @@ async function markClassCompleted(classId) {
         const rows = Array.from(exerciseTable.querySelectorAll(".exercise-row"));
 
         rows.forEach(row => {
+          const select = row.querySelector(".exercise-library-select");
           const cells = row.querySelectorAll("span");
           exerciseTable.appendChild(
             createExerciseRow(
+              select?.value || "",
               cells[0]?.textContent || "",
               cells[1]?.textContent || "",
-              cells[2]?.textContent || "",
-              cells[3]?.textContent || ""
+              cells[2]?.textContent || ""
             )
           );
         });
@@ -2391,6 +2452,7 @@ async function markClassCompleted(classId) {
         updateStarfitLinks();
         updateStarfitHistoryLink();
         updateStudentIdentity();
+        await loadExerciseLibrary();
 
         if (isNewStudent) {
           resetForNewStudent();
