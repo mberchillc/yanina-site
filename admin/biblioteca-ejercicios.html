@@ -43,6 +43,12 @@
     const $ = id => document.getElementById(id);
     const escapeHtml = value => String(value || '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
     const assetPath = path => !path ? '' : String(path).startsWith('../') ? path : `../${path}`;
+    const imageOverrides = {
+      'zancadas-smith': ['assets/zancadas-smith-1.svg?v=smith-1','assets/zancadas-smith-2.svg?v=smith-1','assets/zancadas-smith-3.svg?v=smith-1'],
+      'hip-thrust-barra': ['assets/hip-thrust-barra-1.svg?v=hip-1','assets/hip-thrust-barra-2.svg?v=hip-1','assets/hip-thrust-barra-3.svg?v=hip-1'],
+      'peso-muerto-rumano': ['assets/peso-muerto-rumano-1.svg?v=rumano-1','assets/peso-muerto-rumano-2.svg?v=rumano-1','assets/peso-muerto-rumano-3.svg?v=rumano-1']
+    };
+    const stepImage = (exercise, step, index) => imageOverrides[exercise.id]?.[index] || step.image;
 
     async function loadLibrary(){
       try{
@@ -112,7 +118,7 @@
         <div class="step-grid">
           ${(item.steps || []).slice(0,3).map((step,index) => `
             <article class="step-card">
-              <img src="${escapeHtml(assetPath(step.image))}" alt="${escapeHtml(item.name)} - ${escapeHtml(step.title)}">
+              <img src="${escapeHtml(assetPath(stepImage(item, step, index)))}" alt="${escapeHtml(item.name)} - ${escapeHtml(step.title)}">
               <div class="step-body"><h3>${index + 1}. ${escapeHtml(step.title)}</h3><p>${escapeHtml(step.text)}</p></div>
             </article>
           `).join('')}
