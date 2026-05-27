@@ -197,6 +197,7 @@
 
       <div class="top-actions">
         <a href="../index.html" class="btn btn-secondary">Volver al sitio</a>
+        <a href="biblioteca-ejercicios.html" class="btn btn-secondary">Biblioteca</a>
         <button type="button" class="btn btn-secondary btn-link-reset" id="logoutBtn">Salir</button>
         <a href="alumno.html?new=1" class="btn btn-primary">+ Nuevo alumno</a>
       </div>
@@ -265,7 +266,12 @@ function isBirthdayTomorrow(birthDate) {
   const month = Number(parts[1]);
   const day = Number(parts[2]);
 
-  const tomorrow = new Date();
+  if (!month || !day) return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
   return tomorrow.getMonth() + 1 === month && tomorrow.getDate() === day;
@@ -274,7 +280,7 @@ function isBirthdayTomorrow(birthDate) {
 function renderBirthdayAlerts(students) {
   if (!birthdayAlerts) return;
 
-  const birthdayStudents = students.filter(student => isBirthdayTomorrow(getBirthDate(student)));
+  const birthdayStudents = (students || []).filter(student => isBirthdayTomorrow(getBirthDate(student)));
 
   if (!birthdayStudents.length) {
     birthdayAlerts.style.display = "none";
@@ -283,84 +289,96 @@ function renderBirthdayAlerts(students) {
   }
 
   birthdayAlerts.style.display = "block";
-  birthdayAlerts.innerHTML = birthdayStudents.map(student => {
-    const name = escapeHtml(getStudentName(student));
-    return `<div class="birthday-alert">🎂 Mañana cumple ${name}</div>`;
-  }).join("");
+  birthdayAlerts.innerHTML = birthdayStudents.map(student => `
+    <div class="birthday-alert">
+      🎂 Mañana es el cumpleaños de ${escapeHtml(getStudentName(student))}. Preparar saludo.
+    </div>
+  `).join("");
 }
-    function renderStudents(students) {
-      if (!studentsGrid) return;
 
+    function renderStudents(students) {
       if (!students.length) {
-        studentsGrid.innerHTML = `<div class="empty-state">No hay alumnos para mostrar. Usá <strong>+ Nuevo alumno</strong> para cargar el primero.</div>`;
+        studentsGrid.innerHTML = `
+          <div class="empty-state">
+            Todavía no hay alumnos cargados. Usá el botón <strong>+ Nuevo alumno</strong> para crear la primera ficha.
+          </div>
+        `;
         return;
       }
 
       studentsGrid.innerHTML = students.map(student => {
         const id = getStudentId(student);
-        const name = escapeHtml(getStudentName(student));
-        const modality = escapeHtml(getStudentModality(student));
-        const goal = escapeHtml(getStudentGoal(student));
-        const frequency = escapeHtml(getStudentFrequency(student));
-        const lastMeasurements = escapeHtml(formatDate(getLastMeasurements(student)));
-
         return `
-          <article class="student-card" data-student-id="${id}">
+          <article class="student-card">
             <div class="student-top">
-              <div class="student-name">${name}</div>
-              <div class="student-pill">${modality}</div>
-            </div>
-
-            <div class="student-meta">
-              <div><strong>Objetivo:</strong> ${goal}</div>
-              <div><strong>Frecuencia:</strong> ${frequency}</div>
-              <div><strong>Últimas mediciones:</strong> ${lastMeasurements}</div>
+              <div>
+                <div class="student-name">${escapeHtml(getStudentName(student))}</div>
+                <div class="student-meta" style="margin-top:10px;">
+                  <div><strong>Frecuencia:</strong> ${escapeHtml(getStudentFrequency(student))}</div>
+                  <div><strong>Modalidad:</strong> ${escapeHtml(getStudentModality(student))}</div>
+                  <div><strong>Últimas mediciones:</strong> ${escapeHtml(formatDate(getLastMeasurements(student)))}</div>
+                </div>
+              </div>
+              <span class="student-pill">ID ${escapeHtml(id)}</span>
             </div>
 
             <div class="next-class">
-              <strong>Próxima clase:</strong><br>
-              Se cargará desde el calendario del alumno.
+              <strong>Objetivo:</strong><br />
+              ${escapeHtml(getStudentGoal(student))}
             </div>
 
             <div class="card-actions">
-              <a href="alumno.html?id=${id}" class="btn btn-soft">Ver ficha</a>
-              <a href="alumno.html?id=${id}#calendario" class="btn btn-soft">Calendario</a>
+              <a class="btn btn-soft" href="alumno.html?id=${encodeURIComponent(id)}">Abrir ficha</a>
+              <a class="btn btn-soft" href="../alumno/?id=${encodeURIComponent(id)}" target="_blank">Vista alumna</a>
             </div>
 
-            <button type="button" class="delete-student-btn" data-student-id="${id}" data-student-name="${name}" aria-label="Eliminar alumno ${name}" title="Eliminar alumno">E</button>
+            <button type="button" class="delete-student-btn" data-delete-id="${escapeHtml(id)}" aria-label="Eliminar alumno">E</button>
           </article>
         `;
       }).join("");
 
-      studentsGrid.querySelectorAll(".delete-student-btn").forEach(button => {
-        button.addEventListener("click", () => deleteStudent(button.dataset.studentId, button.dataset.studentName, button));
+      studentsGrid.querySelectorAll("[data-delete-id]").forEach(button => {
+        button.addEventListener("click", () => deleteStudent(button.dataset.deleteId));
       });
     }
 
-    function updateStats(students) {
-      if (studentsCount) studentsCount.textContent = students.length;
-      if (classesCount) classesCount.textContent = "—";
-      if (routinesCount) routinesCount.textContent = "—";
+    async function loadStudents() {
+      try {
+        const response = await fetch(`${API_BASE}/api/students?cache=${Date.now()}`);
+        if (!response.ok) throw new Error("No se pudo cargar la lista de alumnos desde D1");
+
+        allStudents = await response.json();
+        allStudents = Array.isArray(allStudents) ? allStudents : [];
+
+        studentsCount.textContent = allStudents.length;
+        classesCount.textContent = "—";
+        routinesCount.textContent = "—";
+        renderBirthdayAlerts(allStudents);
+        renderStudents(allStudents);
+      } catch (error) {
+        console.error(error);
+        studentsGrid.innerHTML = `
+          <div class="empty-state">
+            No se pudo conectar con la API. Revisá que el Worker esté activo.
+          </div>
+        `;
+      }
     }
 
-    async function loadStudentsFromBackend() {
-      const response = await fetch(`${API_BASE}/api/students?cache=${Date.now()}`);
-      if (!response.ok) throw new Error("No se pudieron cargar los alumnos desde D1");
-      const data = await response.json();
-      if (Array.isArray(data)) return data;
-      if (Array.isArray(data.students)) return data.students;
-      return [];
-    }
+    async function deleteStudent(studentId) {
+      const found = allStudents.find(student => String(getStudentId(student)) === String(studentId));
+      const name = found ? getStudentName(found) : `ID ${studentId}`;
 
-    async function deleteStudent(studentId, studentName, button) {
-      const confirmed = confirm(`¿Eliminar la ficha de ${studentName}? También se eliminarán sus clases, rutinas y ejercicios. Esta acción no se puede deshacer.`);
+      const confirmed = confirm(`¿Eliminar a ${name}? Esta acción borrará también sus clases y rutinas.`);
       if (!confirmed) return;
 
-      button.disabled = true;
-      button.textContent = "…";
+      const button = document.querySelector(`[data-delete-id="${CSS.escape(String(studentId))}"]`);
+      if (button) button.disabled = true;
 
       try {
-        const response = await fetch(`${API_BASE}/api/students/${studentId}`, { method: "DELETE" });
+        const response = await fetch(`${API_BASE}/api/students/${encodeURIComponent(studentId)}`, {
+          method: "DELETE"
+        });
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -368,29 +386,13 @@ function renderBirthdayAlerts(students) {
         }
 
         allStudents = allStudents.filter(student => String(getStudentId(student)) !== String(studentId));
-        updateStats(allStudents);
+        studentsCount.textContent = allStudents.length;
         renderBirthdayAlerts(allStudents);
         renderStudents(allStudents);
       } catch (error) {
         console.error(error);
         alert(error.message || "No se pudo eliminar el alumno.");
-        button.disabled = false;
-        button.textContent = "E";
-      }
-    }
-
-    async function initDashboard() {
-      try {
-        allStudents = await loadStudentsFromBackend();
-updateStats(allStudents);
-renderBirthdayAlerts(allStudents);
-renderStudents(allStudents);
-      } catch (error) {
-        console.error(error);
-        if (studentsGrid) {
-          studentsGrid.innerHTML = `<div class="empty-state">No se pudieron cargar los alumnos desde D1. Revisá el Worker o probá nuevamente.</div>`;
-        }
-        updateStats([]);
+        if (button) button.disabled = false;
       }
     }
 
@@ -401,7 +403,7 @@ renderStudents(allStudents);
       });
     }
 
-    initDashboard();
+    loadStudents();
   </script>
 </body>
 </html>
