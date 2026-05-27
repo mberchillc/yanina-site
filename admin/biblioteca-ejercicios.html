@@ -44,9 +44,18 @@
     const escapeHtml = value => String(value || '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
     const assetPath = path => !path ? '' : String(path).startsWith('../') ? path : `../${path}`;
     const fullImageOverrides = {
-      'sentadilla-libre-barra': 'assets/exercises/sentadilla-libre-barra.png?v=full-1',
-      'sentadilla-hack': 'assets/exercises/sentadilla-maquina-hack.png?v=full-1',
-      'sentadilla-smith': 'assets/exercises/sentadilla-maquina-smith.png?v=full-1'
+      'sentadilla-libre-barra': 'assets/exercises/sentadilla-libre-barra.png?v=full-2',
+      'sentadilla-hack': 'assets/exercises/sentadilla-maquina-hack.png?v=full-2',
+      'sentadilla-smith': 'assets/exercises/sentadilla-maquina-smith.png?v=full-2',
+      'prensa-piernas': 'assets/exercises/prensa-piernas.png?v=full-2',
+      'sentadilla-bulgara': 'assets/exercises/sentadilla-bulgara.png?v=full-2',
+      'zancadas-caminando': 'assets/exercises/zancadas-caminando.png?v=full-2',
+      'extension-cuadriceps': 'assets/exercises/extension-cuadriceps-maquina.png?v=full-2',
+      'curl-piernas': 'assets/exercises/curl-piernas-maquina.png?v=full-2',
+      'aductores-abductores': 'assets/exercises/aductores-abductores-maquina.png?v=full-2',
+      'elevacion-talones': 'assets/exercises/elevacion-talones-maquina.png?v=full-2',
+      'press-banca': 'assets/exercises/press-banca-barra.png?v=full-2',
+      'chest-press': 'assets/exercises/chest-press.png?v=full-2'
     };
     const imageOverrides = {
       'zancadas-smith': ['assets/zancadas-smith-1.svg?v=smith-1','assets/zancadas-smith-2.svg?v=smith-1','assets/zancadas-smith-3.svg?v=smith-1'],
