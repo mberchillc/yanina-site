@@ -1,16 +1,80 @@
 [
   {
-    "id": "sentadilla-libre",
-    "name": "Sentadilla libre",
+    "id": "sentadilla-libre-barra",
+    "name": "Sentadilla libre con barra",
     "category": "Tren inferior",
-    "equipment": "Barra o peso corporal",
+    "equipment": "Barra",
     "default_sets": "3",
     "default_reps": "10",
     "default_load": "—",
     "steps": [
-      { "title": "Inicio", "text": "Pies al ancho de hombros, abdomen activo y espalda larga. La carga se mantiene estable y el pecho abierto.", "image": "assets/ejercicio-sentadilla-banco-1.png?v=steps-2" },
-      { "title": "Descenso", "text": "Llevá la cadera hacia atrás y flexioná rodillas con control, sin perder alineación de pies y rodillas.", "image": "assets/ejercicio-sentadilla-banco-2.png?v=steps-2" },
-      { "title": "Subida", "text": "Empujá el suelo, activá glúteos y volvé a la posición inicial sin bloquear la zona lumbar.", "image": "assets/ejercicio-sentadilla-banco-3.png?v=steps-2" }
+      {
+        "title": "Inicio",
+        "text": "Ubicá la barra firme, pies al ancho de hombros y abdomen activo antes de iniciar.",
+        "image": "assets/ejercicio-sentadilla-banco-1.png?v=steps-2"
+      },
+      {
+        "title": "Descenso",
+        "text": "Descendé con control llevando la cadera atrás y manteniendo rodillas alineadas con los pies.",
+        "image": "assets/ejercicio-sentadilla-banco-2.png?v=steps-2"
+      },
+      {
+        "title": "Subida",
+        "text": "Empujá el suelo para subir, activando piernas y glúteos sin perder la postura.",
+        "image": "assets/ejercicio-sentadilla-banco-3.png?v=steps-2"
+      }
+    ]
+  },
+  {
+    "id": "sentadilla-hack",
+    "name": "Sentadilla en máquina Hack",
+    "category": "Tren inferior",
+    "equipment": "Hack Squat",
+    "default_sets": "3",
+    "default_reps": "10",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Sentadilla en máquina Hack con pies firmes, abdomen activo y postura estable antes de iniciar.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové cadera y rodillas con control, manteniendo alineación de pies, rodillas y torso.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Volvé a la posición inicial empujando desde el suelo y sosteniendo la técnica en todo el recorrido.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "sentadilla-smith",
+    "name": "Sentadilla en máquina Smith / Multipower",
+    "category": "Tren inferior",
+    "equipment": "Máquina Smith",
+    "default_sets": "3",
+    "default_reps": "10",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Sentadilla en máquina Smith / Multipower con pies firmes, abdomen activo y postura estable antes de iniciar.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové cadera y rodillas con control, manteniendo alineación de pies, rodillas y torso.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Volvé a la posición inicial empujando desde el suelo y sosteniendo la técnica en todo el recorrido.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
     ]
   },
   {
@@ -22,9 +86,99 @@
     "default_reps": "12",
     "default_load": "—",
     "steps": [
-      { "title": "Inicio", "text": "Apoyá toda la espalda en el respaldo y ubicá los pies firmes sobre la plataforma.", "image": "assets/icono-ejercicio-1.png?v=icons-2" },
-      { "title": "Flexión", "text": "Bajá la plataforma con control, llevando rodillas hacia el pecho sin despegar la pelvis.", "image": "assets/icono-ejercicio-2.png?v=icons-2" },
-      { "title": "Empuje", "text": "Empujá desde talones y mediopié hasta extender sin trabar completamente las rodillas.", "image": "assets/icono-ejercicio-3.png?v=icons-2" }
+      {
+        "title": "Inicio",
+        "text": "Apoyá toda la espalda en el respaldo y ubicá los pies firmes sobre la plataforma.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Flexión",
+        "text": "Bajá la plataforma con control, llevando rodillas hacia el pecho sin despegar la pelvis.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Empuje",
+        "text": "Empujá desde talones y mediopié hasta extender sin trabar completamente las rodillas.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "sentadilla-bulgara",
+    "name": "Sentadilla búlgara",
+    "category": "Tren inferior",
+    "equipment": "Mancuernas o barra guiada",
+    "default_sets": "3",
+    "default_reps": "10 por pierna",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Sentadilla búlgara con pies firmes, abdomen activo y postura estable antes de iniciar.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové cadera y rodillas con control, manteniendo alineación de pies, rodillas y torso.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Volvé a la posición inicial empujando desde el suelo y sosteniendo la técnica en todo el recorrido.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "zancadas-caminando",
+    "name": "Zancadas caminando",
+    "category": "Tren inferior",
+    "equipment": "Barra o mancuernas",
+    "default_sets": "3",
+    "default_reps": "10 por pierna",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Zancadas caminando con pies firmes, abdomen activo y postura estable antes de iniciar.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové cadera y rodillas con control, manteniendo alineación de pies, rodillas y torso.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Volvé a la posición inicial empujando desde el suelo y sosteniendo la técnica en todo el recorrido.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "zancadas-smith",
+    "name": "Zancadas estáticas en máquina Smith",
+    "category": "Tren inferior",
+    "equipment": "Máquina Smith",
+    "default_sets": "3",
+    "default_reps": "10 por pierna",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Zancadas estáticas en máquina Smith con pies firmes, abdomen activo y postura estable antes de iniciar.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové cadera y rodillas con control, manteniendo alineación de pies, rodillas y torso.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Volvé a la posición inicial empujando desde el suelo y sosteniendo la técnica en todo el recorrido.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
     ]
   },
   {
@@ -36,9 +190,333 @@
     "default_reps": "10",
     "default_load": "—",
     "steps": [
-      { "title": "Apoyo", "text": "Apoyá la parte alta de la espalda en el banco, pies firmes y barra sobre la cadera.", "image": "assets/icono-ejercicio-1.png?v=icons-2" },
-      { "title": "Elevación", "text": "Elevá la cadera activando glúteos, con mentón levemente hacia adentro y abdomen firme.", "image": "assets/icono-ejercicio-2.png?v=icons-2" },
-      { "title": "Control", "text": "Bajá lento sin perder tensión y repetí evitando arquear de más la zona lumbar.", "image": "assets/icono-ejercicio-3.png?v=icons-2" }
+      {
+        "title": "Apoyo",
+        "text": "Apoyá la parte alta de la espalda en el banco, pies firmes y barra sobre la cadera.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Elevación",
+        "text": "Elevá la cadera activando glúteos, con mentón levemente hacia adentro y abdomen firme.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Bajá lento sin perder tensión y repetí evitando arquear de más la zona lumbar.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "peso-muerto-rumano",
+    "name": "Peso muerto rumano",
+    "category": "Tren inferior",
+    "equipment": "Barra o mancuernas",
+    "default_sets": "3",
+    "default_reps": "10",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Peso muerto rumano con pies firmes, abdomen activo y postura estable antes de iniciar.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové cadera y rodillas con control, manteniendo alineación de pies, rodillas y torso.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Volvé a la posición inicial empujando desde el suelo y sosteniendo la técnica en todo el recorrido.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "extension-cuadriceps",
+    "name": "Extensión de cuádriceps en máquina",
+    "category": "Tren inferior",
+    "equipment": "Leg Extension",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Extensión de cuádriceps en máquina con pies firmes, abdomen activo y postura estable antes de iniciar.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové cadera y rodillas con control, manteniendo alineación de pies, rodillas y torso.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Volvé a la posición inicial empujando desde el suelo y sosteniendo la técnica en todo el recorrido.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "curl-piernas",
+    "name": "Curl de piernas en máquina",
+    "category": "Tren inferior",
+    "equipment": "Máquina tumbada o sentada",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Curl de piernas en máquina con pies firmes, abdomen activo y postura estable antes de iniciar.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové cadera y rodillas con control, manteniendo alineación de pies, rodillas y torso.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Volvé a la posición inicial empujando desde el suelo y sosteniendo la técnica en todo el recorrido.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "aductores-abductores",
+    "name": "Aductores / abductores en máquina",
+    "category": "Tren inferior",
+    "equipment": "Máquina de aductores/abductores",
+    "default_sets": "3",
+    "default_reps": "15",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Aductores / abductores en máquina con pies firmes, abdomen activo y postura estable antes de iniciar.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové cadera y rodillas con control, manteniendo alineación de pies, rodillas y torso.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Volvé a la posición inicial empujando desde el suelo y sosteniendo la técnica en todo el recorrido.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "elevacion-talones",
+    "name": "Elevación de talones en máquina",
+    "category": "Tren inferior",
+    "equipment": "Máquina de pantorrillas",
+    "default_sets": "3",
+    "default_reps": "15",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Elevación de talones en máquina con pies firmes, abdomen activo y postura estable antes de iniciar.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové cadera y rodillas con control, manteniendo alineación de pies, rodillas y torso.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Volvé a la posición inicial empujando desde el suelo y sosteniendo la técnica en todo el recorrido.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "press-banca",
+    "name": "Press de banca con barra o mancuernas",
+    "category": "Tren superior",
+    "equipment": "Banco + barra o mancuernas",
+    "default_sets": "3",
+    "default_reps": "10",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Press de banca con barra o mancuernas con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "chest-press",
+    "name": "Press de pecho en máquina guiada",
+    "category": "Tren superior",
+    "equipment": "Chest Press",
+    "default_sets": "3",
+    "default_reps": "10",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Press de pecho en máquina guiada con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "cruces-poleas",
+    "name": "Cruces de poleas para pectoral",
+    "category": "Tren superior",
+    "equipment": "Poleas / cables",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Cruces de poleas para pectoral con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "press-hombros",
+    "name": "Press de hombros con mancuernas o máquina",
+    "category": "Tren superior",
+    "equipment": "Mancuernas o máquina",
+    "default_sets": "3",
+    "default_reps": "10",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Press de hombros con mancuernas o máquina con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "vuelos-laterales",
+    "name": "Vuelos laterales",
+    "category": "Tren superior",
+    "equipment": "Mancuernas o polea baja",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Vuelos laterales con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "vuelos-frontales",
+    "name": "Vuelos frontales",
+    "category": "Tren superior",
+    "equipment": "Mancuernas o barra",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Vuelos frontales con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "remo-menton",
+    "name": "Remo al mentón",
+    "category": "Tren superior",
+    "equipment": "Barra, mancuernas o polea baja",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Remo al mentón con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
     ]
   },
   {
@@ -50,9 +528,307 @@
     "default_reps": "12",
     "default_load": "—",
     "steps": [
-      { "title": "Inicio", "text": "Sentate estable, tomá la barra con agarre cómodo y mantené hombros lejos de las orejas.", "image": "assets/icono-ejercicio-1.png?v=icons-2" },
-      { "title": "Tracción", "text": "Llevá la barra hacia el pecho, activando espalda y acercando codos al torso.", "image": "assets/icono-ejercicio-2.png?v=icons-2" },
-      { "title": "Regreso", "text": "Volvé con control hasta extender brazos sin soltar la postura ni elevar hombros.", "image": "assets/icono-ejercicio-3.png?v=icons-2" }
+      {
+        "title": "Inicio",
+        "text": "Sentate estable, tomá la barra con agarre cómodo y mantené hombros lejos de las orejas.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Tracción",
+        "text": "Llevá la barra hacia el pecho, activando espalda y acercando codos al torso.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Regreso",
+        "text": "Volvé con control hasta extender brazos sin soltar la postura ni elevar hombros.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "remo-maquina",
+    "name": "Remo en máquina sentado",
+    "category": "Tren superior",
+    "equipment": "Máquina con soporte al pecho",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Remo en máquina sentado con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "remo-barra-tbar",
+    "name": "Remo con barra o T-Bar",
+    "category": "Tren superior",
+    "equipment": "Barra o T-Bar",
+    "default_sets": "3",
+    "default_reps": "10",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Remo con barra o T-Bar con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "vuelos-posteriores",
+    "name": "Pájaros / vuelos posteriores",
+    "category": "Tren superior",
+    "equipment": "Mancuernas o Pec Deck invertido",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Pájaros / vuelos posteriores con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "dominadas",
+    "name": "Dominadas libres o asistidas",
+    "category": "Tren superior",
+    "equipment": "Barra o máquina asistida",
+    "default_sets": "3",
+    "default_reps": "8-10",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Dominadas libres o asistidas con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "curl-biceps",
+    "name": "Curl de bíceps con barra o mancuernas",
+    "category": "Tren superior",
+    "equipment": "Barra recta/Z o mancuernas",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Curl de bíceps con barra o mancuernas con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "curl-scott",
+    "name": "Curl de bíceps en banco Scott",
+    "category": "Tren superior",
+    "equipment": "Banco Scott / predicador",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Curl de bíceps en banco Scott con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "curl-polea-baja",
+    "name": "Curl de bíceps en polea baja",
+    "category": "Tren superior",
+    "equipment": "Polea baja",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Curl de bíceps en polea baja con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "triceps-polea",
+    "name": "Extensión de tríceps en polea alta",
+    "category": "Tren superior",
+    "equipment": "Polea alta con cuerda o barra",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Extensión de tríceps en polea alta con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "fondos-paralelas",
+    "name": "Fondos en paralelas",
+    "category": "Tren superior",
+    "equipment": "Paralelas o máquina asistida",
+    "default_sets": "3",
+    "default_reps": "8-10",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Fondos en paralelas con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "press-frances",
+    "name": "Press francés con barra Z",
+    "category": "Tren superior",
+    "equipment": "Barra Z",
+    "default_sets": "3",
+    "default_reps": "10",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará Press francés con barra Z con agarre cómodo, hombros estables y abdomen activo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Mové la carga con control, activando el grupo muscular indicado y evitando impulsos.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "press-pallof",
+    "name": "Press Pallof",
+    "category": "Core",
+    "equipment": "Torre de poleas",
+    "default_sets": "3",
+    "default_reps": "12 por lado",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará la posición de Press Pallof, con abdomen activo, respiración controlada y cuello relajado.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Realizá el movimiento o sostén indicado sin perder alineación de columna, cadera y hombros.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Mantené la tensión abdominal hasta terminar la repetición o el tiempo indicado, sin compensar con lumbar.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
     ]
   },
   {
@@ -64,9 +840,203 @@
     "default_reps": "30 segundos",
     "default_load": "—",
     "steps": [
-      { "title": "Apoyo", "text": "Apoyá antebrazos y puntas de pies, con codos debajo de hombros.", "image": "assets/icono-ejercicio-1.png?v=icons-2" },
-      { "title": "Alineación", "text": "Mantené cabeza, espalda y cadera en una línea, abdomen activo y glúteos firmes.", "image": "assets/icono-ejercicio-2.png?v=icons-2" },
-      { "title": "Sostén", "text": "Respirá sin perder postura. Si aparece dolor lumbar, bajá rodillas y avisá a Yanina.", "image": "assets/icono-ejercicio-3.png?v=icons-2" }
+      {
+        "title": "Apoyo",
+        "text": "Apoyá antebrazos y puntas de pies, con codos debajo de hombros.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Alineación",
+        "text": "Mantené cabeza, espalda y cadera en una línea, abdomen activo y glúteos firmes.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Sostén",
+        "text": "Respirá sin perder postura. Si aparece dolor lumbar, bajá rodillas y avisá a Yanina.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "plancha-lateral",
+    "name": "Plancha lateral",
+    "category": "Core",
+    "equipment": "Mat",
+    "default_sets": "3",
+    "default_reps": "20-30 segundos por lado",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará la posición de Plancha lateral, con abdomen activo, respiración controlada y cuello relajado.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Realizá el movimiento o sostén indicado sin perder alineación de columna, cadera y hombros.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Mantené la tensión abdominal hasta terminar la repetición o el tiempo indicado, sin compensar con lumbar.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "hollow-body-hold",
+    "name": "Hollow Body Hold",
+    "category": "Core",
+    "equipment": "Mat",
+    "default_sets": "3",
+    "default_reps": "20-30 segundos",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará la posición de Hollow Body Hold, con abdomen activo, respiración controlada y cuello relajado.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Realizá el movimiento o sostén indicado sin perder alineación de columna, cadera y hombros.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Mantené la tensión abdominal hasta terminar la repetición o el tiempo indicado, sin compensar con lumbar.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "crunch-polea",
+    "name": "Crunch abdominal en polea alta",
+    "category": "Core",
+    "equipment": "Polea alta",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará la posición de Crunch abdominal en polea alta, con abdomen activo, respiración controlada y cuello relajado.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Realizá el movimiento o sostén indicado sin perder alineación de columna, cadera y hombros.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Mantené la tensión abdominal hasta terminar la repetición o el tiempo indicado, sin compensar con lumbar.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "crunch-maquina",
+    "name": "Crunch en máquina de abdomen",
+    "category": "Core",
+    "equipment": "Máquina abdominal",
+    "default_sets": "3",
+    "default_reps": "12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará la posición de Crunch en máquina de abdomen, con abdomen activo, respiración controlada y cuello relajado.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Realizá el movimiento o sostén indicado sin perder alineación de columna, cadera y hombros.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Mantené la tensión abdominal hasta terminar la repetición o el tiempo indicado, sin compensar con lumbar.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "elevaciones-piernas-colgado",
+    "name": "Elevaciones de piernas colgado",
+    "category": "Core",
+    "equipment": "Barra o silla de capitán",
+    "default_sets": "3",
+    "default_reps": "10",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará la posición de Elevaciones de piernas colgado, con abdomen activo, respiración controlada y cuello relajado.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Realizá el movimiento o sostén indicado sin perder alineación de columna, cadera y hombros.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Mantené la tensión abdominal hasta terminar la repetición o el tiempo indicado, sin compensar con lumbar.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "giros-rusos",
+    "name": "Giros rusos",
+    "category": "Core",
+    "equipment": "Disco o balón medicinal",
+    "default_sets": "3",
+    "default_reps": "20 alternados",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará la posición de Giros rusos, con abdomen activo, respiración controlada y cuello relajado.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Realizá el movimiento o sostén indicado sin perder alineación de columna, cadera y hombros.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Mantené la tensión abdominal hasta terminar la repetición o el tiempo indicado, sin compensar con lumbar.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "plancha-spiderman",
+    "name": "Plancha Spiderman",
+    "category": "Core",
+    "equipment": "Mat",
+    "default_sets": "3",
+    "default_reps": "10 por lado",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Prepará la posición de Plancha Spiderman, con abdomen activo, respiración controlada y cuello relajado.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Ejecución",
+        "text": "Realizá el movimiento o sostén indicado sin perder alineación de columna, cadera y hombros.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Control",
+        "text": "Mantené la tensión abdominal hasta terminar la repetición o el tiempo indicado, sin compensar con lumbar.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
     ]
   }
 ]
