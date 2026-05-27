@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca de ejercicios | Yanina Trainer</title>
+  <script>
+    const SESSION_KEY = "yaninaAdminSession";
+    const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    if (!session || session.loggedIn !== true) window.location.href = "login.html";
+  </script>
+  <style>
+    :root{--green-dark:#183f35;--green-main:#7ec845;--green-soft:#d9f2cb;--cream:#f7f3ea;--white:#fff;--text:#24332e;--muted:#6f7d78;--border:rgba(24,63,53,.14);--shadow:0 18px 50px rgba(24,63,53,.12);--radius:24px}*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--cream),#eef7ea);color:var(--text);min-height:100vh}.shell{max-width:1280px;margin:0 auto;padding:24px}.topbar{background:var(--green-dark);color:var(--white);border-radius:24px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:var(--shadow);margin-bottom:26px}.brand{display:flex;align-items:center;gap:18px}.brand img{width:260px;height:88px;object-fit:cover;object-position:center}.brand small{display:block;color:rgba(255,255,255,.72);font-size:13px;margin-top:3px}.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.btn{border:none;border-radius:999px;padding:11px 17px;font-size:14px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:inherit}.btn-primary{background:var(--green-main);color:var(--green-dark)}.btn-secondary{background:rgba(255,255,255,.1);color:var(--white);border:1px solid rgba(255,255,255,.24)}.page-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:18px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;color:var(--green-dark);font-size:12px;font-weight:900;margin-bottom:8px}h1{font-size:clamp(30px,4vw,48px);line-height:1.05;color:var(--green-dark);margin-bottom:8px}.subtitle{color:var(--muted);font-size:17px;max-width:760px;line-height:1.5}.stats{display:flex;gap:10px;flex-wrap:wrap}.stat{background:var(--green-dark);color:#fff;border-radius:18px;padding:13px 16px;min-width:130px}.stat span{display:block;color:rgba(255,255,255,.72);font-size:12px;margin-bottom:5px}.stat strong{display:block;color:var(--green-soft);font-size:24px}.workspace{display:grid;grid-template-columns:360px 1fr;gap:18px}.panel{background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}.tools{display:grid;gap:10px;margin-bottom:14px}.tools input,.tools select{width:100%;border:1px solid var(--border);border-radius:16px;padding:13px 14px;background:#fff;color:var(--text);font:inherit;outline:none}.exercise-list{display:grid;gap:10px;max-height:74vh;overflow:auto;padding-right:4px}.exercise-btn{border:1px solid var(--border);background:#fff;border-radius:18px;padding:14px;text-align:left;cursor:pointer;display:grid;gap:7px}.exercise-btn.active{border-color:var(--green-main);box-shadow:0 0 0 4px rgba(126,200,69,.16)}.exercise-btn strong{color:var(--green-dark);font-size:16px}.exercise-btn span{color:var(--muted);font-size:13px}.preview-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:16px}.preview-title h2{color:var(--green-dark);font-size:30px;margin-bottom:7px}.preview-title p{color:var(--muted);line-height:1.45}.pill{display:inline-flex;border-radius:999px;background:var(--green-soft);color:var(--green-dark);padding:8px 11px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}.meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}.meta{background:#f8fcf6;border:1px solid #edf4e9;border-radius:16px;padding:13px}.meta span{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:6px}.meta strong{color:var(--green-dark)}.step-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.step-card{background:#fff;border:1px solid var(--border);border-radius:26px;overflow:hidden;box-shadow:0 12px 30px rgba(24,63,53,.08)}.step-card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#f7fbf8}.step-body{padding:18px}.step-body h3{color:var(--green-dark);font-size:20px;margin-bottom:8px}.step-body p{color:var(--muted);line-height:1.5;font-size:15px}.empty{background:#f8fcf6;border:1px dashed rgba(126,200,69,.45);border-radius:20px;padding:18px;color:var(--muted);line-height:1.5}.status-note{margin-top:18px;background:#102f35;color:#fff;border-radius:22px;padding:18px;line-height:1.5}.status-note strong{color:var(--green-soft)}@media(max-width:980px){.workspace{grid-template-columns:1fr}.step-grid,.meta-grid{grid-template-columns:1fr}.topbar,.page-head{align-items:flex-start;flex-direction:column}.brand img{width:220px;height:78px}.exercise-list{max-height:none}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><img src="../assets/logo-transp.png" alt="Yanina Trainer"><div><strong>Admin Trainer</strong><small>Biblioteca interna de ejercicios</small></div></div>
+      <div class="actions"><a class="btn btn-secondary" href="index.html">Panel Admin</a><a class="btn btn-primary" href="alumno.html?id=18#plan">Probar en rutina</a></div>
+    </header>
+
+    <section class="page-head">
+      <div><div class="eyebrow">Biblioteca Yanina Trainer</div><h1>Ejercicios ilustrados</h1><p class="subtitle">Vista de administración para revisar la biblioteca central. La alumna no busca acá: la rutina toma estos datos cuando ella toca Ver en un ejercicio.</p></div>
+      <div class="stats"><div class="stat"><span>Ejercicios</span><strong id="countAll">—</strong></div><div class="stat"><span>Categorías</span><strong id="countCategories">—</strong></div></div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel">
+        <div class="tools"><input id="searchInput" type="search" placeholder="Buscar ejercicio"><select id="categoryFilter"><option value="">Todas las categorías</option></select></div>
+        <div class="exercise-list" id="exerciseList"><div class="empty">Cargando biblioteca...</div></div>
+      </aside>
+
+      <article class="panel" id="previewPanel"><div class="empty">Seleccioná un ejercicio para ver sus 3 cards.</div></article>
+    </section>
+
+    <section class="status-note"><strong>Fase actual:</strong> biblioteca estática en <code>exercises.json</code>. Las imágenes se reemplazan por tandas. Próxima etapa: agregar carga/edición desde esta misma pantalla.</section>
+  </main>
+
+  <script>
+    let exercises = [];
+    let selectedId = null;
+    const $ = id => document.getElementById(id);
+    const escapeHtml = value => String(value || '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+    const assetPath = path => !path ? '' : String(path).startsWith('../') ? path : `../${path}`;
+
+    async function loadLibrary(){
+      try{
+        const response = await fetch(`../exercises.json?cache=${Date.now()}`);
+        if(!response.ok) throw new Error('No se pudo cargar exercises.json');
+        exercises = await response.json();
+        if(!Array.isArray(exercises)) exercises = [];
+        setupFilters();
+        renderList();
+        if(exercises[0]) selectExercise(exercises[0].id);
+      }catch(error){
+        console.error(error);
+        $('exerciseList').innerHTML = '<div class="empty">No se pudo cargar la biblioteca.</div>';
+      }
+    }
+
+    function setupFilters(){
+      $('countAll').textContent = exercises.length;
+      const categories = [...new Set(exercises.map(item => item.category || 'Sin categoría'))].sort();
+      $('countCategories').textContent = categories.length;
+      $('categoryFilter').innerHTML = '<option value="">Todas las categorías</option>' + categories.map(category => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
+    }
+
+    function filteredExercises(){
+      const query = $('searchInput').value.trim().toLowerCase();
+      const category = $('categoryFilter').value;
+      return exercises.filter(item => {
+        const matchesQuery = !query || [item.name,item.category,item.equipment].join(' ').toLowerCase().includes(query);
+        const matchesCategory = !category || item.category === category;
+        return matchesQuery && matchesCategory;
+      });
+    }
+
+    function renderList(){
+      const items = filteredExercises();
+      if(!items.length){
+        $('exerciseList').innerHTML = '<div class="empty">No hay ejercicios con ese filtro.</div>';
+        return;
+      }
+      $('exerciseList').innerHTML = items.map(item => `
+        <button class="exercise-btn ${item.id === selectedId ? 'active' : ''}" type="button" data-id="${escapeHtml(item.id)}">
+          <strong>${escapeHtml(item.name)}</strong>
+          <span>${escapeHtml(item.category || 'Sin categoría')} · ${escapeHtml(item.equipment || 'Sin equipo')}</span>
+        </button>
+      `).join('');
+      document.querySelectorAll('[data-id]').forEach(button => button.addEventListener('click', () => selectExercise(button.dataset.id)));
+    }
+
+    function selectExercise(id){
+      selectedId = id;
+      renderList();
+      const item = exercises.find(exercise => exercise.id === id);
+      if(!item){
+        $('previewPanel').innerHTML = '<div class="empty">Ejercicio no encontrado.</div>';
+        return;
+      }
+      $('previewPanel').innerHTML = `
+        <div class="preview-head">
+          <div class="preview-title"><h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.category || 'Sin categoría')} · ${escapeHtml(item.equipment || 'Sin equipo')}</p></div>
+          <span class="pill">Vista alumna</span>
+        </div>
+        <div class="meta-grid">
+          <div class="meta"><span>Series default</span><strong>${escapeHtml(item.default_sets || '—')}</strong></div>
+          <div class="meta"><span>Reps / tiempo default</span><strong>${escapeHtml(item.default_reps || '—')}</strong></div>
+          <div class="meta"><span>Carga default</span><strong>${escapeHtml(item.default_load || '—')}</strong></div>
+        </div>
+        <div class="step-grid">
+          ${(item.steps || []).slice(0,3).map((step,index) => `
+            <article class="step-card">
+              <img src="${escapeHtml(assetPath(step.image))}" alt="${escapeHtml(item.name)} - ${escapeHtml(step.title)}">
+              <div class="step-body"><h3>${index + 1}. ${escapeHtml(step.title)}</h3><p>${escapeHtml(step.text)}</p></div>
+            </article>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    $('searchInput').addEventListener('input', renderList);
+    $('categoryFilter').addEventListener('change', renderList);
+    loadLibrary();
+  </script>
+</body>
+</html>
