@@ -43,30 +43,63 @@
     const $ = id => document.getElementById(id);
     const escapeHtml = value => String(value || '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
     const assetPath = path => !path ? '' : String(path).startsWith('../') ? path : `../${path}`;
-    const fullImageOverrides = {
-      'sentadilla-libre-barra': 'assets/exercises/sentadilla-libre-barra.png?v=full-2',
-      'sentadilla-hack': 'assets/exercises/sentadilla-maquina-hack.png?v=full-2',
-      'sentadilla-smith': 'assets/exercises/sentadilla-maquina-smith.png?v=full-2',
-      'prensa-piernas': 'assets/exercises/prensa-piernas.png?v=full-2',
-      'sentadilla-bulgara': 'assets/exercises/sentadilla-bulgara.png?v=full-2',
-      'zancadas-caminando': 'assets/exercises/zancadas-caminando.png?v=full-2',
-      'extension-cuadriceps': 'assets/exercises/extension-cuadriceps-maquina.png?v=full-2',
-      'curl-piernas': 'assets/exercises/curl-piernas-maquina.png?v=full-2',
-      'aductores-abductores': 'assets/exercises/aductores-abductores-maquina.png?v=full-2',
-      'elevacion-talones': 'assets/exercises/elevacion-talones-maquina.png?v=full-2',
-      'press-banca': 'assets/exercises/press-banca-barra.png?v=full-2',
-      'chest-press': 'assets/exercises/chest-press.png?v=full-2'
+    const withCache = path => `${path}?v=full-4`;
+    const exerciseImageCandidates = {
+      'sentadilla-libre-barra': ['sentadilla-libre-barra'],
+      'sentadilla-hack': ['sentadilla-maquina-hack','sentadilla-hack'],
+      'sentadilla-smith': ['sentadilla-maquina-smith','sentadilla-smith'],
+      'prensa-piernas': ['prensa-piernas'],
+      'sentadilla-bulgara': ['sentadilla-bulgara'],
+      'zancadas-caminando': ['zancadas-caminando'],
+      'zancadas-smith': ['zancadas-smith','zancadas-estaticas-smith'],
+      'hip-thrust-barra': ['hip-thrust-barra'],
+      'peso-muerto-rumano': ['peso-muerto-rumano'],
+      'extension-cuadriceps': ['extension-cuadriceps-maquina','extension-cuadriceps'],
+      'curl-piernas': ['curl-piernas-maquina','curl-piernas'],
+      'aductores-abductores': ['aductores-abductores-maquina','aductores-abductores'],
+      'elevacion-talones': ['elevacion-talones-maquina','elevacion-talones'],
+      'press-banca': ['press-banca-barra','press-banca'],
+      'chest-press': ['chest-press'],
+      'cruces-poleas': ['cruce-poleas','cruces-poleas'],
+      'press-hombros': ['press-hombros'],
+      'vuelos-laterales': ['vuelos-laterales'],
+      'vuelos-frontales': ['vuelos-frontales'],
+      'remo-menton': ['remo-al-menton','remo-menton'],
+      'jalon-al-pecho': ['jalon-al-pecho','polea-al-pecho'],
+      'remo-maquina': ['remo-en-maquina','remo-maquina'],
+      'remo-barra-tbar': ['remo-con-barra-t-bar','remo-barra-tbar','remo-t-bar'],
+      'vuelos-posteriores': ['vuelos-posteriores','pajaros-vuelos-posteriores'],
+      'dominadas': ['dominadas','dominadas-libres-asistidas'],
+      'curl-biceps': ['curl-biceps','curl-de-biceps-barra-mancuernas'],
+      'curl-scott': ['curl-scott'],
+      'curl-polea-baja': ['curl-polea-baja'],
+      'triceps-polea': ['extension-triceps-polea-alta','triceps-polea-alta','triceps-polea'],
+      'fondos-paralelas': ['fondos-paralelas'],
+      'press-frances': ['press-frances'],
+      'press-pallof': ['press-pallof'],
+      'plancha-abdominal': ['plancha-abdominal'],
+      'plancha-lateral': ['plancha-lateral'],
+      'hollow-body-hold': ['hollow-body-hold'],
+      'crunch-polea': ['crunch-polea-alta','crunch-polea'],
+      'crunch-maquina': ['crunch-maquina-abdomen','crunch-maquina'],
+      'elevaciones-piernas-colgado': ['elevaciones-piernas-colgado'],
+      'giros-rusos': ['giros-rusos'],
+      'plancha-spiderman': ['plancha-spiderman']
     };
-    const imageOverrides = {
-      'zancadas-smith': ['assets/zancadas-smith-1.svg?v=smith-1','assets/zancadas-smith-2.svg?v=smith-1','assets/zancadas-smith-3.svg?v=smith-1'],
-      'hip-thrust-barra': ['assets/hip-thrust-barra-1.svg?v=hip-1','assets/hip-thrust-barra-2.svg?v=hip-1','assets/hip-thrust-barra-3.svg?v=hip-1'],
-      'peso-muerto-rumano': ['assets/peso-muerto-rumano-1.svg?v=rumano-1','assets/peso-muerto-rumano-2.svg?v=rumano-1','assets/peso-muerto-rumano-3.svg?v=rumano-1']
+    const candidatePaths = id => (exerciseImageCandidates[id] || [id]).map(name => withCache(`assets/exercises/${name}.png`));
+    const stepImage = (exercise, step) => step.image;
+    const handleImageError = image => {
+      const candidates = JSON.parse(image.dataset.candidates || '[]');
+      const nextIndex = Number(image.dataset.nextIndex || 1);
+      if(nextIndex < candidates.length){
+        image.dataset.nextIndex = String(nextIndex + 1);
+        image.src = assetPath(candidates[nextIndex]);
+      }
     };
-    const stepImage = (exercise, step, index) => imageOverrides[exercise.id]?.[index] || step.image;
     const renderVisual = item => {
-      const fullImage = fullImageOverrides[item.id];
-      if(fullImage){
-        return `<div class="full-exercise-card"><img src="${escapeHtml(assetPath(fullImage))}" alt="${escapeHtml(item.name)}"></div>`;
+      const fullImages = candidatePaths(item.id);
+      if(fullImages.length){
+        return `<div class="full-exercise-card"><img src="${escapeHtml(assetPath(fullImages[0]))}" data-candidates='${escapeHtml(JSON.stringify(fullImages))}' data-next-index="1" onerror="handleImageError(this)" alt="${escapeHtml(item.name)}"></div>`;
       }
       return `<div class="step-grid">
         ${(item.steps || []).slice(0,3).map((step,index) => `
