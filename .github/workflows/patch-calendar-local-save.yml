@@ -1,0 +1,182 @@
+name: Patch calendar local save
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-calendar-local-save.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch alumno calendar behavior
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('admin/alumno.html')
+          text = path.read_text(encoding='utf-8')
+
+          text = text.replace(
+          '    let allClasses = [];\n    let selectedClass = null;',
+          '    let allClasses = [];\n    let dirtyClassIds = new Set();\n    let selectedClass = null;',
+          1
+          )
+
+          text = text.replace(
+          '    const studentNameInput = document.getElementById("nombre");\n    const navStudentName = document.getElementById("navStudentName");',
+          '''    const studentNameInput = document.getElementById("nombre");
+    const navStudentName = document.getElementById("navStudentName");
+
+    function markClassDirty(classId) {
+      if (!classId) return;
+      dirtyClassIds.add(String(classId));
+    }
+
+    function classPayloadFromItem(item) {
+      return {
+        class_date: item.class_date || "",
+        class_time: item.class_time || "",
+        routine_type: item.routine_type || "Nueva clase",
+        status: normalizeStatus(item.status),
+        planning_criteria: item.planning_criteria || ""
+      };
+    }
+
+    function syncSelectedClassDraft(statusOverride) {
+      if (!selectedClass) return;
+      const payload = selectedClassPayload(statusOverride);
+      selectedClass.class_date = payload.class_date;
+      selectedClass.class_time = payload.class_time;
+      selectedClass.routine_type = payload.routine_type;
+      selectedClass.status = payload.status;
+      selectedClass.planning_criteria = payload.planning_criteria;
+      markClassDirty(selectedClass.id);
+    }
+
+    async function saveCalendarChanges(statusOverride) {
+      if (!selectedClass && !dirtyClassIds.size) {
+        alert("Seleccioná o agregá una clase primero.");
+        return null;
+      }
+
+      if (selectedClass) syncSelectedClassDraft(statusOverride);
+
+      const idsToSave = Array.from(dirtyClassIds);
+      let lastUpdated = null;
+
+      for (const classId of idsToSave) {
+        const item = allClasses.find(entry => String(entry.id) === String(classId));
+        if (!item) continue;
+
+        const response = await fetch(`${API_BASE}/api/classes/${classId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(classPayloadFromItem(item))
+        });
+
+        if (!response.ok) throw new Error("No se pudo guardar el calendario");
+
+        const updated = await response.json();
+        lastUpdated = updated;
+        allClasses = allClasses.map(entry => Number(entry.id) === Number(updated.id) ? updated : entry);
+        if (selectedClass && Number(selectedClass.id) === Number(updated.id)) selectedClass = updated;
+      }
+
+      dirtyClassIds.clear();
+      renderCalendarAndClasses();
+      return lastUpdated || selectedClass;
+    }
+''',
+          1
+          )
+
+          text = text.replace(
+          '''              if (selectedClass) selectedClass.class_time = value;
+              const timeLabel = cell.querySelector("em");''',
+          '''              if (selectedClass) {
+                selectedClass.class_time = value;
+                markClassDirty(selectedClass.id);
+              }
+              const timeLabel = cell.querySelector("em");''',
+          1
+          )
+
+          old_create = '''async function createClassForStudent(dateKey = toISODate(startOfToday()), shouldScroll = true) {
+  if (!studentId) {
+    alert("Primero guardá los datos del alumno para crear su ficha.");
+    return;
+  }
+
+  const response = await fetch(`${API_BASE}/api/students/${studentId}/classes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      class_date: dateKey || "",
+      class_time: "",
+      routine_type: "Nueva clase",
+      status: "draft",
+      planning_criteria: ""
+    })
+  });
+
+  if (!response.ok) throw new Error("No se pudo crear la clase");
+
+  const created = await response.json();
+  await loadClassesFromBackend();
+  await selectClass(created.id, shouldScroll);
+}    
+'''
+          new_create = '''async function createClassForStudent(dateKey = toISODate(startOfToday()), shouldScroll = true) {
+  if (!studentId) {
+    alert("Primero guardá los datos del alumno para crear su ficha.");
+    return;
+  }
+
+  const payload = {
+    class_date: dateKey || "",
+    class_time: "",
+    routine_type: "Nueva clase",
+    status: "draft",
+    planning_criteria: ""
+  };
+
+  const response = await fetch(`${API_BASE}/api/students/${studentId}/classes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) throw new Error("No se pudo crear la clase");
+
+  const created = await response.json();
+  const createdClass = { ...payload, ...created };
+  allClasses.push(createdClass);
+  allClasses.sort((a, b) => String(a.class_date || "").localeCompare(String(b.class_date || "")) || String(a.class_time || "").localeCompare(String(b.class_time || "")));
+  await selectClass(createdClass.id, shouldScroll);
+}    
+'''
+          if old_create not in text:
+              raise SystemExit('createClassForStudent block not found')
+          text = text.replace(old_create, new_create, 1)
+
+          text = text.replace('          await saveSelectedClass();\n          saveClassBtn.textContent = "✓ Calendario guardado";', '          await saveCalendarChanges();\n          saveClassBtn.textContent = "✓ Calendario guardado";', 1)
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit patch
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add admin/alumno.html
+          git commit -m "Mantener cambios de calendario hasta guardar"
+          git push
