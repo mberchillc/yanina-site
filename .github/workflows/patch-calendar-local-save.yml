@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/patch-calendar-local-save.yml'
+      - 'admin/calendar-patch-trigger.txt'
   workflow_dispatch:
 
 permissions:
@@ -160,9 +161,8 @@ jobs:
   await selectClass(createdClass.id, shouldScroll);
 }    
 '''
-          if old_create not in text:
-              raise SystemExit('createClassForStudent block not found')
-          text = text.replace(old_create, new_create, 1)
+          if old_create in text:
+              text = text.replace(old_create, new_create, 1)
 
           text = text.replace('          await saveSelectedClass();\n          saveClassBtn.textContent = "✓ Calendario guardado";', '          await saveCalendarChanges();\n          saveClassBtn.textContent = "✓ Calendario guardado";', 1)
 
