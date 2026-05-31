@@ -4,7 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ficha del Alumno | Yanina Trainer</title>
+/* Ajuste de navegación y jerarquía calendario / entrenamiento */
+.workout-card > .card-header {
+  display: none !important;
+}
 
+#calendario-mensual,
+#clase-seleccionada {
+  scroll-margin-top: 110px;
+}
+
+#calendario-mensual .plan-timeline-header {
+  display: block;
+}
+
+#calendario-mensual .plan-timeline-header h3 {
+  font-size: clamp(28px, 3vw, 38px);
+  line-height: 1.05;
+  margin-bottom: 8px;
+}
+
+#calendario-mensual .calendar-toolbar {
+  margin-top: 16px;
+  margin-bottom: 0;
+}
   <style>
     :root {
       --green-dark: #183f35;
