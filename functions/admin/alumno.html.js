@@ -143,6 +143,52 @@ function sortedMeasurementsByDate(measurements) {
     );
   }
 
+  html = html
+    .replace('<a href="#calendario" class="student-tab">Calendario de clases</a>', '<a href="#calendario-mensual" class="student-tab">Calendario de clases</a>')
+    .replace('<a href="#plan" class="student-tab">Plan de entrenamiento</a>', '<a href="#clase-seleccionada" class="student-tab">Entrenamiento</a>')
+    .replace('<div class="card-title">Calendario de clases</div>', '<div class="card-title">Próximas clases</div>')
+    .replace('<section class="plan-timeline">', '<section class="plan-timeline" id="calendario-mensual">')
+    .replace('<section class="selected-class-panel">', '<section class="selected-class-panel" id="clase-seleccionada">');
+
+  html = html.replace(
+    '</style>',
+    `
+    .workout-card > .card-header { display: none !important; }
+    #calendario-mensual { scroll-margin-top: 110px; }
+    #clase-seleccionada { scroll-margin-top: 110px; }
+    #calendario-mensual .plan-timeline-header { display: block; }
+    #calendario-mensual .plan-timeline-header h3 {
+      font-size: clamp(28px, 3vw, 38px);
+      line-height: 1.05;
+      margin-bottom: 8px;
+    }
+    #calendario-mensual .calendar-toolbar {
+      margin-top: 16px;
+      margin-bottom: 0;
+    }
+    #calendario .calendar-toolbar { display: none; }
+    </style>`
+  );
+
+  html = html.replace(
+    '</body>',
+    `<script>
+      (function alignStudentAdminSections(){
+        function moveToolbar(){
+          const toolbar = document.querySelector('#calendario .calendar-toolbar');
+          const monthlyHeader = document.querySelector('#calendario-mensual .plan-timeline-header');
+          if (toolbar && monthlyHeader && toolbar.parentElement !== monthlyHeader) {
+            monthlyHeader.appendChild(toolbar);
+            toolbar.style.display = 'flex';
+          }
+        }
+        moveToolbar();
+        setTimeout(moveToolbar, 250);
+      })();
+    </script>
+  </body>`
+  );
+
   return new Response(html, {
     status: response.status,
     headers: {
