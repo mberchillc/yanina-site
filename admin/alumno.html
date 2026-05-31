@@ -4,31 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ficha del Alumno | Yanina Trainer</title>
-/* Ajuste de navegación y jerarquía calendario / entrenamiento */
-.workout-card > .card-header {
-  display: none !important;
-}
-
-#calendario-mensual,
-#clase-seleccionada {
-  scroll-margin-top: 110px;
-}
-
-#calendario-mensual .plan-timeline-header {
-  display: block;
-}
-
-#calendario-mensual .plan-timeline-header h3 {
-  font-size: clamp(28px, 3vw, 38px);
-  line-height: 1.05;
-  margin-bottom: 8px;
-}
-
-#calendario-mensual .calendar-toolbar {
-  margin-top: 16px;
-  margin-bottom: 0;
-}
-  <style>
+<style>
     :root {
       --green-dark: #183f35;
       --green-main: #7ec845;
@@ -378,6 +354,8 @@
 }
     #datos,
     #calendario,
+    #calendario-mensual,
+    #clase-seleccionada,
     #plan,
     #mediciones {
       scroll-margin-top: 110px;
@@ -1045,6 +1023,45 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Ajuste real de navegación y jerarquía calendario / entrenamiento */
+#calendario-mensual,
+#clase-seleccionada {
+  scroll-margin-top: 110px;
+}
+
+.workout-card > .card-header {
+  display: none !important;
+}
+
+#calendario-mensual .plan-timeline-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: start;
+}
+
+#calendario-mensual .plan-timeline-header h3 {
+  font-size: clamp(28px, 3vw, 38px);
+  line-height: 1.05;
+  margin-bottom: 8px;
+}
+
+#calendario-mensual .calendar-toolbar {
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
+#calendario-mensual .calendar-month-select {
+  min-width: 260px;
+}
+
+@media (max-width: 840px) {
+  #calendario-mensual .plan-timeline-header {
+    grid-template-columns: 1fr;
+  }
+}
+
     .exercise-library-select { width: 100%; border: 0; background: transparent; color: var(--green-dark); font: inherit; font-weight: 800; outline: none; }
 
     @media (max-width: 840px) {
@@ -1223,7 +1240,7 @@
 
           <div class="bottom-actions">
             <button type="button" class="btn btn-form-primary" id="saveStudentBtn">Guardar datos</button>
-            <a href="#plan" class="btn btn-form-secondary">Crear plan de entrenamiento</a>
+            <a href="#clase-seleccionada" class="btn btn-form-secondary">Crear entrenamiento</a>
             <a class="btn btn-form-secondary" id="starfitMeasurementsBtn" href="mediciones-starfit.html">Cargar medición Starfit</a>
             <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">Descargar rutina PDF</a>
           </div>
@@ -1262,38 +1279,29 @@
       <article class="card calendar-card" id="calendario">
         <div class="card-header">
           <div>
-            <div class="card-title">Calendario de clases</div>
-            <p class="card-subtitle">Lista real de clases del alumno. Editar clase selecciona la clase y baja al plan.</p>
+            <div class="card-title">Próximas clases</div>
+            <p class="card-subtitle">Lista real de clases del alumno. Editar clase selecciona la clase y baja al entrenamiento.</p>
           </div>
           <button type="button" class="btn btn-form-primary" id="addClassBtn">+ Agregar clase</button>
         </div>
-
-        <div class="calendar-toolbar">
-          <button type="button" class="calendar-nav" id="prevWindowBtn">‹</button>
-          <div class="status-pill" id="calendarRangeLabel">Mes actual</div>
-          <select class="calendar-month-select" id="calendarMonthSelect" aria-label="Elegir mes del calendario"></select>
-          <button type="button" class="calendar-nav" id="nextWindowBtn">›</button>
-          <button type="button" class="btn btn-form-secondary" id="todayWindowBtn">Desde hoy</button>
-        </div>
-
-        <div class="class-list" id="classList">
+<div class="class-list" id="classList">
           <div class="empty-state">Cargando clases...</div>
         </div>
       </article>
 
       <article class="card workout-card" id="plan">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Plan de entrenamiento</div>
-          </div>
-          
-        </div>
-
-        <section class="plan-timeline">
+<section class="plan-timeline" id="calendario-mensual">
           <div class="plan-timeline-header">
             <div>
               <h3>Calendario de clases mensuales</h3>
               <p>Click en un día para programar clase. El día seleccionado permite cargar o editar la hora dentro del calendario.</p>
+              <div class="calendar-toolbar">
+                        <button type="button" class="calendar-nav" id="prevWindowBtn">‹</button>
+                        <div class="status-pill" id="calendarRangeLabel">Mes actual</div>
+                        <select class="calendar-month-select" id="calendarMonthSelect" aria-label="Elegir mes del calendario"></select>
+                        <button type="button" class="calendar-nav" id="nextWindowBtn">›</button>
+                        <button type="button" class="btn btn-form-secondary" id="todayWindowBtn">Desde hoy</button>
+                      </div>
             </div>
             <span class="status-pill" id="plannedCounter">0 clases previstas</span>
           </div>
@@ -1301,7 +1309,7 @@
           <div class="timeline-grid" id="timelineGrid"></div>
         </section>
 
-        <section class="selected-class-panel">
+        <section class="selected-class-panel" id="clase-seleccionada">
           <h3>Clase seleccionada</h3>
           <div class="class-form-grid">
             <div class="field">
@@ -1408,11 +1416,6 @@ function normalizeMeasurementDateValue(value) {
   const raw = String(value).trim();
   if (!raw) return '';
 
-  const iso = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-  if (iso) {
-    return `${iso[1]}-${String(iso[2]).padStart(2, '0')}-${String(iso[3]).padStart(2, '0')}`;
-  }
-
   const monthMap = {
     jan: '01', january: '01', ene: '01', enero: '01',
     feb: '02', february: '02', febrero: '02',
@@ -1428,10 +1431,13 @@ function normalizeMeasurementDateValue(value) {
     dec: '12', december: '12', dic: '12', diciembre: '12'
   };
 
+  const iso = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) return `${iso[1]}-${String(iso[2]).padStart(2, '0')}-${String(iso[3]).padStart(2, '0')}`;
+
   const textMatch = raw.match(/^([A-Za-zÁÉÍÓÚáéíóúñÑ]+)\s+(\d{1,2}),?\s+(\d{2,4})$/);
   if (textMatch) {
     const monthKey = textMatch[1].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const month = monthMap[monthKey.slice(0, 3)] || monthMap[monthKey];
+    const month = monthMap[monthKey] || monthMap[monthKey.slice(0, 3)];
     const day = String(textMatch[2]).padStart(2, '0');
     let year = String(textMatch[3]);
     if (year.length === 2) year = Number(year) >= 70 ? `19${year}` : `20${year}`;
@@ -1442,10 +1448,14 @@ function normalizeMeasurementDateValue(value) {
   if (slash) {
     let year = String(slash[3]);
     if (year.length === 2) year = Number(year) >= 70 ? `19${year}` : `20${year}`;
-    return `${year}-${String(slash[1]).padStart(2, '0')}-${String(slash[2]).padStart(2, '0')}`;
+    const first = Number(slash[1]);
+    const second = Number(slash[2]);
+    const month = first > 12 ? second : first;
+    const day = first > 12 ? first : second;
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   }
 
-  return raw;
+  return '';
 }
 
 function measurementDateValue(item) {
@@ -1453,13 +1463,17 @@ function measurementDateValue(item) {
 }
 
 function measurementSortKey(item) {
-  return normalizeMeasurementDateValue(
-    item?.measured_date_iso || item?.measured_at || item?.measuredAt || item?.measurement_date || item?.date || item?.created_at || ''
-  );
+  const normalized = normalizeMeasurementDateValue(measurementDateValue(item));
+  const timestamp = Date.parse(`${normalized}T00:00:00`);
+  return Number.isFinite(timestamp) ? timestamp : Number.MAX_SAFE_INTEGER;
 }
 
 function sortedMeasurementsByDate(measurements) {
-  return [...(measurements || [])].sort((a, b) => measurementSortKey(a).localeCompare(measurementSortKey(b)));
+  return [...(measurements || [])].sort((a, b) => {
+    const primary = measurementSortKey(a) - measurementSortKey(b);
+    if (primary !== 0) return primary;
+    return String(a?.created_at || '').localeCompare(String(b?.created_at || ''));
+  });
 }
 
 function formatMeasurementCardDate(value) {
@@ -1988,7 +2002,7 @@ return {
     }
 
     function scrollToPlan() {
-      document.getElementById("plan")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("clase-seleccionada")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function getInitials(name) {
