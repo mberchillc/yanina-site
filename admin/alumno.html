@@ -628,6 +628,16 @@
       background: var(--green-main);
     }
 
+    .timeline-day.is-active {
+      outline: 3px solid rgba(126, 200, 69, 0.35);
+      background: var(--green-main);
+    }
+
+    .timeline-day.is-active .slot-action {
+      color: var(--green-dark);
+      font-weight: 800;
+    }
+
     .selected-class-panel {
       border: 1px solid var(--border);
       border-radius: 20px;
@@ -2245,7 +2255,12 @@ return {
         const label = formatDateShort(dateKey);
         const classesForDay = map.get(dateKey) || [];
         const firstClass = classesForDay[0];
-        const isActive = firstClass && selectedClass && Number(firstClass.id) === Number(selectedClass.id);
+        const selectedDate = String(selectedClass?.class_date || "");
+        const isNewSelection = Boolean(selectedClass?._isNewCalendarSelection && selectedDate === dateKey);
+        const isSavedActive = Boolean(firstClass && selectedClass && Number(firstClass.id) === Number(selectedClass.id));
+        const isActive = isSavedActive || isNewSelection;
+        const visibleTime = isNewSelection ? (selectedClass.class_time || "") : (firstClass?.class_time || "");
+        const visibleRoutine = isNewSelection ? (selectedClass.routine_type || "Nueva clase") : (firstClass?.routine_type || "Clase");
 
         const cell = document.createElement(isCurrentMonth ? "button" : "div");
         cell.className = "timeline-day";
@@ -2258,10 +2273,10 @@ return {
         cell.innerHTML = `
           <span>${label.weekday}</span>
           <strong>${label.day}</strong>
-          ${firstClass ? `
-            <em>${escapeHtml(firstClass.class_time || "Sin hora")}</em>
-            ${isActive ? `<input class="slot-time-input" type="time" value="${escapeHtml(normalizeTimeForInput(firstClass.class_time || ""))}" aria-label="Hora de clase">` : ""}
-            <small>${escapeHtml(firstClass.routine_type || "Clase")}</small>
+          ${firstClass || isNewSelection ? `
+            <em>${escapeHtml(visibleTime || "Sin hora")}</em>
+            ${isActive ? `<input class="slot-time-input" type="time" value="${escapeHtml(normalizeTimeForInput(visibleTime || ""))}" aria-label="Hora de clase">` : ""}
+            <small>${escapeHtml(visibleRoutine || "Nueva clase")}</small>
             ${classesForDay.length > 1 ? `<small>${classesForDay.length} clases este día</small>` : ""}
           ` : isCurrentMonth ? `<small class="slot-action">Click para clase</small>` : `<small></small>`}
         `;
@@ -2284,8 +2299,12 @@ return {
               document.getElementById("classTimeInput").value = value;
 
               if (selectedClass) {
-                updateClassInMemory(selectedClass.id, { class_time: value });
-                markClassDirty(selectedClass.id);
+                selectedClass = { ...selectedClass, class_time: value };
+
+                if (activeBackendClassId && selectedClass.id) {
+                  updateClassInMemory(selectedClass.id, { class_time: value });
+                  markClassDirty(selectedClass.id);
+                }
               }
 
               const timeLabel = cell.querySelector("em");
