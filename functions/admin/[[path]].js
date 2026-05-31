@@ -14,7 +14,23 @@ export async function onRequest(context) {
     .replace('<section class="plan-timeline">', '<section class="plan-timeline" id="calendario-mensual">')
     .replace('<section class="selected-class-panel">', '<section class="selected-class-panel" id="clase-seleccionada">')
     .replace('<a href="#plan" class="student-tab">Plan de entrenamiento</a>', '<a href="#clase-seleccionada" class="student-tab">Entrenamiento</a>')
-    .replace('<a href="#calendario" class="student-tab">Calendario de clases</a>', '<a href="#calendario-mensual" class="student-tab">Calendario de clases</a>');
+    .replace('<a href="#calendario" class="student-tab">Calendario de clases</a>', '<a href="#calendario-mensual" class="student-tab">Calendario de clases</a>')
+    .replace('<span class="status-pill" id="plannedCounter">0 clases previstas</span>', '')
+    .replace(
+      '<button type="button" class="btn btn-form-primary" id="saveClassBtn">Guardar calendario</button>',
+      '<button type="button" class="btn btn-form-primary" id="saveClassBtn">Guardar calendario</button>\n            <span class="status-pill" id="plannedCounter">0 clases guardadas</span>'
+    );
+
+  html = html.replace(
+    `        const draftInMonth = Array.from(pendingCalendarDrafts.values()).filter(item => {
+          if (!isCalendarDraftMeaningful(item)) return false;
+          const d = parseISODate(item.class_date);
+          return d && d >= monthStart && d <= monthEnd;
+        });
+
+        plannedCounter.textContent = \`${savedInMonth.length + draftInMonth.length} clases previstas\`;`,
+    '        plannedCounter.textContent = `${savedInMonth.length} clases guardadas`;'
+  );
 
   html = html.replace(
     '</style>',
@@ -32,6 +48,13 @@ export async function onRequest(context) {
       margin-top: 16px;
       margin-bottom: 0;
     }
+    #calendario-mensual .bottom-actions {
+      align-items: center;
+      margin-top: 18px;
+    }
+    #calendario-mensual .plan-timeline-header #plannedCounter {
+      display: none !important;
+    }
     </style>`
   );
 
@@ -45,6 +68,8 @@ export async function onRequest(context) {
           const monthlyHeaderText = document.querySelector('#calendario-mensual .plan-timeline-header > div');
           const calendarTitle = document.querySelector('#calendario .card-title');
           const workoutHeader = document.querySelector('.workout-card > .card-header');
+          const counter = document.querySelector('#plannedCounter');
+          const saveClassBtn = document.querySelector('#saveClassBtn');
 
           if (calendarTitle) calendarTitle.textContent = 'Próximas clases';
           if (workoutHeader) workoutHeader.style.display = 'none';
@@ -53,6 +78,10 @@ export async function onRequest(context) {
             if (monthlyHeaderText) monthlyHeaderText.insertAdjacentElement('afterend', toolbar);
             else monthlyHeader.appendChild(toolbar);
             toolbar.style.display = 'flex';
+          }
+
+          if (counter && saveClassBtn && counter.parentElement !== saveClassBtn.parentElement) {
+            saveClassBtn.insertAdjacentElement('afterend', counter);
           }
         }
 
