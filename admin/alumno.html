@@ -419,6 +419,16 @@
       cursor: pointer;
     }
 
+    .calendar-month-select {
+      width: auto;
+      min-width: 220px;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-weight: 800;
+      color: var(--green-dark);
+      background: var(--white);
+    }
+
     .class-list {
       display: grid;
       gap: 14px;
@@ -1150,7 +1160,8 @@
 
         <div class="calendar-toolbar">
           <button type="button" class="calendar-nav" id="prevWindowBtn">‹</button>
-          <div class="status-pill" id="calendarRangeLabel">Próximos 15 días</div>
+          <div class="status-pill" id="calendarRangeLabel">Mes actual</div>
+          <select class="calendar-month-select" id="calendarMonthSelect" aria-label="Elegir mes del calendario"></select>
           <button type="button" class="calendar-nav" id="nextWindowBtn">›</button>
           <button type="button" class="btn btn-form-secondary" id="todayWindowBtn">Desde hoy</button>
         </div>
@@ -1164,7 +1175,6 @@
         <div class="card-header">
           <div>
             <div class="card-title">Plan de entrenamiento</div>
-            <p class="card-subtitle">Rutina asociada a la clase seleccionada.</p>
           </div>
           
         </div>
@@ -1552,6 +1562,7 @@ async function loadMeasurementsFromBackend() {
     const prevWindowBtn = document.getElementById("prevWindowBtn");
     const nextWindowBtn = document.getElementById("nextWindowBtn");
     const todayWindowBtn = document.getElementById("todayWindowBtn");
+    const calendarMonthSelect = document.getElementById("calendarMonthSelect");
 
     const saveClassBtn = document.getElementById("saveClassBtn");
     const markCompletedBtn = document.getElementById("markCompletedBtn");
@@ -1633,6 +1644,31 @@ async function loadMeasurementsFromBackend() {
       d.setDate(1);
       d.setHours(0, 0, 0, 0);
       return d;
+    }
+
+    function monthKey(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    }
+
+    function populateCalendarMonthSelect() {
+      if (!calendarMonthSelect) return;
+      const currentValue = monthKey(calendarStartDate);
+      const base = startOfMonth(startOfToday());
+      const options = [];
+
+      for (let offset = -3; offset <= 12; offset++) {
+        const date = addMonths(base, offset);
+        const value = monthKey(date);
+        const label = date.toLocaleDateString("es-US", { month: "long", year: "numeric" });
+        options.push(`<option value="${value}" ${value === currentValue ? "selected" : ""}>${label}</option>`);
+      }
+
+      if (!options.some(option => option.includes(`value="${currentValue}"`))) {
+        const label = calendarStartDate.toLocaleDateString("es-US", { month: "long", year: "numeric" });
+        options.unshift(`<option value="${currentValue}" selected>${label}</option>`);
+      }
+
+      calendarMonthSelect.innerHTML = options.join("");
     }
 
     function toISODate(date) {
@@ -1951,6 +1987,8 @@ return {
       if (calendarRangeLabel) {
         calendarRangeLabel.textContent = monthStart.toLocaleDateString("es-US", { month: "long", year: "numeric" });
       }
+
+      populateCalendarMonthSelect();
 
       if (plannedCounter) {
         const inMonth = allClasses.filter(item => {
@@ -2552,6 +2590,16 @@ async function markClassCompleted(classId) {
     if (todayWindowBtn) {
       todayWindowBtn.addEventListener("click", () => {
         calendarStartDate = startOfMonth(startOfToday());
+        renderCalendarAndClasses();
+      });
+    }
+
+    if (calendarMonthSelect) {
+      calendarMonthSelect.addEventListener("change", () => {
+        const [year, month] = String(calendarMonthSelect.value || "").split("-").map(Number);
+        if (!year || !month) return;
+        calendarStartDate = new Date(year, month - 1, 1);
+        calendarStartDate.setHours(0, 0, 0, 0);
         renderCalendarAndClasses();
       });
     }
