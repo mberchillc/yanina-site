@@ -1548,6 +1548,7 @@ async function loadMeasurementsFromBackend() {
 
     let exerciseLibrary = [];
     let allClasses = [];
+    let dirtyClassIds = new Set();
     let selectedClass = null;
     let activeBackendClassId = null;
     let calendarStartDate = startOfMonth(startOfToday());
@@ -1573,6 +1574,83 @@ async function loadMeasurementsFromBackend() {
 
     const studentNameInput = document.getElementById("nombre");
     const navStudentName = document.getElementById("navStudentName");
+
+    function markClassDirty(classId) {
+      if (!classId) return;
+      dirtyClassIds.add(String(classId));
+    }
+
+    function updateClassInMemory(classId, patch = {}) {
+      if (!classId) return null;
+      const id = String(classId);
+      let updatedItem = null;
+
+      allClasses = allClasses.map(item => {
+        if (String(item.id) !== id) return item;
+        updatedItem = { ...item, ...patch };
+        return updatedItem;
+      });
+
+      if (selectedClass && String(selectedClass.id) === id) {
+        selectedClass = { ...selectedClass, ...patch };
+        updatedItem = selectedClass;
+      }
+
+      return updatedItem;
+    }
+
+    function classPayloadFromItem(item) {
+      return {
+        class_date: item.class_date || "",
+        class_time: item.class_time || "",
+        routine_type: item.routine_type || "Nueva clase",
+        status: normalizeStatus(item.status),
+        planning_criteria: item.planning_criteria || ""
+      };
+    }
+
+    function syncSelectedClassDraft(statusOverride) {
+      if (!selectedClass) return;
+
+      const payload = selectedClassPayload(statusOverride);
+      updateClassInMemory(selectedClass.id, payload);
+      markClassDirty(selectedClass.id);
+    }
+
+    async function saveCalendarChanges(statusOverride) {
+      if (!selectedClass && !dirtyClassIds.size) {
+        alert("Seleccioná o agregá una clase primero.");
+        return null;
+      }
+
+      if (selectedClass) syncSelectedClassDraft(statusOverride);
+
+      const idsToSave = Array.from(dirtyClassIds);
+      let lastUpdated = null;
+
+      for (const classId of idsToSave) {
+        const item = allClasses.find(entry => String(entry.id) === String(classId));
+        if (!item) continue;
+
+        const response = await fetch(`${API_BASE}/api/classes/${classId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(classPayloadFromItem(item))
+        });
+
+        if (!response.ok) throw new Error("No se pudo guardar el calendario");
+
+        const updated = await response.json();
+        lastUpdated = updated;
+        allClasses = allClasses.map(entry => Number(entry.id) === Number(updated.id) ? updated : entry);
+        if (selectedClass && Number(selectedClass.id) === Number(updated.id)) selectedClass = updated;
+      }
+
+      dirtyClassIds.clear();
+      renderCalendarAndClasses();
+      return lastUpdated || selectedClass;
+    }
+
     const studentPhoto = document.querySelector(".student-photo");
     const studentAvatar = document.querySelector(".student-avatar");
 
@@ -2038,15 +2116,23 @@ return {
 
           const timeInput = cell.querySelector(".slot-time-input");
           if (timeInput) {
-            timeInput.addEventListener("click", event => event.stopPropagation());
-            timeInput.addEventListener("input", event => {
+            const syncSlotTime = event => {
               event.stopPropagation();
               const value = event.target.value || "";
               document.getElementById("classTimeInput").value = value;
-              if (selectedClass) selectedClass.class_time = value;
+
+              if (selectedClass) {
+                updateClassInMemory(selectedClass.id, { class_time: value });
+                markClassDirty(selectedClass.id);
+              }
+
               const timeLabel = cell.querySelector("em");
               if (timeLabel) timeLabel.textContent = value || "Sin hora";
-            });
+            };
+
+            timeInput.addEventListener("click", event => event.stopPropagation());
+            timeInput.addEventListener("input", syncSlotTime);
+            timeInput.addEventListener("change", syncSlotTime);
           }
         }
 
@@ -2201,23 +2287,29 @@ async function createClassForStudent(dateKey = toISODate(startOfToday()), should
     return;
   }
 
+  const payload = {
+    class_date: dateKey || "",
+    class_time: "",
+    routine_type: "Nueva clase",
+    status: "draft",
+    planning_criteria: ""
+  };
+
   const response = await fetch(`${API_BASE}/api/students/${studentId}/classes`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      class_date: dateKey || "",
-      class_time: "",
-      routine_type: "Nueva clase",
-      status: "draft",
-      planning_criteria: ""
-    })
+    body: JSON.stringify(payload)
   });
 
   if (!response.ok) throw new Error("No se pudo crear la clase");
 
   const created = await response.json();
-  await loadClassesFromBackend();
-  await selectClass(created.id, shouldScroll);
+  const createdClass = { ...payload, ...created };
+
+  allClasses.push(createdClass);
+  allClasses.sort((a, b) => String(a.class_date || "").localeCompare(String(b.class_date || "")) || String(a.class_time || "").localeCompare(String(b.class_time || "")));
+
+  await selectClass(createdClass.id, shouldScroll);
 }    
     async function saveSelectedClass(statusOverride) {
       if (!selectedClass || !activeBackendClassId) {
@@ -2488,7 +2580,7 @@ async function markClassCompleted(classId) {
     if (saveClassBtn) {
       saveClassBtn.addEventListener("click", async () => {
         try {
-          await saveSelectedClass();
+          await saveCalendarChanges();
           saveClassBtn.textContent = "✓ Calendario guardado";
           setTimeout(() => saveClassBtn.textContent = "Guardar calendario", 1800);
         } catch (error) {
