@@ -1072,6 +1072,28 @@
   }
 }
 
+
+.student-user-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border-radius: 999px;
+  padding: 11px 16px;
+  background: rgba(217, 242, 203, 0.72);
+  color: var(--green-dark);
+  border: 1px solid rgba(126, 200, 69, 0.5);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.calendar-save-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
     .exercise-library-select { width: 100%; border: 0; background: transparent; color: var(--green-dark); font: inherit; font-weight: 800; outline: none; }
 
     @media (max-width: 840px) {
@@ -1253,6 +1275,7 @@
             <a href="#clase-seleccionada" class="btn btn-form-secondary">Crear entrenamiento</a>
             <a class="btn btn-form-secondary" id="starfitMeasurementsBtn" href="mediciones-starfit.html">Cargar medición Starfit</a>
             <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">Descargar rutina PDF</a>
+            <span class="student-user-badge" id="studentUserBadge">Usuario: —</span>
           </div>
 
           <div class="save-message" id="saveMessage">Datos guardados correctamente.</div>
@@ -1317,6 +1340,9 @@
           </div>
 
           <div class="timeline-grid" id="timelineGrid"></div>
+          <div class="calendar-save-actions">
+            <button type="button" class="btn btn-form-primary" id="saveClassBtn">Guardar calendario</button>
+          </div>
         </section>
 
         <section class="selected-class-panel" id="clase-seleccionada">
@@ -1341,7 +1367,6 @@
           </div>
 
           <div class="bottom-actions">
-            <button type="button" class="btn btn-form-primary" id="saveClassBtn">Guardar calendario</button>
             <button type="button" class="btn btn-form-secondary" id="markCompletedBtn">Marcar realizada</button>
           </div>
         </section>
@@ -2047,6 +2072,31 @@ return {
         .join("") || "NA";
     }
 
+
+    function generateStudentUsername(fullName) {
+      const parts = String(fullName || "")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+      if (!parts.length) return "";
+
+      const firstName = parts[0];
+      const lastName = parts.length > 1 ? parts[parts.length - 1] : "";
+      const first = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+      const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : "";
+
+      return lastInitial ? `${first}.${lastInitial}` : first;
+    }
+
+    function updateStudentUserBadge() {
+      const badge = document.getElementById("studentUserBadge");
+      if (!badge) return;
+
+      const username = generateStudentUsername(studentNameInput?.value || "");
+      badge.textContent = username ? `Usuario: ${username}` : "Usuario: —";
+    }
+
     function updateStudentIdentity() {
       const currentName = studentNameInput?.value || "";
       const initials = getInitials(currentName);
@@ -2054,6 +2104,7 @@ return {
       if (navStudentName) navStudentName.textContent = currentName || "Nuevo alumno";
       if (studentPhoto) studentPhoto.textContent = initials;
       if (studentAvatar) studentAvatar.textContent = initials;
+      updateStudentUserBadge();
     }
 
     function setSelectValueByText(selectId, text) {
