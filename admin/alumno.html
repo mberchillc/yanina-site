@@ -1833,7 +1833,7 @@ async function loadMeasurementsFromBackend() {
             class_date: draft.class_date || "",
             class_time: draft.class_time || "",
             routine_type: draft.routine_type || "Nueva clase",
-            status: draft.status || "draft",
+            status: draft.class_time ? "scheduled" : (draft.status || "draft"),
             planning_criteria: draft.planning_criteria || ""
           })
         });
@@ -2632,10 +2632,29 @@ async function createClassForStudent(dateKey = toISODate(startOfToday()), should
     }
 
     async function deleteClass(classId) {
-      const confirmed = confirm("¿Eliminar esta clase futura? Esta acción no se puede deshacer.");
+      const item = allClasses.find(entry => Number(entry.id) === Number(classId));
+      const confirmed = confirm("¿Eliminar esta clase? Esta acción no se puede deshacer.");
       if (!confirmed) return;
 
-      const response = await fetch(`${API_BASE}/api/classes/${classId}`, { method: "DELETE" });
+      let response = await fetch(`${API_BASE}/api/classes/${classId}`, { method: "DELETE" });
+
+      if (!response.ok && item && isMeaningfulClass(item)) {
+        const scheduledPayload = {
+          ...classPayloadFromItem(item),
+          status: "scheduled"
+        };
+
+        const scheduleResponse = await fetch(`${API_BASE}/api/classes/${classId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(scheduledPayload)
+        });
+
+        if (scheduleResponse.ok) {
+          response = await fetch(`${API_BASE}/api/classes/${classId}`, { method: "DELETE" });
+        }
+      }
+
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
         throw new Error(error.error || "No se pudo eliminar la clase.");
