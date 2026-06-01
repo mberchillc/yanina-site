@@ -1050,6 +1050,11 @@
   margin-bottom: 0;
 }
 
+#calendario-mensual .calendar-save-actions {
+  align-items: center;
+  margin-top: 18px;
+}
+
     @media (max-width: 840px) {
       .topbar {
         align-items: flex-start;
@@ -1291,7 +1296,6 @@
               <h3>Calendario de clases mensuales</h3>
               <p>Click en un día para programar clase. El día seleccionado permite cargar o editar la hora dentro del calendario.</p>
             </div>
-            <span class="status-pill" id="plannedCounter">0 clases previstas</span>
           </div>
 
           <div class="calendar-toolbar">
@@ -1303,8 +1307,9 @@
         </div>
 
           <div class="timeline-grid" id="timelineGrid"></div>
-          <div class="bottom-actions">
+          <div class="bottom-actions calendar-save-actions">
             <button type="button" class="btn btn-form-primary" id="saveClassBtn">Guardar calendario</button>
+            <span class="status-pill" id="plannedCounter">0 clases guardadas</span>
           </div>
         </section>
 
@@ -2314,13 +2319,8 @@ return {
           return d && d >= monthStart && d <= monthEnd;
         });
 
-        const draftInMonth = Array.from(pendingCalendarDrafts.values()).filter(item => {
-          if (!isCalendarDraftMeaningful(item)) return false;
-          const d = parseISODate(item.class_date);
-          return d && d >= monthStart && d <= monthEnd;
-        });
-
-        plannedCounter.textContent = `${savedInMonth.length + draftInMonth.length} clases previstas`;
+        const savedCount = savedInMonth.length;
+        plannedCounter.textContent = `${savedCount} ${savedCount === 1 ? "clase guardada" : "clases guardadas"}`;
       }
 
       for (let i = 0; i < 42; i++) {
