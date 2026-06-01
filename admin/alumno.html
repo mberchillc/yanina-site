@@ -825,6 +825,35 @@
   transform: translateY(0);
 }
 
+.delete-class-btn {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 999px;
+  background: #e34b2f;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(227, 75, 47, 0.24);
+}
+
+.delete-class-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(227, 75, 47, 0.30);
+}
+
+.delete-class-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
 
 /* starfit-tracking-charts */
 .measurement-tracking {
@@ -1335,6 +1364,7 @@
           </div>
 
           <div class="bottom-actions">
+            <button type="button" class="delete-class-btn" id="deleteSelectedClassBtn" title="Eliminar clase" aria-label="Eliminar clase">E</button>
             <button type="button" class="btn btn-form-secondary" id="markCompletedBtn">Marcar realizada</button>
           </div>
         </section>
@@ -1695,6 +1725,7 @@ async function loadMeasurementsFromBackend() {
 
     const saveClassBtn = document.getElementById("saveClassBtn");
     const markCompletedBtn = document.getElementById("markCompletedBtn");
+    const deleteSelectedClassBtn = document.getElementById("deleteSelectedClassBtn");
     const workoutSaveButton = document.getElementById("saveWorkoutBtn");
     const addExerciseBtn = document.getElementById("addExerciseBtn");
     const duplicateWorkoutBtn = document.getElementById("duplicateWorkoutBtn");
@@ -2614,6 +2645,10 @@ async function createClassForStudent(dateKey = toISODate(startOfToday()), should
       if (selectedClass && Number(selectedClass.id) === Number(classId)) {
         selectedClass = null;
         activeBackendClassId = null;
+        document.getElementById("classDateInput").value = "";
+        document.getElementById("classTimeInput").value = "";
+        document.getElementById("classRoutineInput").value = "";
+        document.getElementById("classCriteriaInput").value = "";
         clearExerciseRows();
         addBlankExerciseRow();
       }
@@ -2823,6 +2858,22 @@ async function createClassForStudent(dateKey = toISODate(startOfToday()), should
         } catch (error) {
           console.error(error);
           alert(error.message || "No se pudo guardar el calendario.");
+        }
+      });
+    }
+
+    if (deleteSelectedClassBtn) {
+      deleteSelectedClassBtn.addEventListener("click", async () => {
+        if (!activeBackendClassId) {
+          alert("Sólo se puede eliminar una clase guardada.");
+          return;
+        }
+
+        try {
+          await deleteClass(activeBackendClassId);
+        } catch (error) {
+          console.error(error);
+          alert(error.message || "No se pudo eliminar la clase.");
         }
       });
     }
