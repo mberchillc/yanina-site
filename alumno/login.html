@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Acceso Alumna | Yanina Trainer</title>
+  <title>Acceso Alumnos/as | Yanina Trainer</title>
   <style>
     :root{--green-dark:#183f35;--green-main:#7ec845;--green-soft:#d9f2cb;--cream:#f7f3ea;--white:#fff;--text:#24332e;--muted:#6f7d78;--border:rgba(24,63,53,.14);--shadow:0 18px 50px rgba(24,63,53,.14)}
     *{box-sizing:border-box;margin:0;padding:0}
     body{min-height:100vh;font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--cream),#eef7ea);color:var(--text);display:flex;align-items:center;justify-content:center;padding:24px}
     .login-card{width:100%;max-width:460px;background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow);padding:34px}
-    .brand-block{background:var(--green-dark);border-radius:24px;padding:28px;text-align:center;margin-bottom:28px}
+    .brand-block{background:var(--green-dark);border-radius:24px;padding:28px;text-align:center;margin-bottom:24px}
     .brand-block img{width:260px;height:92px;object-fit:cover;object-position:center;display:block;margin:0 auto}
     .eyebrow{color:var(--green-dark);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
-    h1{color:var(--green-dark);font-size:34px;line-height:1.08;margin-bottom:10px}
-    .subtitle{color:var(--muted);line-height:1.5;font-size:16px;margin-bottom:24px}
+    h1{color:var(--green-dark);font-size:34px;line-height:1.08;margin-bottom:20px}
     .field{display:grid;gap:7px;margin-bottom:16px}
     label{color:var(--muted);font-size:13px;font-weight:800}
     input{width:100%;border:1px solid var(--border);background:var(--white);color:var(--text);border-radius:14px;padding:14px;font-size:15px;outline:none}
@@ -25,19 +24,19 @@
     .login-error{display:none;margin:0 0 16px;padding:12px 14px;border-radius:16px;background:rgba(180,48,48,.1);color:#8f2525;font-size:13px;font-weight:800;line-height:1.4}
     .login-success{display:none;margin:0 0 16px;padding:12px 14px;border-radius:16px;background:var(--green-soft);color:var(--green-dark);font-size:13px;font-weight:800;line-height:1.4}
     .note{margin-top:18px;padding:13px 14px;border-radius:16px;background:var(--green-soft);color:var(--green-dark);font-size:13px;line-height:1.45}
+    .note p + p{margin-top:8px}
     .mode-switch{display:flex;gap:10px;margin-bottom:18px}
     .mode-switch button{flex:1;border:1px solid var(--border);background:#fff;border-radius:999px;padding:11px 12px;color:var(--green-dark);font-weight:900;cursor:pointer}
     .mode-switch button.active{background:var(--green-main);border-color:var(--green-main)}
     .hidden{display:none}
-    @media(max-width:520px){.login-card{padding:24px}.brand-block img{width:220px;height:82px}h1{font-size:30px}.mode-switch{flex-direction:column}}
+    @media(max-width:520px){body{align-items:flex-start;padding:12px}.login-card{padding:24px}.brand-block{margin-bottom:22px}.brand-block img{width:220px;height:82px}h1{font-size:30px;margin-bottom:18px}.mode-switch{flex-direction:column}}
   </style>
 </head>
 <body>
   <main class="login-card">
     <div class="brand-block"><img src="../assets/logo-transp.png" alt="Yanina Trainer"></div>
     <div class="eyebrow">Plataforma Yanina Trainer</div>
-    <h1>Acceso alumna</h1>
-    <p class="subtitle">Ingresá para ver tu rutina, tus indicaciones y tu seguimiento personal.</p>
+    <h1>Acceso alumnos/as</h1>
 
     <div class="mode-switch">
       <button type="button" id="loginModeBtn" class="active">Entrar</button>
@@ -63,7 +62,10 @@
       <button type="submit" class="btn btn-primary" id="submitBtn">Entrar a mi espacio</button>
     </form>
 
-    <div class="note" id="loginNote">Usá el usuario indicado por Yanina. Ejemplo: <strong>Nombre.A</strong></div>
+    <div class="note" id="loginNote">
+      <p>Usá el usuario indicado por Yanina. Ejemplo: <strong>Nombre.A</strong></p>
+      <p>Creá tu contraseña alfanumérica de 6 dígitos. Una vez creada tu contraseña, en esta misma ventana podrás colocar la información para ingresar.</p>
+    </div>
     <a class="back-link" href="../index.html">← Volver al sitio</a>
   </main>
 
