@@ -4,219 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestión administrativa | Yanina Trainer</title>
-
   <script>
     const SESSION_KEY = "yaninaAdminSession";
     const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
     if (!session || session.loggedIn !== true) window.location.href = "login.html";
   </script>
-
   <style>
-    :root{--green-dark:#183f35;--green-main:#7ec845;--green-mid:#6ea313;--green-soft:#d9f2cb;--cream:#f7f3ea;--white:#fff;--text:#24332e;--navy:#18223d;--muted:#6f7d78;--border:rgba(24,63,53,.14);--shadow:0 18px 50px rgba(24,63,53,.12);--radius:24px}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--cream),#eef7ea);color:var(--text);min-height:100vh}
-    .admin-shell{max-width:1180px;margin:0 auto;padding:24px}.topbar{background:var(--green-dark);color:var(--white);border-radius:24px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:var(--shadow);margin-bottom:26px}.brand{display:flex;align-items:center;gap:18px}.brand img{width:300px;height:100px;object-fit:cover;object-position:center;display:block}.brand-text small{display:block;color:rgba(255,255,255,.72);font-size:13px;margin-top:3px}.top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.btn{border:0;border-radius:999px;padding:11px 17px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .18s ease,opacity .18s ease;font-family:inherit}.btn:hover{transform:translateY(-1px);opacity:.92}.btn-primary{background:var(--green-main);color:var(--green-dark)}.btn-secondary{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.24)}.btn-soft{background:var(--green-soft);color:var(--green-dark)}.btn-dark{background:var(--green-dark);color:#fff}
-    .page-header{margin-bottom:22px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;color:var(--green-dark);font-size:12px;font-weight:800;margin-bottom:8px}h1{font-size:clamp(30px,4vw,48px);line-height:1.05;color:var(--green-dark);margin-bottom:8px}.subtitle{color:var(--muted);font-size:17px;max-width:760px;line-height:1.5}
-    .management-grid{display:grid;grid-template-columns:390px 1fr;gap:22px;align-items:start}.card{background:rgba(255,255,255,.88);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}.card-title{font-size:22px;color:var(--green-dark);font-weight:900;margin-bottom:8px}.card-subtitle{color:var(--muted);font-size:14px;line-height:1.45;margin-bottom:18px}.field{display:grid;gap:7px;margin-bottom:14px}label{font-size:13px;color:var(--muted);font-weight:900}input,select{width:100%;border:1px solid var(--border);background:#fff;color:var(--text);border-radius:14px;padding:13px 14px;font-size:15px;outline:0;font-family:inherit}input:focus,select:focus{border-color:var(--green-main);box-shadow:0 0 0 4px rgba(126,200,69,.18)}.calc-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.calc-box{background:rgba(217,242,203,.55);border:1px solid rgba(126,200,69,.25);border-radius:18px;padding:15px}.calc-box span{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:7px}.calc-box strong{display:block;color:var(--green-dark);font-size:27px}.action-stack{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.status-note{margin-top:14px;color:var(--muted);font-size:13px;line-height:1.45}
-    .calendar-mini{margin-top:18px}.calendar-mini-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.calendar-mini-head strong{color:var(--green-dark);font-size:18px}.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.weekday{color:var(--muted);font-size:12px;font-weight:900;text-align:center}.day{height:42px;border-radius:13px;background:#fff;border:1px solid rgba(24,63,53,.08);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--text)}.day.outside{opacity:.28}.day.has-class{background:var(--green-mid);color:#fff;border-color:var(--green-mid);box-shadow:0 8px 16px rgba(110,163,19,.22)}
-    .preview-wrap{display:grid;gap:14px}.print-card{width:100%;max-width:820px;margin:0 auto;background:radial-gradient(circle at 8% 10%,rgba(239,247,218,.9),transparent 30%),#fff;border-radius:30px;box-shadow:var(--shadow);overflow:hidden;border:1px solid rgba(24,63,53,.09);padding:22px}.summary-hero{position:relative;border-radius:26px;overflow:hidden;min-height:250px;background:#e9f3df}.summary-hero img{width:100%;height:280px;object-fit:cover;object-position:center;display:block}.summary-logo{position:absolute;left:22px;top:18px;width:170px;filter:drop-shadow(0 8px 18px rgba(255,255,255,.75))}.summary-month{position:absolute;right:26px;top:28px;color:var(--green-mid);font-weight:900;letter-spacing:.1em;font-size:20px;text-transform:uppercase}.thanks{font-family:Georgia,serif;font-style:italic;text-align:center;color:var(--green-mid);font-size:30px;margin:22px 0 8px}.summary-name{text-align:center;color:var(--navy);font-size:32px;font-weight:900;margin-bottom:7px}.summary-modality{width:max-content;margin:0 auto 18px;background:#eef5df;color:var(--text);border-radius:999px;padding:8px 18px;font-weight:800}.summary-cards{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:14px;margin:18px 0}.summary-card{background:#fff;border:1px solid rgba(24,63,53,.08);border-radius:24px;padding:22px;text-align:center;box-shadow:0 14px 38px rgba(24,63,53,.08)}.summary-card strong{display:block;color:var(--navy);font-size:40px;margin:10px 0 7px}.summary-card span{display:block;color:var(--navy);font-size:17px;font-weight:900}.summary-card small{display:block;color:var(--green-mid);font-size:14px;font-weight:900;margin-top:8px}.summary-card.total{background:linear-gradient(135deg,#7fb018,#5f9419);color:#fff}.summary-card.total strong,.summary-card.total span,.summary-card.total small{color:#fff}.summary-bottom{display:grid;grid-template-columns:1.08fr .92fr;gap:14px}.visual-calendar,.training-days{background:#fff;border:1px solid rgba(24,63,53,.08);border-radius:24px;padding:20px;box-shadow:0 14px 38px rgba(24,63,53,.08)}.section-title{color:var(--navy);font-weight:900;font-size:18px;margin-bottom:14px}.visual-calendar .month-grid{gap:8px}.visual-calendar .day{height:33px;border:0;background:transparent}.visual-calendar .day.has-class{background:var(--green-mid);color:#fff;border-radius:50%;box-shadow:none}.days-list{display:flex;flex-wrap:wrap;gap:12px}.days-list span{width:58px;height:58px;border-radius:14px;background:#eef5df;color:var(--green-mid);display:flex;align-items:center;justify-content:center;font-size:27px;font-weight:900}.empty-state{background:rgba(255,255,255,.9);border:1px solid var(--border);border-radius:18px;padding:18px;color:var(--muted);line-height:1.5}
-    @media(max-width:980px){.management-grid{grid-template-columns:1fr}.summary-cards,.summary-bottom{grid-template-columns:1fr}.brand img{width:240px;height:86px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.admin-shell{padding:16px}}
-    @media print{body{background:#fff}.topbar,.page-header,.admin-panel,.preview-actions{display:none!important}.admin-shell{padding:0;max-width:none}.management-grid{display:block}.preview-wrap{display:block}.print-card{box-shadow:none;border:0;border-radius:0;width:100%;max-width:100%;padding:16px}.summary-hero img{height:260px}@page{size:A4 portrait;margin:8mm}}
+    :root{--green-dark:#183f35;--green-main:#7ec845;--green-mid:#6ea313;--green-soft:#d9f2cb;--cream:#f7f3ea;--white:#fff;--text:#24332e;--navy:#18223d;--muted:#6f7d78;--border:rgba(24,63,53,.14);--shadow:0 18px 50px rgba(24,63,53,.12);--radius:24px}*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--cream),#eef7ea);color:var(--text);min-height:100vh}.admin-shell{max-width:1180px;margin:0 auto;padding:24px}.topbar{background:var(--green-dark);color:var(--white);border-radius:24px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:var(--shadow);margin-bottom:26px}.brand{display:flex;align-items:center;gap:18px}.brand img{width:300px;height:100px;object-fit:cover;object-position:center;display:block}.brand-text small{display:block;color:rgba(255,255,255,.72);font-size:13px;margin-top:3px}.top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.btn{border:0;border-radius:999px;padding:11px 17px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .18s ease,opacity .18s ease;font-family:inherit}.btn:hover{transform:translateY(-1px);opacity:.92}.btn-primary{background:var(--green-main);color:var(--green-dark)}.btn-secondary{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.24)}.btn-soft{background:var(--green-soft);color:var(--green-dark)}.btn-dark{background:var(--green-dark);color:#fff}.page-header{margin-bottom:22px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;color:var(--green-dark);font-size:12px;font-weight:800;margin-bottom:8px}h1{font-size:clamp(30px,4vw,48px);line-height:1.05;color:var(--green-dark);margin-bottom:8px}.subtitle{color:var(--muted);font-size:17px;max-width:760px;line-height:1.5}.management-grid{display:grid;grid-template-columns:390px 1fr;gap:22px;align-items:start}.card{background:rgba(255,255,255,.88);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}.card-title{font-size:22px;color:var(--green-dark);font-weight:900;margin-bottom:8px}.card-subtitle{color:var(--muted);font-size:14px;line-height:1.45;margin-bottom:18px}.field{display:grid;gap:7px;margin-bottom:14px}label{font-size:13px;color:var(--muted);font-weight:900}input,select{width:100%;border:1px solid var(--border);background:#fff;color:var(--text);border-radius:14px;padding:13px 14px;font-size:15px;outline:0;font-family:inherit}input:focus,select:focus{border-color:var(--green-main);box-shadow:0 0 0 4px rgba(126,200,69,.18)}.calc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.calc-box{background:rgba(217,242,203,.55);border:1px solid rgba(126,200,69,.25);border-radius:18px;padding:14px;min-height:70px}.calc-box span{display:block;color:var(--muted);font-size:11px;font-weight:900;margin-bottom:7px}.calc-box strong{display:block;color:var(--green-dark);font-size:24px}.calc-box input{padding:0;border:0;background:transparent;border-radius:0;box-shadow:none;color:var(--green-dark);font-size:24px;font-weight:900}.action-stack{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.status-note{margin-top:14px;color:var(--muted);font-size:13px;line-height:1.45}.calendar-mini{margin-top:18px}.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.weekday{color:var(--muted);font-size:12px;font-weight:900;text-align:center}.day{height:42px;border-radius:13px;background:#fff;border:1px solid rgba(24,63,53,.08);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--text)}.day.outside{opacity:.28}.day.has-class{background:var(--green-mid);color:#fff;border-color:var(--green-mid);box-shadow:0 8px 16px rgba(110,163,19,.22)}.preview-wrap{display:grid;gap:14px}.print-card{width:100%;max-width:820px;margin:0 auto;background:radial-gradient(circle at 6% 9%,rgba(243,250,231,.95),transparent 28%),#fff;border-radius:30px;box-shadow:var(--shadow);overflow:hidden;border:1px solid rgba(24,63,53,.09);padding:18px}.summary-top{position:relative;padding:18px 22px 0;min-height:358px}.summary-logo{position:absolute;left:22px;top:8px;width:165px;z-index:5}.summary-month{position:absolute;right:28px;top:26px;color:var(--green-mid);font-weight:900;letter-spacing:.12em;font-size:22px;text-transform:uppercase;z-index:5}.leaf-badge{position:absolute;right:18px;top:16px;width:44px;height:44px;border-radius:50%;background:#eef5df;color:var(--green-mid);display:none;align-items:center;justify-content:center;font-size:24px;font-weight:900;z-index:5}.summary-hero{position:absolute;left:18px;right:18px;top:92px;height:300px;border-radius:28px;overflow:hidden;background:#e9f3df}.summary-hero img{width:100%;height:100%;object-fit:cover;object-position:center 42%;display:block}.hero-wave{position:absolute;left:18px;right:18px;top:326px;height:95px;background:#fff;border-radius:60% 60% 0 0/90% 90% 0 0;z-index:3}.thanks{position:relative;z-index:4;font-family:Georgia,serif;font-style:italic;text-align:center;color:var(--green-mid);font-size:31px;margin:-1px 0 8px}.summary-name{text-align:center;color:var(--navy);font-size:32px;font-weight:900;margin-bottom:7px}.summary-modality{width:max-content;margin:0 auto 18px;background:#eef5df;color:var(--text);border-radius:999px;padding:8px 18px;font-weight:800}.summary-cards{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:14px;margin:18px 0}.summary-card{background:#fff;border:1px solid rgba(24,63,53,.08);border-radius:24px;padding:22px;text-align:center;box-shadow:0 14px 38px rgba(24,63,53,.08)}.summary-card strong{display:block;color:var(--navy);font-size:40px;margin:10px 0 7px}.summary-card span{display:block;color:var(--navy);font-size:17px;font-weight:900}.summary-card small{display:block;color:var(--green-mid);font-size:14px;font-weight:900;margin-top:8px}.summary-card.total{background:linear-gradient(135deg,#7fb018,#5f9419);color:#fff}.summary-card.total strong,.summary-card.total span,.summary-card.total small{color:#fff}.summary-bottom{display:grid;grid-template-columns:1.08fr .92fr;gap:14px}.visual-calendar,.monthly-detail{background:#fff;border:1px solid rgba(24,63,53,.08);border-radius:24px;padding:20px;box-shadow:0 14px 38px rgba(24,63,53,.08)}.section-title{color:var(--navy);font-weight:900;font-size:18px;margin-bottom:14px}.visual-calendar .month-grid{gap:8px}.visual-calendar .day{height:33px;border:0;background:transparent}.visual-calendar .day.has-class{background:var(--green-mid);color:#fff;border-radius:50%;box-shadow:none}.detail-list{display:grid;gap:12px}.detail-row{display:flex;justify-content:space-between;gap:16px;align-items:center;background:#f3f8e9;border-radius:16px;padding:14px 15px}.detail-row span{color:var(--muted);font-size:14px;font-weight:900}.detail-row strong{color:var(--green-mid);font-size:24px}.detail-row.total-line{background:var(--green-mid)}.detail-row.total-line span,.detail-row.total-line strong{color:#fff}.empty-state{background:rgba(255,255,255,.9);border:1px solid var(--border);border-radius:18px;padding:18px;color:var(--muted);line-height:1.5}@media(max-width:980px){.management-grid{grid-template-columns:1fr}.summary-cards,.summary-bottom{grid-template-columns:1fr}.brand img{width:240px;height:86px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.admin-shell{padding:16px}.summary-top{min-height:330px}.summary-hero{height:250px}}@media print{body{background:#fff}.topbar,.page-header,.admin-panel{display:none!important}.admin-shell{padding:0;max-width:none}.management-grid{display:block}.print-card{box-shadow:none;border:0;border-radius:0;width:100%;max-width:100%;padding:12px}@page{size:A4 portrait;margin:8mm}}
   </style>
 </head>
 <body>
   <main class="admin-shell">
-    <header class="topbar">
-      <div class="brand">
-        <img src="../assets/logo-transp.png" alt="Yanina Trainer" />
-        <div class="brand-text"><strong>Admin Trainer</strong><small>Gestión administrativa</small></div>
-      </div>
-      <div class="top-actions">
-        <a href="index.html" class="btn btn-secondary">Panel Admin</a>
-        <a href="alumno.html?new=1" class="btn btn-primary">+ Nuevo alumno</a>
-      </div>
-    </header>
-
-    <section class="page-header">
-      <div class="eyebrow">Plataforma Yanina Trainer</div>
-      <h1>Gestión administrativa</h1>
-      <p class="subtitle">Seleccioná alumna y mes, revisá las clases programadas, cargá el valor por clase y generá el resumen mensual para descargar en PDF.</p>
-    </section>
-
+    <header class="topbar"><div class="brand"><img src="../assets/logo-transp.png" alt="Yanina Trainer" /><div class="brand-text"><strong>Admin Trainer</strong><small>Gestión administrativa</small></div></div><div class="top-actions"><a href="index.html" class="btn btn-secondary">Panel Admin</a><a href="alumno.html?new=1" class="btn btn-primary">+ Nuevo alumno</a></div></header>
+    <section class="page-header"><div class="eyebrow">Plataforma Yanina Trainer</div><h1>Gestión administrativa</h1><p class="subtitle">Seleccioná alumna y mes, revisá las clases programadas, cargá el valor por clase y generá el resumen mensual para descargar en PDF.</p></section>
     <section class="management-grid">
       <article class="card admin-panel">
-        <div class="card-title">Cálculo mensual</div>
-        <p class="card-subtitle">El resumen se calcula sobre clases programadas para cobrar por adelantado.</p>
-
+        <div class="card-title">Cálculo mensual</div><p class="card-subtitle">El resumen se calcula sobre clases programadas para cobrar por adelantado.</p>
         <div class="field"><label for="studentSelect">Alumna</label><select id="studentSelect"><option value="">Cargando alumnas...</option></select></div>
         <div class="field"><label for="monthSelect">Mes a cobrar</label><select id="monthSelect"></select></div>
         <div class="field"><label for="classValueInput">Valor por clase</label><input id="classValueInput" type="number" min="0" step="1" placeholder="Ej. 35" /></div>
-
-        <div class="calc-row">
-          <div class="calc-box"><span>Clases a realizar</span><strong id="classCountBox">0</strong></div>
-          <div class="calc-box"><span>Total mensual</span><strong id="totalBox">$0</strong></div>
-        </div>
-
+        <div class="calc-row"><div class="calc-box"><span>Clases a realizar</span><strong id="classCountBox">0</strong></div><div class="calc-box"><span>Otros</span><input id="otherValueInput" type="number" min="0" step="1" value="0" /></div><div class="calc-box"><span>Total mensual</span><strong id="totalBox">$0</strong></div></div>
         <div class="calendar-mini" id="adminCalendarMini"></div>
-
-        <div class="action-stack">
-          <button type="button" class="btn btn-dark" id="generateBtn">Aceptar</button>
-          <button type="button" class="btn btn-soft" id="printBtn">Descargar PDF</button>
-        </div>
-        <p class="status-note" id="statusNote">Elegí una alumna para cargar su calendario.</p>
+        <div class="action-stack"><button type="button" class="btn btn-dark" id="generateBtn">Aceptar</button><button type="button" class="btn btn-soft" id="printBtn">Descargar PDF</button></div><p class="status-note" id="statusNote">Elegí una alumna para cargar su calendario.</p>
       </article>
-
       <section class="preview-wrap">
-        <div class="preview-actions admin-panel"><button type="button" class="btn btn-soft" id="refreshBtn">Actualizar vista</button></div>
         <article class="print-card" id="summaryCard">
-          <div class="summary-hero">
-            <img src="../assets/student-side-photo.png" alt="Yanina sonriendo al aire libre" />
-            <img class="summary-logo" src="../assets/logo-transp.png" alt="Yanina Trainer" />
-            <div class="summary-month" id="summaryMonth">Mes</div>
-          </div>
-          <div class="thanks">Gracias por entrenar conmigo ♡</div>
-          <div class="summary-name" id="summaryName">Seleccioná alumna</div>
-          <div class="summary-modality" id="summaryModality">Modalidad</div>
-
-          <div class="summary-cards">
-            <div class="summary-card"><strong id="summaryClassCount">0</strong><span>clases a realizar</span><small>este mes</small></div>
-            <div class="summary-card"><strong id="summaryClassValue">$0</strong><span>valor por clase</span><small>por entrenamiento</small></div>
-            <div class="summary-card total"><span>TOTAL MENSUAL</span><strong id="summaryTotal">$0</strong><small>♡</small></div>
-          </div>
-
-          <div class="summary-bottom">
-            <div class="visual-calendar"><div class="section-title">Calendario de entrenamientos</div><div id="summaryCalendar"></div></div>
-            <div class="training-days"><div class="section-title">Días con entrenamiento</div><div class="days-list" id="summaryDays"></div></div>
-          </div>
+          <div class="summary-top"><img class="summary-logo" src="../assets/logo-transp.png" alt="Yanina Trainer" /><div class="summary-month" id="summaryMonth">Mes</div><div class="leaf-badge">⌁</div><div class="summary-hero"><img src="../assets/about-yanina.png" alt="Yanina sonriendo al aire libre" /></div><div class="hero-wave"></div></div>
+          <div class="thanks">Gracias por entrenar conmigo ♡</div><div class="summary-name" id="summaryName">Seleccioná alumna</div><div class="summary-modality" id="summaryModality">Modalidad</div>
+          <div class="summary-cards"><div class="summary-card"><strong id="summaryClassCount">0</strong><span>clases a realizar</span><small>este mes</small></div><div class="summary-card"><strong id="summaryClassValue">$0</strong><span>valor por clase</span><small>por entrenamiento</small></div><div class="summary-card total"><span>TOTAL MENSUAL</span><strong id="summaryTotal">$0</strong><small id="summaryOtherNote">♡</small></div></div>
+          <div class="summary-bottom"><div class="visual-calendar"><div class="section-title">Calendario de entrenamientos</div><div id="summaryCalendar"></div></div><div class="monthly-detail"><div class="section-title">Resumen mensual</div><div class="detail-list"><div class="detail-row"><span>Clases</span><strong id="detailClasses">0</strong></div><div class="detail-row"><span>Valor por clase</span><strong id="detailValue">$0</strong></div><div class="detail-row"><span>Otros</span><strong id="detailOther">$0</strong></div><div class="detail-row total-line"><span>Total mensual</span><strong id="detailTotal">$0</strong></div></div></div></div>
         </article>
       </section>
     </section>
   </main>
-
   <script>
-    const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
-    const studentSelect = document.getElementById("studentSelect");
-    const monthSelect = document.getElementById("monthSelect");
-    const classValueInput = document.getElementById("classValueInput");
-    const classCountBox = document.getElementById("classCountBox");
-    const totalBox = document.getElementById("totalBox");
-    const statusNote = document.getElementById("statusNote");
-    const adminCalendarMini = document.getElementById("adminCalendarMini");
-
-    let students = [];
-    let selectedStudent = null;
-    let selectedClasses = [];
-
-    function escapeHtml(value){return String(value || "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
-    function startOfMonth(date){const d=new Date(date);d.setDate(1);d.setHours(0,0,0,0);return d}
-    function addMonths(date,months){const d=new Date(date);d.setMonth(d.getMonth()+months);d.setDate(1);d.setHours(0,0,0,0);return d}
-    function addDays(date,days){const d=new Date(date);d.setDate(d.getDate()+days);return d}
-    function toISODate(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
-    function parseISODate(value){const d=new Date(String(value || "")+"T00:00:00");return Number.isNaN(d.getTime())?null:d}
-    function monthKey(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}`}
-    function money(value){const n=Number(value || 0);return `$${Number.isFinite(n)?n.toLocaleString("en-US",{maximumFractionDigits:0}):"0"}`}
-    function studentId(student){return student.id || student.student_id || student.studentId || ""}
-    function studentName(student){return student.full_name || student.name || "Alumna sin nombre"}
-    function studentModality(student){return student.modality || "Presencial"}
-
-    function populateMonths(){
-      const base=startOfMonth(new Date());
-      const options=[];
-      for(let offset=-1;offset<=12;offset++){
-        const d=addMonths(base,offset);
-        const value=monthKey(d);
-        const label=d.toLocaleDateString("es-US",{month:"long",year:"numeric"});
-        options.push(`<option value="${value}" ${offset===0?"selected":""}>${label}</option>`);
-      }
-      monthSelect.innerHTML=options.join("");
-    }
-
-    function selectedMonthBounds(){
-      const [year,month]=String(monthSelect.value).split("-").map(Number);
-      const start=new Date(year,month-1,1);
-      const end=addDays(addMonths(start,1),-1);
-      return {start,end};
-    }
-
-    function classCountsForMonth(){
-      const {start,end}=selectedMonthBounds();
-      return selectedClasses.filter(item=>{
-        const d=parseISODate(item.class_date);
-        const status=String(item.status || "").toLowerCase();
-        return d && d>=start && d<=end && status!=="cancelled";
-      });
-    }
-
-    function renderCalendar(target, compact=false){
-      const {start,end}=selectedMonthBounds();
-      const classDates=new Set(classCountsForMonth().map(item=>String(item.class_date || "")));
-      const weekdays=["Lu","Ma","Mi","Ju","Vi","Sa","Do"];
-      const firstWeekday=(start.getDay()+6)%7;
-      const visibleStart=addDays(start,-firstWeekday);
-      let html=`<div class="month-grid">${weekdays.map(d=>`<div class="weekday">${d}</div>`).join("")}`;
-      for(let i=0;i<42;i++){
-        const date=addDays(visibleStart,i);
-        const key=toISODate(date);
-        const outside=date<start || date>end;
-        html+=`<div class="day ${outside?"outside":""} ${classDates.has(key)?"has-class":""}">${date.getDate()}</div>`;
-      }
-      html+="</div>";
-      target.innerHTML=html;
-    }
-
-    function updateSummary(){
-      const monthStart=selectedMonthBounds().start;
-      const classes=classCountsForMonth();
-      const count=classes.length;
-      const value=Number(classValueInput.value || 0);
-      const total=count*value;
-      const days=classes.map(item=>parseISODate(item.class_date)).filter(Boolean).sort((a,b)=>a-b);
-      const monthLabel=monthStart.toLocaleDateString("es-US",{month:"long",year:"numeric"}).toUpperCase();
-
-      classCountBox.textContent=String(count);
-      totalBox.textContent=money(total);
-      document.getElementById("summaryMonth").textContent=monthLabel;
-      document.getElementById("summaryName").textContent=selectedStudent?studentName(selectedStudent):"Seleccioná alumna";
-      document.getElementById("summaryModality").textContent=selectedStudent?studentModality(selectedStudent):"Modalidad";
-      document.getElementById("summaryClassCount").textContent=String(count);
-      document.getElementById("summaryClassValue").textContent=money(value);
-      document.getElementById("summaryTotal").textContent=money(total);
-      document.getElementById("summaryDays").innerHTML=days.length?days.map(d=>`<span>${String(d.getDate()).padStart(2,"0")}</span>`).join(""):`<div class="empty-state">Sin clases programadas para este mes.</div>`;
-      renderCalendar(document.getElementById("summaryCalendar"));
-      renderCalendar(adminCalendarMini,true);
-      statusNote.textContent=selectedStudent?`${count} clases programadas para ${studentName(selectedStudent)} en ${monthLabel.toLowerCase()}.`:"Elegí una alumna para cargar su calendario.";
-    }
-
-    async function loadStudents(){
-      const response=await fetch(`${API_BASE}/api/students?cache=${Date.now()}`);
-      if(!response.ok) throw new Error("No se pudieron cargar las alumnas");
-      students=await response.json();
-      students=Array.isArray(students)?students:[];
-      studentSelect.innerHTML=`<option value="">Seleccionar alumna</option>`+students.map(student=>`<option value="${escapeHtml(studentId(student))}">${escapeHtml(studentName(student))}</option>`).join("");
-    }
-
-    async function loadClassesForStudent(id){
-      selectedClasses=[];
-      if(!id){selectedStudent=null;updateSummary();return}
-      selectedStudent=students.find(student=>String(studentId(student))===String(id)) || null;
-      statusNote.textContent="Cargando calendario de clases...";
-      const response=await fetch(`${API_BASE}/api/students/${encodeURIComponent(id)}/classes?cache=${Date.now()}`);
-      if(!response.ok) throw new Error("No se pudieron cargar las clases de la alumna");
-      const data=await response.json();
-      selectedClasses=Array.isArray(data)?data:[];
-      updateSummary();
-    }
-
-    studentSelect.addEventListener("change",()=>loadClassesForStudent(studentSelect.value).catch(error=>{console.error(error);statusNote.textContent=error.message || "No se pudo cargar el calendario."}));
-    monthSelect.addEventListener("change",updateSummary);
-    classValueInput.addEventListener("input",updateSummary);
-    document.getElementById("generateBtn").addEventListener("click",updateSummary);
-    document.getElementById("refreshBtn").addEventListener("click",updateSummary);
-    document.getElementById("printBtn").addEventListener("click",()=>window.print());
-
-    populateMonths();
-    updateSummary();
-    loadStudents().catch(error=>{console.error(error);studentSelect.innerHTML='<option value="">No se pudieron cargar alumnas</option>';statusNote.textContent=error.message || "No se pudieron cargar alumnas."});
+    const API_BASE="https://yanina-trainer-api.mberchillc.workers.dev",studentSelect=document.getElementById("studentSelect"),monthSelect=document.getElementById("monthSelect"),classValueInput=document.getElementById("classValueInput"),otherValueInput=document.getElementById("otherValueInput"),classCountBox=document.getElementById("classCountBox"),totalBox=document.getElementById("totalBox"),statusNote=document.getElementById("statusNote"),adminCalendarMini=document.getElementById("adminCalendarMini"),generateBtn=document.getElementById("generateBtn");let students=[],selectedStudent=null,selectedClasses=[];
+    function escapeHtml(v){return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}function startOfMonth(d){const x=new Date(d);x.setDate(1);x.setHours(0,0,0,0);return x}function addMonths(d,m){const x=new Date(d);x.setMonth(x.getMonth()+m);x.setDate(1);x.setHours(0,0,0,0);return x}function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}function toISODate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}function parseISODate(v){const d=new Date(String(v||"")+"T00:00:00");return Number.isNaN(d.getTime())?null:d}function monthKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`}function money(v){const n=Number(v||0);return `$${Number.isFinite(n)?n.toLocaleString("en-US",{maximumFractionDigits:0}):"0"}`}function studentId(s){return s.id||s.student_id||s.studentId||""}function studentName(s){return s.full_name||s.name||"Alumna sin nombre"}function studentModality(s){return s.modality||"Presencial"}
+    function populateMonths(){const base=startOfMonth(new Date()),options=[];for(let offset=-1;offset<=12;offset++){const d=addMonths(base,offset),value=monthKey(d),label=d.toLocaleDateString("es-US",{month:"long",year:"numeric"});options.push(`<option value="${value}" ${offset===0?"selected":""}>${label}</option>`)}monthSelect.innerHTML=options.join("")}
+    function selectedMonthBounds(){const [year,month]=String(monthSelect.value).split("-").map(Number),start=new Date(year,month-1,1),end=addDays(addMonths(start,1),-1);return{start,end}}
+    function classCountsForMonth(){const{start,end}=selectedMonthBounds();return selectedClasses.filter(item=>{const d=parseISODate(item.class_date),status=String(item.status||"").toLowerCase();return d&&d>=start&&d<=end&&status!=="cancelled"})}
+    function renderCalendar(target){const{start,end}=selectedMonthBounds(),classDates=new Set(classCountsForMonth().map(item=>String(item.class_date||""))),weekdays=["Lu","Ma","Mi","Ju","Vi","Sa","Do"],firstWeekday=(start.getDay()+6)%7,visibleStart=addDays(start,-firstWeekday);let html=`<div class="month-grid">${weekdays.map(d=>`<div class="weekday">${d}</div>`).join("")}`;for(let i=0;i<42;i++){const date=addDays(visibleStart,i),key=toISODate(date),outside=date<start||date>end;html+=`<div class="day ${outside?"outside":""} ${classDates.has(key)?"has-class":""}">${date.getDate()}</div>`}html+="</div>";target.innerHTML=html}
+    function updateSummary(){const monthStart=selectedMonthBounds().start,classes=classCountsForMonth(),count=classes.length,value=Number(classValueInput.value||0),other=Number(otherValueInput.value||0),total=count*value+other,monthLabel=monthStart.toLocaleDateString("es-US",{month:"long",year:"numeric"}).toUpperCase();classCountBox.textContent=String(count);totalBox.textContent=money(total);document.getElementById("summaryMonth").textContent=monthLabel;document.getElementById("summaryName").textContent=selectedStudent?studentName(selectedStudent):"Seleccioná alumna";document.getElementById("summaryModality").textContent=selectedStudent?studentModality(selectedStudent):"Modalidad";document.getElementById("summaryClassCount").textContent=String(count);document.getElementById("summaryClassValue").textContent=money(value);document.getElementById("summaryTotal").textContent=money(total);document.getElementById("summaryOtherNote").textContent=other>0?`incluye otros ${money(other)}`:"♡";document.getElementById("detailClasses").textContent=String(count);document.getElementById("detailValue").textContent=money(value);document.getElementById("detailOther").textContent=money(other);document.getElementById("detailTotal").textContent=money(total);renderCalendar(document.getElementById("summaryCalendar"));renderCalendar(adminCalendarMini);statusNote.textContent=selectedStudent?`${count} clases programadas para ${studentName(selectedStudent)} en ${monthLabel.toLowerCase()}.`:"Elegí una alumna para cargar su calendario."}
+    async function loadStudents(){const response=await fetch(`${API_BASE}/api/students?cache=${Date.now()}`);if(!response.ok)throw new Error("No se pudieron cargar las alumnas");students=await response.json();students=Array.isArray(students)?students:[];studentSelect.innerHTML=`<option value="">Seleccionar alumna</option>`+students.map(s=>`<option value="${escapeHtml(studentId(s))}">${escapeHtml(studentName(s))}</option>`).join("");const params=new URLSearchParams(window.location.search),pre=params.get("studentId");if(pre){studentSelect.value=pre;await loadClassesForStudent(pre)}}
+    async function loadClassesForStudent(id){selectedClasses=[];if(!id){selectedStudent=null;updateSummary();return}selectedStudent=students.find(s=>String(studentId(s))===String(id))||null;statusNote.textContent="Cargando calendario de clases...";const response=await fetch(`${API_BASE}/api/students/${encodeURIComponent(id)}/classes?cache=${Date.now()}`);if(!response.ok)throw new Error("No se pudieron cargar las clases de la alumna");const data=await response.json();selectedClasses=Array.isArray(data)?data:[];updateSummary()}
+    studentSelect.addEventListener("change",()=>loadClassesForStudent(studentSelect.value).catch(e=>{console.error(e);statusNote.textContent=e.message||"No se pudo cargar el calendario."}));monthSelect.addEventListener("change",updateSummary);classValueInput.addEventListener("input",updateSummary);otherValueInput.addEventListener("input",updateSummary);generateBtn.addEventListener("click",()=>{updateSummary();generateBtn.textContent="✓ Aceptado";generateBtn.classList.add("btn-primary");setTimeout(()=>{generateBtn.textContent="Aceptar";generateBtn.classList.remove("btn-primary")},1800)});document.getElementById("printBtn").addEventListener("click",()=>window.print());populateMonths();updateSummary();loadStudents().catch(e=>{console.error(e);studentSelect.innerHTML='<option value="">No se pudieron cargar alumnas</option>';statusNote.textContent=e.message||"No se pudieron cargar alumnas."});
   </script>
 </body>
 </html>
