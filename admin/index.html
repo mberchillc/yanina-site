@@ -8,196 +8,28 @@
   <script>
     const SESSION_KEY = "yaninaAdminSession";
     const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-
-    if (!session || session.loggedIn !== true) {
-      window.location.href = "login.html";
-    }
+    if (!session || session.loggedIn !== true) window.location.href = "login.html";
   </script>
 
   <style>
-    :root {
-      --green-dark: #183f35;
-      --green-main: #7ec845;
-      --green-soft: #d9f2cb;
-      --cream: #f7f3ea;
-      --white: #ffffff;
-      --text: #24332e;
-      --muted: #6f7d78;
-      --border: rgba(24, 63, 53, 0.14);
-      --shadow: 0 18px 50px rgba(24, 63, 53, 0.12);
-      --radius: 22px;
-      --danger: #d92d20;
-      --danger-dark: #9f1f17;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, var(--cream), #eef7ea);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    .admin-shell { max-width: 1180px; margin: 0 auto; padding: 24px; }
-
-    .topbar {
-      background: var(--green-dark);
-      color: var(--white);
-      border-radius: 24px;
-      padding: 18px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      box-shadow: var(--shadow);
-      margin-bottom: 26px;
-    }
-
-    .brand { display: flex; align-items: center; gap: 18px; }
-    .brand img { width: 300px; height: 100px; object-fit: cover; object-position: center; display: block; }
-    .brand-text small { display: block; color: rgba(255,255,255,0.72); font-size: 13px; margin-top: 3px; }
-    .top-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
-
-    .btn {
-      border: none;
-      border-radius: 999px;
-      padding: 11px 17px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: transform 0.18s ease, opacity 0.18s ease;
-      font-family: inherit;
-    }
-
-    .btn:hover { transform: translateY(-1px); opacity: 0.92; }
-    .btn-primary { background: var(--green-main); color: var(--green-dark); }
-    .btn-secondary { background: rgba(255,255,255,0.1); color: var(--white); border: 1px solid rgba(255,255,255,0.24); }
-    .btn-soft { background: var(--green-soft); color: var(--green-dark); }
-
-    .page-header { margin-bottom: 22px; }
-    .eyebrow { text-transform: uppercase; letter-spacing: 0.12em; color: var(--green-dark); font-size: 12px; font-weight: 800; margin-bottom: 8px; }
-    h1 { font-size: clamp(30px, 4vw, 48px); line-height: 1.05; color: var(--green-dark); margin-bottom: 8px; }
-    .subtitle { color: var(--muted); font-size: 17px; max-width: 720px; line-height: 1.5; }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 22px; }
-    .stat-card { background: var(--green-dark); color: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
-    .stat-card span { display: block; color: rgba(255,255,255,0.72); font-size: 13px; margin-bottom: 8px; }
-    .stat-card strong { display: block; font-size: 28px; color: var(--green-soft); }
-
-    .students-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-
-    .student-card {
-      background: rgba(255,255,255,0.9);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 22px;
-      display: grid;
-      gap: 14px;
-      position: relative;
-      min-height: 285px;
-    }
-
-    .student-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding-right: 8px; }
-    .student-name { color: var(--green-dark); font-size: 22px; font-weight: 900; line-height: 1.1; }
-    .student-pill { background: var(--green-soft); color: var(--green-dark); border-radius: 999px; padding: 7px 11px; font-size: 12px; font-weight: 900; white-space: nowrap; }
-    .student-meta { display: grid; gap: 9px; color: var(--muted); font-size: 14px; line-height: 1.35; }
-    .student-meta strong { color: var(--green-dark); }
-
-    .next-class {
-      background: rgba(217, 242, 203, 0.65);
-      border: 1px solid rgba(126, 200, 69, 0.25);
-      border-radius: 16px;
-      padding: 13px;
-      color: var(--green-dark);
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    .card-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; padding-right: 48px; }
-
-    .delete-student-btn {
-      position: absolute;
-      right: 22px;
-      bottom: 22px;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: none;
-      background: var(--danger);
-      color: var(--white);
-      font-size: 18px;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 10px 24px rgba(217, 45, 32, 0.28);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
-    }
-
-    .delete-student-btn:hover { transform: translateY(-1px); opacity: 0.94; background: var(--danger-dark); }
-    .delete-student-btn:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
-
-    .empty-state, .loading-state {
-      grid-column: 1 / -1;
-      background: rgba(255,255,255,0.9);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 24px;
-      line-height: 1.5;
-    }
-
-    .empty-state { color: var(--muted); }
-    .loading-state { color: var(--green-dark); font-weight: 800; }
-    .btn-link-reset { font-family: inherit; }
-.birthday-alerts {
-  display: none;
-  margin-bottom: 22px;
-}
-
-.birthday-alert {
-  background: #fff;
-  border: 2px solid var(--green-main);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 18px 22px;
-  color: var(--green-dark);
-  font-size: 17px;
-  font-weight: 900;
-  line-height: 1.4;
-}
-    @media (max-width: 900px) {
-      .topbar { align-items: flex-start; flex-direction: column; }
-      .top-actions { justify-content: flex-start; }
-      .stats-grid, .students-grid { grid-template-columns: 1fr; }
-      .brand img { width: 240px; height: 86px; }
-      .admin-shell { padding: 16px; }
-    }
+    :root{--green-dark:#183f35;--green-main:#7ec845;--green-soft:#d9f2cb;--cream:#f7f3ea;--white:#fff;--text:#24332e;--muted:#6f7d78;--border:rgba(24,63,53,.14);--shadow:0 18px 50px rgba(24,63,53,.12);--radius:22px;--danger:#d92d20;--danger-dark:#9f1f17}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--cream),#eef7ea);color:var(--text);min-height:100vh}
+    .admin-shell{max-width:1180px;margin:0 auto;padding:24px}.topbar{background:var(--green-dark);color:var(--white);border-radius:24px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:var(--shadow);margin-bottom:26px}.brand{display:flex;align-items:center;gap:18px}.brand img{width:300px;height:100px;object-fit:cover;object-position:center;display:block}.brand-text small{display:block;color:rgba(255,255,255,.72);font-size:13px;margin-top:3px}.top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.btn{border:0;border-radius:999px;padding:11px 17px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .18s ease,opacity .18s ease;font-family:inherit}.btn:hover{transform:translateY(-1px);opacity:.92}.btn-primary{background:var(--green-main);color:var(--green-dark)}.btn-secondary{background:rgba(255,255,255,.1);color:var(--white);border:1px solid rgba(255,255,255,.24)}.btn-soft{background:var(--green-soft);color:var(--green-dark)}.page-header{margin-bottom:22px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;color:var(--green-dark);font-size:12px;font-weight:800;margin-bottom:8px}h1{font-size:clamp(30px,4vw,48px);line-height:1.05;color:var(--green-dark);margin-bottom:8px}.subtitle{color:var(--muted);font-size:17px;max-width:720px;line-height:1.5}.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}.stat-card{background:var(--green-dark);color:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}.stat-card span{display:block;color:rgba(255,255,255,.72);font-size:13px;margin-bottom:8px}.stat-card strong{display:block;font-size:28px;color:var(--green-soft)}.students-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.student-card{background:rgba(255,255,255,.9);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;display:grid;gap:14px;position:relative;min-height:285px}.student-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-right:8px}.student-name{color:var(--green-dark);font-size:22px;font-weight:900;line-height:1.1}.student-pill{background:var(--green-soft);color:var(--green-dark);border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900;white-space:nowrap}.student-meta{display:grid;gap:9px;color:var(--muted);font-size:14px;line-height:1.35}.student-meta strong{color:var(--green-dark)}.next-class{background:rgba(217,242,203,.65);border:1px solid rgba(126,200,69,.25);border-radius:16px;padding:13px;color:var(--green-dark);font-size:14px;line-height:1.4}.card-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:2px;padding-right:48px}.delete-student-btn{position:absolute;right:22px;bottom:22px;width:42px;height:42px;border-radius:50%;border:0;background:var(--danger);color:var(--white);font-size:18px;font-weight:900;cursor:pointer;box-shadow:0 10px 24px rgba(217,45,32,.28);display:inline-flex;align-items:center;justify-content:center;transition:transform .18s ease,opacity .18s ease,background .18s ease}.delete-student-btn:hover{transform:translateY(-1px);opacity:.94;background:var(--danger-dark)}.delete-student-btn:disabled{cursor:not-allowed;opacity:.55;transform:none}.empty-state,.loading-state{grid-column:1/-1;background:rgba(255,255,255,.9);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;line-height:1.5}.empty-state{color:var(--muted)}.loading-state{color:var(--green-dark);font-weight:800}.btn-link-reset{font-family:inherit}.birthday-alerts{display:none;margin-bottom:22px}.birthday-alert{background:#fff;border:2px solid var(--green-main);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 22px;color:var(--green-dark);font-size:17px;font-weight:900;line-height:1.4}
+    @media(max-width:900px){.topbar{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.stats-grid,.students-grid{grid-template-columns:1fr}.brand img{width:240px;height:86px}.admin-shell{padding:16px}}
   </style>
 </head>
-
 <body>
   <main class="admin-shell">
     <header class="topbar">
       <div class="brand">
         <img src="../assets/logo-transp.png" alt="Yanina Trainer" />
-        <div class="brand-text">
-          <strong>Admin Trainer</strong>
-          <small>Panel de alumnos</small>
-        </div>
+        <div class="brand-text"><strong>Admin Trainer</strong><small>Panel de alumnos</small></div>
       </div>
-
       <div class="top-actions">
         <a href="../index.html" class="btn btn-secondary">Volver al sitio</a>
         <a href="biblioteca-ejercicios.html" class="btn btn-secondary">Biblioteca</a>
+        <a href="gestion-administrativa.html" class="btn btn-secondary">Gestión administrativa</a>
         <button type="button" class="btn btn-secondary btn-link-reset" id="logoutBtn">Salir</button>
         <a href="alumno.html?new=1" class="btn btn-primary">+ Nuevo alumno</a>
       </div>
@@ -206,7 +38,7 @@
     <section class="page-header">
       <div class="eyebrow">Plataforma Yanina Trainer</div>
       <h1>Panel Admin</h1>
-      <p class="subtitle">Abrí la ficha de cada alumno para gestionar datos, clases y planes de entrenamiento.</p>
+      <p class="subtitle">Abrí la ficha de cada alumno para gestionar datos, clases, planes de entrenamiento y resúmenes administrativos.</p>
     </section>
 
     <section class="stats-grid">
@@ -215,9 +47,7 @@
       <div class="stat-card"><span>Rutinas listas</span><strong id="routinesCount">—</strong></div>
     </section>
     <section class="birthday-alerts" id="birthdayAlerts"></section>
-    <section class="students-grid" id="studentsGrid">
-      <div class="loading-state">Cargando alumnos desde D1…</div>
-    </section>
+    <section class="students-grid" id="studentsGrid"><div class="loading-state">Cargando alumnos desde D1…</div></section>
   </main>
 
   <script>
@@ -228,181 +58,63 @@
     const routinesCount = document.getElementById("routinesCount");
     const birthdayAlerts = document.getElementById("birthdayAlerts");
     const logoutBtn = document.getElementById("logoutBtn");
-
     let allStudents = [];
 
-    function escapeHtml(value) {
-      return String(value || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function escapeHtml(value){return String(value || "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+    function formatDate(value){if(!value)return "Sin datos";const date=new Date(value+"T00:00:00");if(Number.isNaN(date.getTime()))return value;return date.toLocaleDateString("es-US",{day:"2-digit",month:"2-digit",year:"numeric"})}
+    function getStudentId(student){return student.id || student.student_id || student.studentId || "1"}
+    function getStudentName(student){return student.full_name || student.name || "Alumno sin nombre"}
+    function getStudentGoal(student){return student.goal || student.objective || "Sin objetivo cargado"}
+    function getStudentFrequency(student){return student.frequency || "Sin frecuencia cargada"}
+    function getStudentModality(student){return student.modality || "Sin modalidad"}
+    function getLastMeasurements(student){return student.last_measurements_date || student.lastMeasurementsDate || ""}
+    function getBirthDate(student){return student.birth_date || ""}
+
+    function isBirthdayTomorrow(birthDate){
+      if(!birthDate)return false;const parts=String(birthDate).split("-");if(parts.length!==3)return false;const month=Number(parts[1]);const day=Number(parts[2]);if(!month || !day)return false;const today=new Date();today.setHours(0,0,0,0);const tomorrow=new Date(today);tomorrow.setDate(tomorrow.getDate()+1);return tomorrow.getMonth()+1===month && tomorrow.getDate()===day;
     }
 
-    function formatDate(value) {
-      if (!value) return "Sin datos";
-      const date = new Date(value + "T00:00:00");
-      if (Number.isNaN(date.getTime())) return value;
-      return date.toLocaleDateString("es-US", { day: "2-digit", month: "2-digit", year: "numeric" });
+    function renderBirthdayAlerts(students){
+      if(!birthdayAlerts)return;const birthdayStudents=(students || []).filter(student=>isBirthdayTomorrow(getBirthDate(student)));
+      if(!birthdayStudents.length){birthdayAlerts.style.display="none";birthdayAlerts.innerHTML="";return}
+      birthdayAlerts.style.display="block";birthdayAlerts.innerHTML=birthdayStudents.map(student=>`<div class="birthday-alert">🎂 Mañana es el cumpleaños de ${escapeHtml(getStudentName(student))}. Preparar saludo.</div>`).join("");
     }
 
-    function getStudentId(student) { return student.id || student.student_id || student.studentId || "1"; }
-    function getStudentName(student) { return student.full_name || student.name || "Alumno sin nombre"; }
-    function getStudentGoal(student) { return student.goal || student.objective || "Sin objetivo cargado"; }
-    function getStudentFrequency(student) { return student.frequency || "Sin frecuencia cargada"; }
-    function getStudentModality(student) { return student.modality || "Sin modalidad"; }
-    function getLastMeasurements(student) { return student.last_measurements_date || student.lastMeasurementsDate || ""; }
-function getBirthDate(student) {
-  return student.birth_date || "";
-}
-
-function isBirthdayTomorrow(birthDate) {
-  if (!birthDate) return false;
-
-  const parts = String(birthDate).split("-");
-  if (parts.length !== 3) return false;
-
-  const month = Number(parts[1]);
-  const day = Number(parts[2]);
-
-  if (!month || !day) return false;
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  return tomorrow.getMonth() + 1 === month && tomorrow.getDate() === day;
-}
-
-function renderBirthdayAlerts(students) {
-  if (!birthdayAlerts) return;
-
-  const birthdayStudents = (students || []).filter(student => isBirthdayTomorrow(getBirthDate(student)));
-
-  if (!birthdayStudents.length) {
-    birthdayAlerts.style.display = "none";
-    birthdayAlerts.innerHTML = "";
-    return;
-  }
-
-  birthdayAlerts.style.display = "block";
-  birthdayAlerts.innerHTML = birthdayStudents.map(student => `
-    <div class="birthday-alert">
-      🎂 Mañana es el cumpleaños de ${escapeHtml(getStudentName(student))}. Preparar saludo.
-    </div>
-  `).join("");
-}
-
-    function renderStudents(students) {
-      if (!students.length) {
-        studentsGrid.innerHTML = `
-          <div class="empty-state">
-            Todavía no hay alumnos cargados. Usá el botón <strong>+ Nuevo alumno</strong> para crear la primera ficha.
-          </div>
-        `;
-        return;
-      }
-
-      studentsGrid.innerHTML = students.map(student => {
-        const id = getStudentId(student);
-        return `
-          <article class="student-card">
-            <div class="student-top">
-              <div>
-                <div class="student-name">${escapeHtml(getStudentName(student))}</div>
-                <div class="student-meta" style="margin-top:10px;">
-                  <div><strong>Frecuencia:</strong> ${escapeHtml(getStudentFrequency(student))}</div>
-                  <div><strong>Modalidad:</strong> ${escapeHtml(getStudentModality(student))}</div>
-                  <div><strong>Últimas mediciones:</strong> ${escapeHtml(formatDate(getLastMeasurements(student)))}</div>
-                </div>
+    function renderStudents(students){
+      if(!students.length){studentsGrid.innerHTML=`<div class="empty-state">Todavía no hay alumnos cargados. Usá el botón <strong>+ Nuevo alumno</strong> para crear la primera ficha.</div>`;return}
+      studentsGrid.innerHTML=students.map(student=>{const id=getStudentId(student);return `
+        <article class="student-card">
+          <div class="student-top">
+            <div>
+              <div class="student-name">${escapeHtml(getStudentName(student))}</div>
+              <div class="student-meta" style="margin-top:10px;">
+                <div><strong>Frecuencia:</strong> ${escapeHtml(getStudentFrequency(student))}</div>
+                <div><strong>Modalidad:</strong> ${escapeHtml(getStudentModality(student))}</div>
+                <div><strong>Últimas mediciones:</strong> ${escapeHtml(formatDate(getLastMeasurements(student)))}</div>
               </div>
-              <span class="student-pill">ID ${escapeHtml(id)}</span>
             </div>
-
-            <div class="next-class">
-              <strong>Objetivo:</strong><br />
-              ${escapeHtml(getStudentGoal(student))}
-            </div>
-
-            <div class="card-actions">
-              <a class="btn btn-soft" href="alumno.html?id=${encodeURIComponent(id)}">Abrir ficha</a>
-              <a class="btn btn-soft" href="../alumno/?id=${encodeURIComponent(id)}" target="_blank">Vista alumna</a>
-            </div>
-
-            <button type="button" class="delete-student-btn" data-delete-id="${escapeHtml(id)}" aria-label="Eliminar alumno">E</button>
-          </article>
-        `;
-      }).join("");
-
-      studentsGrid.querySelectorAll("[data-delete-id]").forEach(button => {
-        button.addEventListener("click", () => deleteStudent(button.dataset.deleteId));
-      });
-    }
-
-    async function loadStudents() {
-      try {
-        const response = await fetch(`${API_BASE}/api/students?cache=${Date.now()}`);
-        if (!response.ok) throw new Error("No se pudo cargar la lista de alumnos desde D1");
-
-        allStudents = await response.json();
-        allStudents = Array.isArray(allStudents) ? allStudents : [];
-
-        studentsCount.textContent = allStudents.length;
-        classesCount.textContent = "—";
-        routinesCount.textContent = "—";
-        renderBirthdayAlerts(allStudents);
-        renderStudents(allStudents);
-      } catch (error) {
-        console.error(error);
-        studentsGrid.innerHTML = `
-          <div class="empty-state">
-            No se pudo conectar con la API. Revisá que el Worker esté activo.
+            <span class="student-pill">ID ${escapeHtml(id)}</span>
           </div>
-        `;
-      }
+          <div class="next-class"><strong>Objetivo:</strong><br />${escapeHtml(getStudentGoal(student))}</div>
+          <div class="card-actions">
+            <a class="btn btn-soft" href="alumno.html?id=${encodeURIComponent(id)}">Abrir ficha</a>
+            <a class="btn btn-soft" href="gestion-administrativa.html?studentId=${encodeURIComponent(id)}">Gestión administrativa</a>
+          </div>
+          <button type="button" class="delete-student-btn" data-delete-id="${escapeHtml(id)}" aria-label="Eliminar alumno">E</button>
+        </article>`}).join("");
+      studentsGrid.querySelectorAll("[data-delete-id]").forEach(button=>button.addEventListener("click",()=>deleteStudent(button.dataset.deleteId)));
     }
 
-    async function deleteStudent(studentId) {
-      const found = allStudents.find(student => String(getStudentId(student)) === String(studentId));
-      const name = found ? getStudentName(found) : `ID ${studentId}`;
-
-      const confirmed = confirm(`¿Eliminar a ${name}? Esta acción borrará también sus clases y rutinas.`);
-      if (!confirmed) return;
-
-      const button = document.querySelector(`[data-delete-id="${CSS.escape(String(studentId))}"]`);
-      if (button) button.disabled = true;
-
-      try {
-        const response = await fetch(`${API_BASE}/api/students/${encodeURIComponent(studentId)}`, {
-          method: "DELETE"
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || "No se pudo eliminar el alumno.");
-        }
-
-        allStudents = allStudents.filter(student => String(getStudentId(student)) !== String(studentId));
-        studentsCount.textContent = allStudents.length;
-        renderBirthdayAlerts(allStudents);
-        renderStudents(allStudents);
-      } catch (error) {
-        console.error(error);
-        alert(error.message || "No se pudo eliminar el alumno.");
-        if (button) button.disabled = false;
-      }
+    async function loadStudents(){
+      try{const response=await fetch(`${API_BASE}/api/students?cache=${Date.now()}`);if(!response.ok)throw new Error("No se pudo cargar la lista de alumnos desde D1");allStudents=await response.json();allStudents=Array.isArray(allStudents)?allStudents:[];studentsCount.textContent=allStudents.length;classesCount.textContent="—";routinesCount.textContent="—";renderBirthdayAlerts(allStudents);renderStudents(allStudents)}catch(error){console.error(error);studentsGrid.innerHTML=`<div class="empty-state">No se pudo conectar con la API. Revisá que el Worker esté activo.</div>`}
     }
 
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem(SESSION_KEY);
-        window.location.href = "login.html";
-      });
+    async function deleteStudent(studentId){
+      const found=allStudents.find(student=>String(getStudentId(student))===String(studentId));const name=found?getStudentName(found):`ID ${studentId}`;const confirmed=confirm(`¿Eliminar a ${name}? Esta acción borrará también sus clases y rutinas.`);if(!confirmed)return;const button=document.querySelector(`[data-delete-id="${CSS.escape(String(studentId))}"]`);if(button)button.disabled=true;
+      try{const response=await fetch(`${API_BASE}/api/students/${encodeURIComponent(studentId)}`,{method:"DELETE"});if(!response.ok){const errorData=await response.json().catch(()=>({}));throw new Error(errorData.error || "No se pudo eliminar el alumno.")}allStudents=allStudents.filter(student=>String(getStudentId(student))!==String(studentId));studentsCount.textContent=allStudents.length;renderBirthdayAlerts(allStudents);renderStudents(allStudents)}catch(error){console.error(error);alert(error.message || "No se pudo eliminar el alumno.");if(button)button.disabled=false}
     }
 
+    if(logoutBtn){logoutBtn.addEventListener("click",()=>{localStorage.removeItem(SESSION_KEY);window.location.href="login.html"})}
     loadStudents();
   </script>
 </body>
