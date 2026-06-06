@@ -26,10 +26,10 @@
     .note{margin-top:18px;padding:13px 14px;border-radius:16px;background:var(--green-soft);color:var(--green-dark);font-size:13px;line-height:1.45}
     .note p + p{margin-top:8px}
     .mode-switch{display:flex;gap:10px;margin-bottom:18px}
-    .mode-switch button{flex:1;border:1px solid var(--border);background:#fff;border-radius:999px;padding:11px 12px;color:var(--green-dark);font-weight:900;cursor:pointer}
+    .mode-switch button{flex:1;border:1px solid var(--border);background:#fff;border-radius:999px;padding:11px 12px;color:var(--green-dark);font-weight:900;cursor:pointer;min-height:42px;white-space:nowrap}
     .mode-switch button.active{background:var(--green-main);border-color:var(--green-main)}
     .hidden{display:none}
-    @media(max-width:520px){body{align-items:flex-start;padding:12px}.login-card{padding:24px}.brand-block{margin-bottom:22px}.brand-block img{width:220px;height:82px}h1{font-size:30px;margin-bottom:18px}.mode-switch{flex-direction:column}}
+    @media(max-width:520px){body{align-items:flex-start;padding:12px}.login-card{padding:24px}.brand-block{margin-bottom:22px}.brand-block img{width:220px;height:82px}h1{font-size:30px;margin-bottom:18px}.mode-switch{flex-direction:row;gap:10px}.mode-switch button{font-size:14px;padding:11px 10px}}
   </style>
 </head>
 <body>
@@ -64,7 +64,7 @@
 
     <div class="note" id="loginNote">
       <p>Usá el usuario indicado por Yanina. Ejemplo: <strong>Nombre.A</strong></p>
-      <p>Creá tu contraseña alfanumérica de 6 dígitos. Una vez creada tu contraseña, en esta misma ventana podrás colocar la información para ingresar.</p>
+      <p>Creá tu contraseña alfanumérica de al menos 6 caracteres. Una vez creada tu contraseña, en esta misma ventana podrás colocar la información para ingresar.</p>
     </div>
     <a class="back-link" href="../index.html">← Volver al sitio</a>
   </main>
@@ -113,6 +113,10 @@
 
     function normalizeUsername(value) {
       return String(value || "").trim();
+    }
+
+    function validNewPassword(value) {
+      return /^[A-Za-z0-9]{6,}$/.test(String(value || ""));
     }
 
     async function postJson(path, payload) {
@@ -178,7 +182,16 @@
         return;
       }
 
-      if (password.length < 6) {
+      if (mode === "setup") {
+        if (!validNewPassword(password)) {
+          showError("La contraseña nueva debe ser alfanumérica y tener al menos 6 caracteres.");
+          return;
+        }
+        if (password !== confirmPassword) {
+          showError("Las contraseñas no coinciden.");
+          return;
+        }
+      } else if (password.length < 6) {
         showError("La contraseña debe tener al menos 6 caracteres.");
         return;
       }
@@ -187,10 +200,6 @@
 
       try {
         if (mode === "setup") {
-          if (password !== confirmPassword) {
-            showError("Las contraseñas no coinciden.");
-            return;
-          }
           await setupPassword(username, password);
           return;
         }
