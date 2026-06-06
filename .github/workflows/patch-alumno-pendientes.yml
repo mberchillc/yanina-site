@@ -1,0 +1,65 @@
+name: Patch alumno pendientes
+
+on:
+  push:
+    paths:
+      - patch-alumno-pendientes-trigger.txt
+      - .github/workflows/patch-alumno-pendientes.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch alumno index
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('alumno/index.html')
+          text = p.read_text(encoding='utf-8')
+
+          css = """
+    .pending-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.pending-summary-box{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;text-align:center;box-shadow:0 14px 34px rgba(24,34,61,.07)}.pending-summary-box span{display:block;color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}.pending-summary-box strong{display:block;color:var(--navy);font-size:40px;line-height:1}.pending-summary-box.total{background:linear-gradient(135deg,var(--green),var(--green-dark));border:0}.pending-summary-box.total span,.pending-summary-box.total strong{color:#fff}.pending-actions{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.pending-status{font-weight:900;color:var(--green-dark)}.pending-status.paid{color:#102f35}.pending-paid-btn.paid{background:#102f35;color:#fff}.pending-note{margin-top:12px;color:var(--muted);font-size:14px;line-height:1.45}@media(max-width:700px){.pending-summary-grid{grid-template-columns:1fr}.pending-summary-box strong{font-size:34px}}
+          """
+          if '.pending-summary-grid' not in text:
+              text = text.replace('</style>', css + '\n  </style>')
+
+          old_nav = '<button class="tab-btn" data-tab="biblioteca">Biblioteca</button></div><div class="mini-note">'
+          new_nav = '<button class="tab-btn" data-tab="biblioteca">Biblioteca</button><button class="tab-btn" data-tab="pendientes" id="pendingTabBtn">Pendientes</button></div><div class="mini-note">'
+          if 'data-tab="pendientes"' not in text:
+              text = text.replace(old_nav, new_nav)
+
+          panel = '''\n      <section class="panel" id="pendientes"><div class="panel-head"><div><h2>Pendientes</h2><p>Resumen de pago mensual informado por Yanina.</p></div><span class="tag" id="pendingStateTag">Pendiente</span></div><div class="card" id="pendingPaymentCard"><div class="empty">No hay pendientes cargados para este mes.</div></div></section>'''
+          if 'id="pendientes"' not in text:
+              text = text.replace('    </main></section>', panel + '\n    </main></section>')
+
+          js = r'''
+    function currentMonthKey(){return `${viewDate.getFullYear()}-${String(viewDate.getMonth()+1).padStart(2,'0')}`}
+    function paymentStorageKey(){return `yaninaPayment:${STUDENT_ID}:${currentMonthKey()}`}
+    function moneyPayment(v){const n=Number(v||0);return `$${Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:0}):'0'}`}
+    function getPaymentSummary(){try{return JSON.parse(localStorage.getItem(paymentStorageKey())||'null')}catch(e){return null}}
+    function renderPendingPayment(){const card=$('pendingPaymentCard');if(!card)return;const summary=getPaymentSummary();const tag=$('pendingStateTag');if(!summary){card.innerHTML='<div class="empty">No hay pendientes cargados para este mes.</div>';if(tag)tag.textContent='Sin pendientes';const btn=$('pendingTabBtn');if(btn)btn.textContent='Sin pendientes';return}const paid=summary.status==='paid';if(tag)tag.textContent=paid?'Pagado':'Pendiente';const btn=$('pendingTabBtn');if(btn)btn.textContent=paid?'Sin pendientes':'Pendientes';card.innerHTML=`<div class="pending-summary-grid"><div class="pending-summary-box"><span>Clases a realizar</span><strong>${summary.classes||0}</strong></div><div class="pending-summary-box"><span>Valor por clase</span><strong>${moneyPayment(summary.classValue)}</strong></div><div class="pending-summary-box total"><span>Total mensual</span><strong>${moneyPayment(summary.total)}</strong></div></div><div class="card" style="margin-top:18px"><div class="pending-actions"><div><div class="pending-status ${paid?'paid':''}">${paid?'Pagado':'Pendiente de pago'}</div><div class="pending-note">Mes: ${esc(String(summary.month||currentMonthKey()))}</div></div><button type="button" class="primary-action pending-paid-btn ${paid?'paid':''}" id="studentPaidBtn">${paid?'Pagado':'Pago realizado'}</button></div></div>`;const paidBtn=$('studentPaidBtn');if(paidBtn){paidBtn.addEventListener('click',()=>{const s=getPaymentSummary();if(!s)return;s.status='paid';s.paidAt=new Date().toISOString();localStorage.setItem(paymentStorageKey(),JSON.stringify(s));renderPendingPayment()})}}
+          '''
+          if 'function renderPendingPayment()' not in text:
+              text = text.replace('    async function loadAll(){', js + '\n    async function loadAll(){')
+              text = text.replace('loadAll();', 'loadAll();renderPendingPayment();')
+              text = text.replace("monthSelect.addEventListener('change'", "monthSelect.addEventListener('change'")
+              # refresh pending after month navigation if these handlers exist
+              text = text.replace("renderCalendar();", "renderCalendar();renderPendingPayment();", 1)
+
+          p.write_text(text, encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No changes"
+          else
+            git add alumno/index.html
+            git commit -m "Add pendientes tab to student view"
+            git push
+          fi
