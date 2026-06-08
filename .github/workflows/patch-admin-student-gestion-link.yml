@@ -47,3 +47,4 @@ jobs:
             git commit -m "Add gestion administrativa link to student calendar"
             git push
           fi
+# trigger run
