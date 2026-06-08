@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - patch-payment-history-trigger.txt
+      - patch-payment-history-trigger-2.txt
       - .github/workflows/patch-payment-history.yml
 
 permissions:
@@ -28,11 +29,11 @@ jobs:
               text = text.replace('function update(){const ms=', 'function updateHistoryLink(){if(!historyBtn)return;if(selectedStudent){historyBtn.href=`../alumno/historial-pagos.html?id=${encodeURIComponent(sid(selectedStudent))}`;historyBtn.style.pointerEvents="auto";historyBtn.style.opacity="1"}else{historyBtn.href="#";historyBtn.style.pointerEvents="none";historyBtn.style.opacity=".45"}}function update(){updateHistoryLink();const ms=')
           p.write_text(text, encoding='utf-8')
 
-          # Student main: stronger pending color, calm no-pending color, add history URL helper
+          # Student main: stronger pending color, calm no-pending color
           p = Path('alumno/index.html')
           text = p.read_text(encoding='utf-8')
           text = text.replace('.tab-btn.pending-alert{background:#f4f6df;color:var(--green-dark);border-color:#dfe8c7;box-shadow:0 12px 26px rgba(115,173,19,.10)}', '.tab-btn.pending-alert{background:#fff1dc;color:#9a5a00;border-color:#f1cf96;box-shadow:0 12px 26px rgba(154,90,0,.10)}')
-          text = text.replace('.tab-btn.no-pending{background:#eef8f6;color:#173f35;border-color:#d7ebe6;box-shadow:0 10px 22px rgba(23,63,53,.06)}', '.tab-btn.no-pending{background:#eef8f6;color:#173f35;border-color:#d7ebe6;box-shadow:0 10px 22px rgba(23,63,53,.06)}')
+          text = text.replace('.tab-btn.pending-alert{background:#fff1dc;color:#9a5a00;border-color:#f1cf96;box-shadow:0 12px 26px rgba(154,90,0,.10)}.tab-btn.no-pending', '.tab-btn.pending-alert{background:#fff1dc;color:#9a5a00;border-color:#f1cf96;box-shadow:0 12px 26px rgba(154,90,0,.10)}.tab-btn.no-pending')
           p.write_text(text, encoding='utf-8')
           PY
       - name: Commit patch
@@ -46,3 +47,4 @@ jobs:
             git commit -m "Add payment history access and pending color"
             git push
           fi
+# trigger history workflow
