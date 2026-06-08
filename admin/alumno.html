@@ -1338,7 +1338,7 @@
           <div class="timeline-grid" id="timelineGrid"></div>
           <div class="bottom-actions calendar-save-actions">
             <button type="button" class="btn btn-form-primary" id="saveClassBtn">Guardar calendario</button>
-            <span class="status-pill" id="plannedCounter">0 clases guardadas</span>
+            <span class="status-pill" id="plannedCounter">0 clases guardadas</span><a class="btn btn-form-secondary" id="goGestionBtn" href="gestion-administrativa.html">Gestión administrativa</a>
           </div>
         </section>
 
@@ -1404,6 +1404,20 @@
     let studentId = isNewStudent ? null : (params.get("id") || "1");
     const starfitMeasurementsBtn = document.getElementById("starfitMeasurementsBtn");
     const starfitMeasurementsTab = null;
+
+    function updateGestionAdministrativaLink() {
+      const btn = document.getElementById("goGestionBtn");
+      if (!btn) return;
+      if (studentId) {
+        btn.href = `gestion-administrativa.html?studentId=${encodeURIComponent(studentId)}`;
+      } else {
+        btn.href = "#";
+        btn.onclick = event => {
+          event.preventDefault();
+          alert("Primero guardá la ficha del alumno para generar gestión administrativa.");
+        };
+      }
+    }
 
     function updateStarfitLinks() {
       const targets = [starfitMeasurementsBtn, starfitMeasurementsTab].filter(Boolean);
@@ -2832,6 +2846,7 @@ async function createClassForStudent(dateKey = toISODate(startOfToday()), should
             studentId = saved.id || saved.student.id;
           }
           updateStarfitLinks();
+        updateGestionAdministrativaLink();
           updateStarfitHistoryLink();
           updateStudentIdentity();
 
@@ -3011,6 +3026,7 @@ async function createClassForStudent(dateKey = toISODate(startOfToday()), should
     async function initializeStudentPage() {
       try {
         updateStarfitLinks();
+        updateGestionAdministrativaLink();
         updateStarfitHistoryLink();
         updateStudentIdentity();
         bindCalendarDraftInputs();
@@ -3025,6 +3041,7 @@ async function createClassForStudent(dateKey = toISODate(startOfToday()), should
         await loadMeasurementsFromBackend();
         await loadClassesFromBackend();
         updateStarfitLinks();
+        updateGestionAdministrativaLink();
         updateStarfitHistoryLink();
       } catch (error) {
         console.error(error);
