@@ -17,22 +17,109 @@
     <section class="card footer-actions"><div><div class="status" id="paymentStatus">Pendiente</div><p class="muted" id="paymentNote">El botón confirma el pago realizado.</p></div><button type="button" class="primary-action" id="paidBtn">Pago realizado</button></section>
   </main>
   <script>
-    const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
-    const params=new URLSearchParams(location.search);const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');
-    const STUDENT_ID=String(params.get('id')||params.get('studentId')||sessionData.studentId||'');
-    const MONTH=String(params.get('month')||new Date().toISOString().slice(0,7));
-    const KEY=`yaninaPayment:${STUDENT_ID}:${MONTH}`;
-    const $=id=>document.getElementById(id);function money(v){const n=Number(v||0);return `$${Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:0}):'0'}`}
-    function monthLabel(value){const [y,m]=String(value).split('-').map(Number);const d=new Date(y,m-1,1);return d.toLocaleDateString('es-US',{month:'long',year:'numeric'}).toUpperCase()}
-    function getSummary(){return JSON.parse(localStorage.getItem(KEY)||'null')}
-    function setSummary(data){localStorage.setItem(KEY,JSON.stringify(data))}
-    function render(summary){$('monthLabel').textContent=monthLabel(MONTH);$('studentName').textContent=summary?.studentName||'Pago mensual';if(!summary){$('summaryArea').innerHTML='<div class="empty">No hay resumen pendiente cargado para este mes.</div>';return}
-      $('summaryArea').innerHTML=`<div class="summary-grid"><div class="summary-box"><span>Clases a realizar</span><strong>${summary.classes||0}</strong></div><div class="summary-box"><span>Valor por clase</span><strong>${money(summary.classValue)}</strong></div><div class="summary-box total"><span>Total mensual</span><strong>${money(summary.total)}</strong></div></div>`;
-      const paid=summary.status==='paid';$('paymentStatus').textContent=paid?'Pagado':'Pendiente';$('paymentStatus').classList.toggle('paid',paid);$('paidBtn').textContent=paid?'Pagado':'Pago realizado';$('paidBtn').classList.toggle('paid',paid);
+  const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
+  const params=new URLSearchParams(location.search);
+  const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');
+  const STUDENT_ID=String(params.get('id')||params.get('studentId')||sessionData.studentId||'');
+  const MONTH=String(params.get('month')||new Date().toISOString().slice(0,7));
+  let currentSummary=null;
+
+  const $=id=>document.getElementById(id);
+
+  function money(v){
+    const n=Number(v||0);
+    return `$${Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:0}):'0'}`;
+  }
+
+  function monthLabel(value){
+    const [y,m]=String(value).split('-').map(Number);
+    const d=new Date(y,m-1,1);
+    return d.toLocaleDateString('es-US',{month:'long',year:'numeric'}).toUpperCase();
+  }
+
+  function normalizeSummary(s){
+    if(!s)return null;
+    return {
+      ...s,
+      classes:s.classes_count??s.classes??0,
+      classValue:s.class_value??s.classValue??0,
+      other:s.other_value??s.other??0,
+      total:s.total_value??s.total??0,
+      studentName:s.studentName||s.student_name||''
+    };
+  }
+
+  function render(summary){
+    currentSummary=normalizeSummary(summary);
+    $('monthLabel').textContent=monthLabel(MONTH);
+
+    if(!currentSummary){
+      $('studentName').textContent='Pago mensual';
+      $('summaryArea').innerHTML='<div class="empty">No hay resumen pendiente cargado para este mes.</div>';
+      $('paymentStatus').textContent='Sin pendientes';
+      $('paidBtn').disabled=true;
+      return;
     }
-    async function load(){if(!STUDENT_ID){render(null);return}try{const r=await fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}?cache=${Date.now()}`);if(r.ok){const s=await r.json();const current=getSummary();if(current&&!current.studentName){current.studentName=s.full_name||s.name||current.studentName;setSummary(current)}}}catch(e){console.warn(e)}render(getSummary())}
-    $('paidBtn').addEventListener('click',()=>{const summary=getSummary();if(!summary)return;summary.status='paid';summary.paidAt=new Date().toISOString();setSummary(summary);render(summary)});
-    if(STUDENT_ID)$('backLink').href=`index.html?id=${encodeURIComponent(STUDENT_ID)}`;load();
-  </script>
+
+    $('studentName').textContent=currentSummary.studentName||'Pago mensual';
+    $('summaryArea').innerHTML=`<div class="summary-grid"><div class="summary-box"><span>Clases a realizar</span><strong>${currentSummary.classes||0}</strong></div><div class="summary-box"><span>Valor por clase</span><strong>${money(currentSummary.classValue)}</strong></div><div class="summary-box total"><span>Total mensual</span><strong>${money(currentSummary.total)}</strong></div></div>`;
+
+    const paid=currentSummary.status==='paid';
+    $('paymentStatus').textContent=paid?'Pagado':'Pendiente';
+    $('paymentStatus').classList.toggle('paid',paid);
+    $('paidBtn').textContent=paid?'Pagado':'Pago realizado';
+    $('paidBtn').classList.toggle('paid',paid);
+    $('paidBtn').disabled=paid;
+  }
+
+  async function load(){
+    if(!STUDENT_ID){render(null);return}
+
+    try{
+      const [studentRes,summaryRes]=await Promise.all([
+        fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}?cache=${Date.now()}`),
+        fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}/payment-summary?month=${encodeURIComponent(MONTH)}&cache=${Date.now()}`)
+      ]);
+
+      let student=null;
+      if(studentRes.ok)student=await studentRes.json();
+
+      let summary=null;
+      if(summaryRes.ok)summary=await summaryRes.json();
+
+      if(summary&&student){
+        summary.studentName=student.full_name||student.name||summary.studentName;
+      }
+
+      render(summary);
+    }catch(e){
+      console.error(e);
+      $('summaryArea').innerHTML='<div class="empty">No se pudo cargar el resumen pendiente.</div>';
+    }
+  }
+
+  $('paidBtn').addEventListener('click',async()=>{
+    if(!currentSummary||!currentSummary.id)return;
+
+    try{
+      $('paidBtn').disabled=true;
+      $('paidBtn').textContent='Confirmando...';
+
+      const r=await fetch(`${API_BASE}/api/payment-summaries/${encodeURIComponent(currentSummary.id)}/paid`,{method:'POST'});
+      if(!r.ok)throw new Error('No se pudo marcar el pago.');
+
+      const updated=await r.json();
+      render({...currentSummary,...updated});
+    }catch(e){
+      console.error(e);
+      alert(e.message||'No se pudo marcar el pago.');
+      $('paidBtn').disabled=false;
+      $('paidBtn').textContent='Pago realizado';
+    }
+  });
+
+  if(STUDENT_ID)$('backLink').href=`index.html?id=${encodeURIComponent(STUDENT_ID)}`;
+  load();
+</script>
 </body>
 </html>
