@@ -38,3 +38,4 @@ jobs:
             git commit -m "Filter admin payment classes to saved classes"
             git push
           fi
+# trigger run
