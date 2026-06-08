@@ -3,123 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pago mensual | Yanina Trainer</title>
+  <title>Pendientes | Yanina Trainer</title>
   <style>
-    :root{--green:#73ad13;--green-dark:#5f9419;--green-soft:#eef8e7;--navy:#18223d;--ink:#354056;--muted:#738092;--line:#dfead9;--white:#fff;--shadow:0 22px 60px rgba(24,34,61,.12)}
-    *{box-sizing:border-box}body{margin:0;font-family:Inter,Montserrat,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#f9fcf7 0%,#fff 50%,#f7fbf7 100%);min-height:100vh}.shell{max-width:1040px;margin:0 auto;padding:24px}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:16px}.brand-badge{width:82px;height:82px;border-radius:28px;background:radial-gradient(circle at 35% 28%,#1f6f48 0%,#14555b 48%,#083a40 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 18px 38px rgba(8,58,64,.25);overflow:hidden}.brand-badge img{width:66px}.brand h1{margin:0;color:var(--navy);font-size:23px;line-height:1.05}.brand p{margin:4px 0 0;color:var(--muted);font-size:14px}.pill-btn,.primary-action{display:inline-flex;align-items:center;justify-content:center;min-height:42px;border-radius:999px;padding:11px 16px;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border:1px solid var(--line);background:#fff;color:var(--green-dark);box-shadow:0 10px 22px rgba(24,34,61,.06);cursor:pointer;text-decoration:none}.primary-action{border:0;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff}.primary-action.paid{background:#102f35}.card{background:#fff;border:1px solid var(--line);border-radius:34px;box-shadow:var(--shadow);padding:28px;margin-bottom:18px}.hero{display:grid;grid-template-columns:1fr 240px;gap:22px;align-items:center}.hero img{width:100%;height:170px;object-fit:cover;object-position:center 42%;border-radius:26px}.month{display:inline-flex;border-radius:999px;background:var(--green-soft);color:var(--green-dark);padding:8px 14px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}h2{margin:0;color:var(--navy);font-size:42px;line-height:1.05}p{line-height:1.55}.muted{color:var(--muted)}.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.summary-box{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;text-align:center;box-shadow:0 14px 34px rgba(24,34,61,.07)}.summary-box span{display:block;color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}.summary-box strong{display:block;color:var(--navy);font-size:42px;line-height:1}.summary-box.total{background:linear-gradient(135deg,var(--green),var(--green-dark));border:0}.summary-box.total span,.summary-box.total strong{color:#fff}.footer-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.status{font-weight:900;color:var(--green-dark)}.status.paid{color:#102f35}.empty{background:#f8fcf6;border:1px solid #edf4e9;border-radius:22px;padding:18px;color:var(--muted)}@media(max-width:760px){.hero,.summary-grid{grid-template-columns:1fr}.shell{padding:14px}.top{align-items:flex-start;flex-direction:column}h2{font-size:34px}}
+    :root{--green-dark:#183f35;--green-main:#7ec845;--green-mid:#6ea313;--green-soft:#d9f2cb;--cream:#f7f3ea;--white:#fff;--text:#24332e;--navy:#18223d;--muted:#6f7d78;--border:rgba(24,63,53,.14);--shadow:0 18px 50px rgba(24,63,53,.12);--radius:22px}
+    *{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--cream),#eef7ea);color:var(--text);min-height:100vh}.shell{max-width:900px;margin:0 auto;padding:22px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}.brand{display:flex;align-items:center;gap:14px}.brand img{width:150px;height:auto}.brand h1{font-size:22px;color:var(--navy);line-height:1.05}.brand p{color:var(--muted);font-size:13px;margin-top:4px}.btn{border:0;border-radius:999px;padding:11px 16px;font-size:13px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;line-height:1.1}.btn-soft{background:#fff;color:var(--green-dark);border:1px solid var(--border);box-shadow:0 10px 22px rgba(24,63,53,.06)}.btn-dark{background:var(--green-dark);color:#fff}.btn-paid{background:var(--green-mid);color:#fff}.btn-paid.paid{background:var(--green-dark)}.btn:disabled{opacity:.7;cursor:not-allowed}.summary-panel{background:rgba(255,255,255,.9);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;overflow:hidden}.summary-hero{position:relative;height:230px;border-radius:26px;overflow:hidden;background:#eef5df;margin-bottom:20px}.summary-hero img.hero-photo{width:100%;height:100%;object-fit:cover;object-position:center 42%;display:block}.summary-hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:72px;background:linear-gradient(0deg,rgba(255,255,255,.94),rgba(255,255,255,0));pointer-events:none}.summary-logo{position:absolute;left:22px;top:20px;width:180px;z-index:2;filter:drop-shadow(0 8px 18px rgba(255,255,255,.75))}.summary-center{text-align:center;margin-bottom:18px}.month-pill{display:inline-flex;align-items:center;justify-content:center;background:#eef5df;color:var(--green-mid);border-radius:999px;padding:8px 18px;font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}.student-name{font-size:34px;line-height:1.08;color:var(--navy);font-weight:900;margin-bottom:8px}.modality-pill{display:inline-flex;align-items:center;gap:7px;background:#eef5df;color:#4a5a46;border-radius:999px;padding:8px 14px;font-weight:800;font-size:14px}.summary-message{margin:18px 0;background:linear-gradient(135deg,#f6fbef,#fff);border:1px solid rgba(126,200,69,.18);border-radius:20px;padding:18px;text-align:center}.summary-message strong{display:block;color:var(--green-dark);font-size:22px;font-weight:900;margin-bottom:4px}.summary-message em{display:block;color:var(--green-mid);font-family:"Brush Script MT","Segoe Script",cursive;font-size:30px;font-weight:400;line-height:1.15}.summary-cards{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:14px;margin:18px 0}.summary-card{background:#fff;border:1px solid rgba(24,63,53,.08);border-radius:22px;padding:20px;text-align:center;box-shadow:0 14px 38px rgba(24,63,53,.08)}.summary-card small{display:block;color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}.summary-card strong{display:block;color:var(--navy);font-size:40px;line-height:1}.summary-card span{display:block;color:var(--green-mid);font-size:14px;font-weight:900;margin-top:8px}.summary-card.total{background:linear-gradient(135deg,#88b313,#6ea313);display:flex;flex-direction:column;justify-content:center}.summary-card.total small,.summary-card.total strong,.summary-card.total span{color:#fff}.summary-card.total strong{font-size:46px}.summary-bottom{display:grid;grid-template-columns:1.08fr .92fr;gap:14px}.visual-calendar,.detail-card{background:#fff;border:1px solid rgba(24,63,53,.08);border-radius:22px;padding:20px;box-shadow:0 14px 38px rgba(24,63,53,.08)}.section-title{color:var(--navy);font-weight:900;font-size:18px;margin-bottom:14px}.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.weekday{color:var(--muted);font-size:12px;font-weight:900;text-align:center}.day{height:33px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--text)}.day.outside{opacity:.28}.day.has-class{background:var(--green-mid);color:#fff;border-radius:50%}.legend{margin-top:12px;display:flex;align-items:center;justify-content:center;gap:9px;color:#505b57;font-size:13px}.legend-dot{width:11px;height:11px;border-radius:50%;background:var(--green-mid)}.detail-list{display:grid;gap:10px}.detail-row{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#f3f8e9;border-radius:15px;padding:13px 14px}.detail-row span{color:var(--muted);font-size:13px;font-weight:900}.detail-row strong{color:var(--green-mid);font-size:22px}.detail-row.total-line{background:var(--green-mid)}.detail-row.total-line span,.detail-row.total-line strong{color:#fff}.payment-bar{margin-top:16px;background:#fff;border:1px solid rgba(24,63,53,.08);border-radius:22px;padding:18px 20px;box-shadow:0 14px 38px rgba(24,63,53,.08);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.status{font-weight:900;color:var(--green-mid);font-size:18px}.status.paid{color:var(--green-dark)}.muted{color:var(--muted);font-size:14px;margin-top:4px}.empty{background:#fff;border:1px solid var(--border);border-radius:22px;padding:22px;color:var(--muted);box-shadow:var(--shadow)}@media(max-width:760px){.shell{padding:14px}.top{align-items:flex-start;flex-direction:column}.brand img{width:120px}.summary-cards,.summary-bottom{grid-template-columns:1fr}.summary-hero{height:220px}.summary-logo{width:145px}.student-name{font-size:28px}.summary-message em{font-size:26px}}
   </style>
 </head>
 <body>
   <main class="shell">
-    <header class="top"><div class="brand"><div class="brand-badge"><img src="../assets/logo-cropped.png" alt="Yanina Trainer"></div><div><h1>Plataforma Yanina Trainer</h1><p>Resumen mensual</p></div></div><a class="pill-btn" id="backLink" href="index.html">Volver</a></header>
-    <section class="card hero"><div><div class="month" id="monthLabel">Mes</div><h2 id="studentName">Pago mensual</h2><p class="muted">Este es el resumen de clases planificadas por Yanina para el mes. Cuando realices el pago, marcá el estado para avisar que quedó resuelto.</p></div><img src="../assets/Yani-pasto.png" alt="Yanina"></section>
-    <section class="card" id="summaryArea"><div class="empty">Cargando resumen pendiente...</div></section>
-    <section class="card footer-actions"><div><div class="status" id="paymentStatus">Pendiente</div><p class="muted" id="paymentNote">El botón confirma el pago realizado.</p></div><button type="button" class="primary-action" id="paidBtn">Pago realizado</button></section>
+    <header class="top"><div class="brand"><img src="../assets/logo-transp.png" alt="Yanina Trainer"><div><h1>Plataforma Yanina Trainer</h1><p>Resumen mensual</p></div></div><a class="btn btn-soft" id="backLink" href="index.html">Volver</a></header>
+    <section id="app"><div class="empty">Cargando resumen pendiente...</div></section>
   </main>
   <script>
-  const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
-  const params=new URLSearchParams(location.search);
-  const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');
-  const STUDENT_ID=String(params.get('id')||params.get('studentId')||sessionData.studentId||'');
-  const MONTH=String(params.get('month')||new Date().toISOString().slice(0,7));
-  let currentSummary=null;
-
-  const $=id=>document.getElementById(id);
-
-  function money(v){
-    const n=Number(v||0);
-    return `$${Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:0}):'0'}`;
-  }
-
-  function monthLabel(value){
-    const [y,m]=String(value).split('-').map(Number);
-    const d=new Date(y,m-1,1);
-    return d.toLocaleDateString('es-US',{month:'long',year:'numeric'}).toUpperCase();
-  }
-
-  function normalizeSummary(s){
-    if(!s)return null;
-    return {
-      ...s,
-      classes:s.classes_count??s.classes??0,
-      classValue:s.class_value??s.classValue??0,
-      other:s.other_value??s.other??0,
-      total:s.total_value??s.total??0,
-      studentName:s.studentName||s.student_name||''
-    };
-  }
-
-  function render(summary){
-    currentSummary=normalizeSummary(summary);
-    $('monthLabel').textContent=monthLabel(MONTH);
-
-    if(!currentSummary){
-      $('studentName').textContent='Pago mensual';
-      $('summaryArea').innerHTML='<div class="empty">No hay resumen pendiente cargado para este mes.</div>';
-      $('paymentStatus').textContent='Sin pendientes';
-      $('paidBtn').disabled=true;
-      return;
-    }
-
-    $('studentName').textContent=currentSummary.studentName||'Pago mensual';
-    $('summaryArea').innerHTML=`<div class="summary-grid"><div class="summary-box"><span>Clases a realizar</span><strong>${currentSummary.classes||0}</strong></div><div class="summary-box"><span>Valor por clase</span><strong>${money(currentSummary.classValue)}</strong></div><div class="summary-box total"><span>Total mensual</span><strong>${money(currentSummary.total)}</strong></div></div>`;
-
-    const paid=currentSummary.status==='paid';
-    $('paymentStatus').textContent=paid?'Pagado':'Pendiente';
-    $('paymentStatus').classList.toggle('paid',paid);
-    $('paidBtn').textContent=paid?'Pagado':'Pago realizado';
-    $('paidBtn').classList.toggle('paid',paid);
-    $('paidBtn').disabled=paid;
-  }
-
-  async function load(){
-    if(!STUDENT_ID){render(null);return}
-
-    try{
-      const [studentRes,summaryRes]=await Promise.all([
-        fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}?cache=${Date.now()}`),
-        fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}/payment-summary?month=${encodeURIComponent(MONTH)}&cache=${Date.now()}`)
-      ]);
-
-      let student=null;
-      if(studentRes.ok)student=await studentRes.json();
-
-      let summary=null;
-      if(summaryRes.ok)summary=await summaryRes.json();
-
-      if(summary&&student){
-        summary.studentName=student.full_name||student.name||summary.studentName;
-      }
-
-      render(summary);
-    }catch(e){
-      console.error(e);
-      $('summaryArea').innerHTML='<div class="empty">No se pudo cargar el resumen pendiente.</div>';
-    }
-  }
-
-  $('paidBtn').addEventListener('click',async()=>{
-    if(!currentSummary||!currentSummary.id)return;
-
-    try{
-      $('paidBtn').disabled=true;
-      $('paidBtn').textContent='Confirmando...';
-
-      const r=await fetch(`${API_BASE}/api/payment-summaries/${encodeURIComponent(currentSummary.id)}/paid`,{method:'POST'});
-      if(!r.ok)throw new Error('No se pudo marcar el pago.');
-
-      const updated=await r.json();
-      render({...currentSummary,...updated});
-    }catch(e){
-      console.error(e);
-      alert(e.message||'No se pudo marcar el pago.');
-      $('paidBtn').disabled=false;
-      $('paidBtn').textContent='Pago realizado';
-    }
-  });
-
-  if(STUDENT_ID)$('backLink').href=`index.html?id=${encodeURIComponent(STUDENT_ID)}`;
-  load();
-</script>
+    const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
+    const params=new URLSearchParams(location.search);const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');
+    const STUDENT_ID=String(params.get('id')||params.get('studentId')||sessionData.studentId||'');
+    const MONTH=String(params.get('month')||new Date().toISOString().slice(0,7));
+    const $=id=>document.getElementById(id);let currentSummary=null,currentStudent=null;
+    function money(v){const n=Number(v||0);return `$${Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:0}):'0'}`}
+    function monthLabel(value){const [y,m]=String(value).split('-').map(Number);const d=new Date(y,m-1,1);return d.toLocaleDateString('es-US',{month:'long',year:'numeric'}).toUpperCase()}
+    function addD(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}function iso(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+    function normalizeSummary(s){if(!s)return null;let dates=[];try{dates=Array.isArray(s.class_dates)?s.class_dates:JSON.parse(s.class_dates||'[]')}catch(_){dates=[]}return{...s,classes:s.classes_count??s.classes??0,classValue:s.class_value??s.classValue??0,other:s.other_value??s.other??0,total:s.total_value??s.total??0,classDates:dates}}
+    function renderCalendar(month,dates){const [y,m]=String(month).split('-').map(Number),st=new Date(y,m-1,1),en=new Date(y,m,0),set=new Set(dates||[]),week=['Lu','Ma','Mi','Ju','Vi','Sa','Do'],first=(st.getDay()+6)%7,vis=addD(st,-first);let html=`<div class="month-grid">${week.map(d=>`<div class="weekday">${d}</div>`).join('')}`;for(let i=0;i<42;i++){const d=addD(vis,i),k=iso(d),out=d<st||d>en;html+=`<div class="day ${out?'outside':''} ${set.has(k)?'has-class':''}">${d.getDate()}</div>`}return html+'</div>'}
+    function render(summary){currentSummary=normalizeSummary(summary);if(!currentSummary){$('app').innerHTML='<div class="empty">No hay resumen pendiente cargado para este mes.</div>';return}const paid=currentSummary.status==='paid',name=currentStudent?.full_name||currentStudent?.name||'Alumna',modality=currentStudent?.modality||'Presencial';$('app').innerHTML=`<section class="summary-panel"><div class="summary-hero"><img class="hero-photo" src="../assets/Yani-pasto.png" alt="Yanina"><img class="summary-logo" src="../assets/logo-transp.png" alt="Yanina Trainer"></div><div class="summary-center"><div class="month-pill">${monthLabel(MONTH)}</div><div class="student-name">${name}</div><div class="modality-pill">📍 ${modality}</div></div><div class="summary-message"><strong>Gracias por entrenar conmigo</strong><em>Entrenás el cuerpo para mejorar tu vida</em></div><div class="summary-cards"><div class="summary-card"><small>Clases a realizar</small><strong>${currentSummary.classes}</strong><span>este mes</span></div><div class="summary-card"><small>Valor por clase</small><strong>${money(currentSummary.classValue)}</strong></div><div class="summary-card total"><small>Total mensual</small><strong>${money(currentSummary.total)}</strong><span>${paid?'pagado':'pendiente'}</span></div></div><div class="summary-bottom"><div class="visual-calendar"><div class="section-title">Calendario de entrenamientos</div>${renderCalendar(MONTH,currentSummary.classDates)}<div class="legend"><span class="legend-dot"></span><span>Días con entrenamiento</span></div></div><div class="detail-card"><div class="section-title">Resumen mensual</div><div class="detail-list"><div class="detail-row"><span>Clases</span><strong>${currentSummary.classes}</strong></div><div class="detail-row"><span>Valor por clase</span><strong>${money(currentSummary.classValue)}</strong></div><div class="detail-row"><span>Otros</span><strong>${money(currentSummary.other)}</strong></div><div class="detail-row total-line"><span>Total mensual</span><strong>${money(currentSummary.total)}</strong></div></div></div></div><div class="payment-bar"><div><div class="status ${paid?'paid':''}">${paid?'Pagado':'Pendiente de pago'}</div><div class="muted">El botón confirma el pago realizado.</div></div><button type="button" class="btn btn-paid ${paid?'paid':''}" id="paidBtn" ${paid?'disabled':''}>${paid?'Pagado':'Pago realizado'}</button></div></section>`;const b=$('paidBtn');if(b)b.addEventListener('click',markPaid)}
+    async function load(){if(!STUDENT_ID){render(null);return}if(STUDENT_ID)$('backLink').href=`index.html?id=${encodeURIComponent(STUDENT_ID)}`;try{const [studentRes,summaryRes]=await Promise.all([fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}?cache=${Date.now()}`),fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}/payment-summary?month=${encodeURIComponent(MONTH)}&cache=${Date.now()}`)]);if(studentRes.ok)currentStudent=await studentRes.json();let summary=null;if(summaryRes.ok)summary=await summaryRes.json();render(summary)}catch(e){console.error(e);$('app').innerHTML='<div class="empty">No se pudo cargar el resumen pendiente.</div>'}}
+    async function markPaid(){if(!currentSummary?.id)return;const b=$('paidBtn');try{b.disabled=true;b.textContent='Confirmando...';const r=await fetch(`${API_BASE}/api/payment-summaries/${encodeURIComponent(currentSummary.id)}/paid`,{method:'POST'});if(!r.ok)throw new Error('No se pudo marcar el pago.');const updated=await r.json();render({...currentSummary,...updated})}catch(e){console.error(e);alert(e.message||'No se pudo marcar el pago.');render(currentSummary)}}
+    load();
+  </script>
 </body>
 </html>
