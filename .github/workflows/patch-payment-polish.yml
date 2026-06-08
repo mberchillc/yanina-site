@@ -19,27 +19,22 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          # 1) Pago page: green platform header
+          # 1) Pago page: same topbar size as admin
           p = Path('alumno/pago.html')
           text = p.read_text(encoding='utf-8')
-          old = ".top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}.brand{display:flex;align-items:center;gap:14px}.brand img{width:150px;height:auto}.brand h1{font-size:22px;color:var(--navy);line-height:1.05}.brand p{color:var(--muted);font-size:13px;margin-top:4px}"
-          new = ".top{background:var(--green-dark);color:#fff;border-radius:24px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:var(--shadow);margin-bottom:26px}.brand{display:flex;align-items:center;gap:18px}.brand img{width:250px;max-width:42vw;height:auto;display:block}.brand h1{font-size:22px;color:#fff;line-height:1.05}.brand p{color:rgba(255,255,255,.72);font-size:13px;margin-top:4px}"
-          if old in text:
-              text = text.replace(old, new)
-          text = text.replace('.btn-soft{background:#fff;color:var(--green-dark);border:1px solid var(--border);box-shadow:0 10px 22px rgba(24,63,53,.06)}', '.btn-soft{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.24);box-shadow:none}')
-          text = text.replace('@media(max-width:760px){.shell{padding:14px}.top{align-items:flex-start;flex-direction:column}.brand img{width:120px}', '@media(max-width:760px){.shell{padding:14px}.top{align-items:flex-start;flex-direction:column}.brand img{width:220px;max-width:72vw}')
+          text = text.replace('.shell{max-width:900px;margin:0 auto;padding:22px}', '.shell{max-width:1180px;margin:0 auto;padding:24px}')
+          text = text.replace('.top{background:var(--green-dark);color:#fff;border-radius:24px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:var(--shadow);margin-bottom:26px}.brand{display:flex;align-items:center;gap:18px}.brand img{width:250px;max-width:42vw;height:auto;display:block}', '.top{background:var(--green-dark);color:#fff;border-radius:24px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:var(--shadow);margin-bottom:26px}.brand{display:flex;align-items:center;gap:18px}.brand img{width:300px;height:100px;object-fit:cover;object-position:center;display:block}')
+          text = text.replace('@media(max-width:760px){.shell{padding:14px}.top{align-items:flex-start;flex-direction:column}.brand img{width:220px;max-width:72vw}', '@media(max-width:760px){.shell{padding:16px}.top{align-items:flex-start;flex-direction:column}.brand img{width:240px;height:86px}')
           p.write_text(text, encoding='utf-8')
 
-          # 2) Student home: pending nav status + beige highlight when pending
+          # 2) Student home: pending and no-pending button colors
           p = Path('alumno/index.html')
           text = p.read_text(encoding='utf-8')
-          if '.tab-btn.pending-alert' not in text:
-              text = text.replace('.tab-btn.active{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;box-shadow:0 14px 30px rgba(115,173,19,.22)}', '.tab-btn.active{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;box-shadow:0 14px 30px rgba(115,173,19,.22)}.tab-btn.pending-alert{background:#f4f6df;color:var(--green-dark);border-color:#dfe8c7;box-shadow:0 12px 26px rgba(115,173,19,.10)}')
-          text = text.replace('<button class="tab-btn" onclick="window.location.href=\'pago.html\'">Pendientes</button>', '<button class="tab-btn" id="pendingNavBtn" type="button" onclick="openPendingPayment()">Pendientes</button>')
-          js = """function currentPaymentMonth(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}function openPendingPayment(){window.location.href=`pago.html?id=${encodeURIComponent(STUDENT_ID)}&month=${encodeURIComponent(currentPaymentMonth())}`}async function refreshPendingNav(){const btn=$('pendingNavBtn');if(!btn)return;try{const r=await fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}/payment-summary?month=${encodeURIComponent(currentPaymentMonth())}&cache=${Date.now()}`);const summary=r.ok?await r.json():null;const pending=summary&&summary.status!=='paid';btn.textContent=pending?'Pendientes':'Sin pendientes';btn.classList.toggle('pending-alert',!!pending)}catch(e){console.warn(e)}}"""
-          if 'function refreshPendingNav()' not in text:
-              text = text.replace('async function init(){', js + 'async function init(){')
-              text = text.replace('init();', 'init();refreshPendingNav();')
+          if '.tab-btn.no-pending' not in text:
+              text = text.replace('.tab-btn.pending-alert{background:#f4f6df;color:var(--green-dark);border-color:#dfe8c7;box-shadow:0 12px 26px rgba(115,173,19,.10)}', '.tab-btn.pending-alert{background:#f4f6df;color:var(--green-dark);border-color:#dfe8c7;box-shadow:0 12px 26px rgba(115,173,19,.10)}.tab-btn.no-pending{background:#eef8f6;color:#173f35;border-color:#d7ebe6;box-shadow:0 10px 22px rgba(23,63,53,.06)}')
+          old_js = "btn.textContent=pending?'Pendientes':'Sin pendientes';btn.classList.toggle('pending-alert',!!pending)"
+          new_js = "btn.textContent=pending?'Pendientes':'Sin pendientes';btn.classList.toggle('pending-alert',!!pending);btn.classList.toggle('no-pending',!pending)"
+          text = text.replace(old_js, new_js)
           p.write_text(text, encoding='utf-8')
           PY
       - name: Commit patch
@@ -50,6 +45,6 @@ jobs:
             echo "No changes"
           else
             git add alumno/pago.html alumno/index.html
-            git commit -m "Polish payment pending UI"
+            git commit -m "Match payment header and pending nav colors"
             git push
           fi
