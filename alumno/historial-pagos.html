@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historial de pagos | Yanina Trainer</title>
+  <style>
+    :root{--green-dark:#183f35;--green-mid:#6ea313;--cream:#f7f3ea;--navy:#18223d;--muted:#6f7d78;--border:rgba(24,63,53,.14);--shadow:0 18px 50px rgba(24,63,53,.12)}
+    *{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--cream),#eef7ea);color:#24332e;min-height:100vh}.shell{max-width:1180px;margin:0 auto;padding:24px}.top{background:var(--green-dark);color:#fff;border-radius:24px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:var(--shadow);margin-bottom:26px}.brand{display:flex;align-items:center;gap:18px}.brand img{width:300px;height:100px;object-fit:cover;object-position:center;display:block}.brand h1{font-size:22px;color:#fff;line-height:1.05}.brand p{color:rgba(255,255,255,.72);font-size:13px;margin-top:4px}.btn{border:0;border-radius:999px;padding:11px 16px;font-size:13px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;line-height:1.1}.btn-soft{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.24)}.page-head{margin:0 0 22px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;color:var(--green-dark);font-size:12px;font-weight:900;margin-bottom:8px}.page-head h2{font-size:44px;color:var(--green-dark);line-height:1.05;margin-bottom:8px}.page-head p{color:var(--muted);font-size:17px;line-height:1.5}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{background:#fff;border:1px solid var(--border);border-radius:24px;box-shadow:0 14px 34px rgba(24,63,53,.08);padding:20px;display:grid;gap:12px}.card h3{color:var(--navy);font-size:22px}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f3f8e9;border-radius:14px;padding:12px}.row span{color:var(--muted);font-weight:900;font-size:13px}.row strong{color:var(--green-mid);font-size:20px}.status{display:inline-flex;width:max-content;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.status.paid{background:#eef8f6;color:#173f35}.status.pending{background:#fff1dc;color:#9a5a00}.open{background:linear-gradient(135deg,#88b313,#6ea313);color:#fff;margin-top:4px}.empty{background:#fff;border:1px solid var(--border);border-radius:22px;padding:22px;color:var(--muted);box-shadow:var(--shadow)}@media(max-width:900px){.grid{grid-template-columns:1fr}.shell{padding:16px}.top{align-items:flex-start;flex-direction:column}.brand img{width:240px;height:86px}.page-head h2{font-size:34px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top"><div class="brand"><img src="../assets/logo-transp.png" alt="Yanina Trainer"><div><h1>Plataforma Yanina Trainer</h1><p>Historial mensual</p></div></div><a class="btn btn-soft" id="backLink" href="index.html">Volver</a></header>
+    <section class="page-head"><div class="eyebrow">Pagos y resúmenes</div><h2>Historial</h2><p id="intro">Cargando resúmenes guardados...</p></section>
+    <section id="historyGrid" class="grid"></section>
+  </main>
+  <script>
+    const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
+    const params=new URLSearchParams(location.search);const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');
+    const STUDENT_ID=String(params.get('id')||params.get('studentId')||sessionData.studentId||'');
+    const $=id=>document.getElementById(id);
+    function money(v){const n=Number(v||0);return `$${Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:0}):'0'}`}
+    function monthName(value){const [y,m]=String(value).split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('es-US',{month:'long',year:'numeric'})}
+    function monthKeys(count=18){const now=new Date();const arr=[];for(let i=0;i<count;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);arr.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`)}return arr}
+    async function getStudent(){try{const r=await fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}?cache=${Date.now()}`);return r.ok?await r.json():null}catch(_){return null}}
+    async function getSummary(month){try{const r=await fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}/payment-summary?month=${encodeURIComponent(month)}&cache=${Date.now()}`);return r.ok?await r.json():null}catch(_){return null}}
+    async function load(){if(!STUDENT_ID){$('historyGrid').innerHTML='<div class="empty">No se encontró alumna.</div>';return}if(STUDENT_ID)$('backLink').href=`index.html?id=${encodeURIComponent(STUDENT_ID)}`;const student=await getStudent();$('intro').textContent=student?`Resúmenes guardados para ${student.full_name||student.name||'alumna'}.`:'Resúmenes guardados.';const summaries=(await Promise.all(monthKeys().map(getSummary))).filter(Boolean);if(!summaries.length){$('historyGrid').innerHTML='<div class="empty">Todavía no hay resúmenes guardados.</div>';return}$('historyGrid').innerHTML=summaries.map(s=>{const month=s.month||'';const paid=s.status==='paid';return `<article class="card"><span class="status ${paid?'paid':'pending'}">${paid?'Pagado':'Pendiente'}</span><h3>${monthName(month)}</h3><div class="row"><span>Clases</span><strong>${s.classes_count??0}</strong></div><div class="row"><span>Total mensual</span><strong>${money(s.total_value)}</strong></div><a class="btn open" href="pago.html?id=${encodeURIComponent(STUDENT_ID)}&month=${encodeURIComponent(month)}">Ver resumen</a></article>`}).join('')}
+    load();
+  </script>
+</body>
+</html>
