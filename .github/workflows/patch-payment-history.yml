@@ -1,0 +1,48 @@
+name: Patch payment history
+
+on:
+  push:
+    paths:
+      - patch-payment-history-trigger.txt
+      - .github/workflows/patch-payment-history.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wire payment history and colors
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # Admin: add Historial button beside summary actions and keep link updated
+          p = Path('admin/gestion-administrativa.html')
+          text = p.read_text(encoding='utf-8')
+          if 'id="historyBtn"' not in text:
+              text = text.replace('<button type="button" class="btn btn-soft" id="saveBtn">Guardar resumen</button></div>', '<button type="button" class="btn btn-soft" id="saveBtn">Guardar resumen</button><a class="btn btn-soft" id="historyBtn" href="#">Historial</a></div>')
+              text = text.replace('const studentSelect=document.getElementById("studentSelect"),monthSelect=', 'const historyBtn=document.getElementById("historyBtn"),studentSelect=document.getElementById("studentSelect"),monthSelect=')
+              text = text.replace('function update(){const ms=', 'function updateHistoryLink(){if(!historyBtn)return;if(selectedStudent){historyBtn.href=`../alumno/historial-pagos.html?id=${encodeURIComponent(sid(selectedStudent))}`;historyBtn.style.pointerEvents="auto";historyBtn.style.opacity="1"}else{historyBtn.href="#";historyBtn.style.pointerEvents="none";historyBtn.style.opacity=".45"}}function update(){updateHistoryLink();const ms=')
+          p.write_text(text, encoding='utf-8')
+
+          # Student main: stronger pending color, calm no-pending color, add history URL helper
+          p = Path('alumno/index.html')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace('.tab-btn.pending-alert{background:#f4f6df;color:var(--green-dark);border-color:#dfe8c7;box-shadow:0 12px 26px rgba(115,173,19,.10)}', '.tab-btn.pending-alert{background:#fff1dc;color:#9a5a00;border-color:#f1cf96;box-shadow:0 12px 26px rgba(154,90,0,.10)}')
+          text = text.replace('.tab-btn.no-pending{background:#eef8f6;color:#173f35;border-color:#d7ebe6;box-shadow:0 10px 22px rgba(23,63,53,.06)}', '.tab-btn.no-pending{background:#eef8f6;color:#173f35;border-color:#d7ebe6;box-shadow:0 10px 22px rgba(23,63,53,.06)}')
+          p.write_text(text, encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No changes"
+          else
+            git add admin/gestion-administrativa.html alumno/index.html
+            git commit -m "Add payment history access and pending color"
+            git push
+          fi
