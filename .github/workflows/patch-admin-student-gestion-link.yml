@@ -1,0 +1,49 @@
+name: Patch admin student gestion link
+
+on:
+  push:
+    paths:
+      - patch-admin-student-gestion-link-trigger.txt
+      - .github/workflows/patch-admin-student-gestion-link.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add gestion administrativa button
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('admin/alumno.html')
+          text = p.read_text(encoding='utf-8')
+          old = '<span class="status-pill" id="plannedCounter">0 clases guardadas</span>'
+          new = '<span class="status-pill" id="plannedCounter">0 clases guardadas</span><a class="btn btn-form-secondary" id="goGestionBtn" href="gestion-administrativa.html">Gestión administrativa</a>'
+          if 'id="goGestionBtn"' not in text:
+              if old not in text:
+                  raise SystemExit('plannedCounter block not found')
+              text = text.replace(old, new)
+          js_marker = 'function updateStarfitLinks() {'
+          js = '''function updateGestionAdministrativaLink() {\n      const btn = document.getElementById("goGestionBtn");\n      if (!btn) return;\n      if (studentId) {\n        btn.href = `gestion-administrativa.html?studentId=${encodeURIComponent(studentId)}`;\n      } else {\n        btn.href = "#";\n        btn.onclick = event => {\n          event.preventDefault();\n          alert("Primero guardá la ficha del alumno para generar gestión administrativa.");\n        };\n      }\n    }\n\n    '''
+          if 'function updateGestionAdministrativaLink()' not in text:
+              if js_marker not in text:
+                  raise SystemExit('updateStarfitLinks marker not found')
+              text = text.replace(js_marker, js + js_marker)
+          if 'updateGestionAdministrativaLink();' not in text:
+              text = text.replace('updateStarfitLinks();', 'updateStarfitLinks();\n        updateGestionAdministrativaLink();')
+          p.write_text(text, encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No changes"
+          else
+            git add admin/alumno.html
+            git commit -m "Add gestion administrativa link to student calendar"
+            git push
+          fi
