@@ -1,0 +1,85 @@
+name: Patch payment API frontend
+
+on:
+  push:
+    paths:
+      - patch-payment-api-trigger.txt
+      - .github/workflows/patch-payment-api-frontend.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch admin and student payment frontend
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # Patch admin/gestion-administrativa.html
+          p = Path('admin/gestion-administrativa.html')
+          text = p.read_text(encoding='utf-8')
+          old = '''    function saveSummary(){if(!selectedStudent){alert("Elegí una alumna antes de guardar el resumen.");return}update();const summary={studentId:String(sid(selectedStudent)),studentName:sname(selectedStudent),month:monthSelect.value,classes:Number(summaryClassCount.textContent||0),classValue:Number(classValueInput.value||0),other:Number(otherValueInput.value||0),total:Number(classCountBox.textContent||0)*Number(classValueInput.value||0)+Number(otherValueInput.value||0),status:"pending",savedAt:new Date().toISOString(),classDates:uniqueMonthDates()};localStorage.setItem(paymentKey(),JSON.stringify(summary));saveBtn.textContent="✓ Pendiente generado";statusNote.innerHTML=`Resumen pendiente guardado. <a href="../alumno/pago.html?id=${encodeURIComponent(summary.studentId)}&month=${encodeURIComponent(summary.month)}" target="_blank">Ver vista alumna</a>`;setTimeout(()=>saveBtn.textContent="Guardar resumen",1800)}'''
+          new = '''    async function saveSummary(){if(!selectedStudent){alert("Elegí una alumna antes de guardar el resumen.");return}update();const summary={student_id:String(sid(selectedStudent)),studentId:String(sid(selectedStudent)),studentName:sname(selectedStudent),month:monthSelect.value,classes_count:Number(summaryClassCount.textContent||0),classes:Number(summaryClassCount.textContent||0),class_value:Number(classValueInput.value||0),classValue:Number(classValueInput.value||0),other_value:Number(otherValueInput.value||0),other:Number(otherValueInput.value||0),total_value:Number(classCountBox.textContent||0)*Number(classValueInput.value||0)+Number(otherValueInput.value||0),total:Number(classCountBox.textContent||0)*Number(classValueInput.value||0)+Number(otherValueInput.value||0),status:"pending",class_dates:uniqueMonthDates(),classDates:uniqueMonthDates()};saveBtn.disabled=true;saveBtn.textContent="Guardando...";try{const r=await fetch(`${API_BASE}/api/payment-summaries`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(summary)});if(!r.ok){let msg="No se pudo guardar el resumen.";try{const err=await r.json();msg=err.error||msg}catch(_){ }throw new Error(msg)}const saved=await r.json();saveBtn.textContent="✓ Pendiente generado";statusNote.innerHTML=`Resumen pendiente guardado. <a href="../alumno/pago.html?id=${encodeURIComponent(summary.studentId)}&month=${encodeURIComponent(summary.month)}" target="_blank">Ver vista alumna</a>`;summaryTotalNote.textContent="pendiente";setTimeout(()=>saveBtn.textContent="Guardar resumen",1800)}catch(e){console.error(e);alert(e.message||"No se pudo guardar el resumen.");saveBtn.textContent="Guardar resumen"}finally{saveBtn.disabled=false}}'''
+          if old in text:
+              text = text.replace(old, new)
+          elif 'async function saveSummary()' not in text:
+              raise SystemExit('admin saveSummary old block not found')
+          p.write_text(text, encoding='utf-8')
+
+          # Replace alumno/pago.html with API-connected version
+          p = Path('alumno/pago.html')
+          pago = r'''<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pago mensual | Yanina Trainer</title>
+  <style>
+    :root{--green:#73ad13;--green-dark:#5f9419;--green-soft:#eef8e7;--navy:#18223d;--ink:#354056;--muted:#738092;--line:#dfead9;--white:#fff;--shadow:0 22px 60px rgba(24,34,61,.12)}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,Montserrat,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#f9fcf7 0%,#fff 50%,#f7fbf7 100%);min-height:100vh}.shell{max-width:1040px;margin:0 auto;padding:24px}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:16px}.brand-badge{width:82px;height:82px;border-radius:28px;background:radial-gradient(circle at 35% 28%,#1f6f48 0%,#14555b 48%,#083a40 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 18px 38px rgba(8,58,64,.25);overflow:hidden}.brand-badge img{width:66px}.brand h1{margin:0;color:var(--navy);font-size:23px;line-height:1.05}.brand p{margin:4px 0 0;color:var(--muted);font-size:14px}.pill-btn,.primary-action{display:inline-flex;align-items:center;justify-content:center;min-height:42px;border-radius:999px;padding:11px 16px;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border:1px solid var(--line);background:#fff;color:var(--green-dark);box-shadow:0 10px 22px rgba(24,34,61,.06);cursor:pointer;text-decoration:none}.primary-action{border:0;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff}.primary-action.paid{background:#102f35}.primary-action:disabled{opacity:.65;cursor:not-allowed}.card{background:#fff;border:1px solid var(--line);border-radius:34px;box-shadow:var(--shadow);padding:28px;margin-bottom:18px}.hero{display:grid;grid-template-columns:1fr 240px;gap:22px;align-items:center}.hero img{width:100%;height:170px;object-fit:cover;object-position:center 42%;border-radius:26px}.month{display:inline-flex;border-radius:999px;background:var(--green-soft);color:var(--green-dark);padding:8px 14px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}h2{margin:0;color:var(--navy);font-size:42px;line-height:1.05}p{line-height:1.55}.muted{color:var(--muted)}.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.summary-box{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;text-align:center;box-shadow:0 14px 34px rgba(24,34,61,.07)}.summary-box span{display:block;color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}.summary-box strong{display:block;color:var(--navy);font-size:42px;line-height:1}.summary-box.total{background:linear-gradient(135deg,var(--green),var(--green-dark));border:0}.summary-box.total span,.summary-box.total strong{color:#fff}.footer-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.status{font-weight:900;color:var(--green-dark)}.status.paid{color:#102f35}.empty{background:#f8fcf6;border:1px solid #edf4e9;border-radius:22px;padding:18px;color:var(--muted)}@media(max-width:760px){.hero,.summary-grid{grid-template-columns:1fr}.shell{padding:14px}.top{align-items:flex-start;flex-direction:column}h2{font-size:34px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top"><div class="brand"><div class="brand-badge"><img src="../assets/logo-cropped.png" alt="Yanina Trainer"></div><div><h1>Plataforma Yanina Trainer</h1><p>Resumen mensual</p></div></div><a class="pill-btn" id="backLink" href="index.html">Volver</a></header>
+    <section class="card hero"><div><div class="month" id="monthLabel">Mes</div><h2 id="studentName">Pago mensual</h2><p class="muted">Este es el resumen de clases planificadas por Yanina para el mes. Cuando realices el pago, marcá el estado para avisar que quedó resuelto.</p></div><img src="../assets/Yani-pasto.png" alt="Yanina"></section>
+    <section class="card" id="summaryArea"><div class="empty">Cargando resumen pendiente...</div></section>
+    <section class="card footer-actions"><div><div class="status" id="paymentStatus">Pendiente</div><p class="muted" id="paymentNote">El botón confirma el pago realizado.</p></div><button type="button" class="primary-action" id="paidBtn">Pago realizado</button></section>
+  </main>
+  <script>
+    const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
+    const params=new URLSearchParams(location.search);const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');
+    const STUDENT_ID=String(params.get('id')||params.get('studentId')||sessionData.studentId||'');
+    const MONTH=String(params.get('month')||new Date().toISOString().slice(0,7));
+    let currentSummary=null;
+    const $=id=>document.getElementById(id);function money(v){const n=Number(v||0);return `$${Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:0}):'0'}`}
+    function monthLabel(value){const [y,m]=String(value).split('-').map(Number);const d=new Date(y,m-1,1);return d.toLocaleDateString('es-US',{month:'long',year:'numeric'}).toUpperCase()}
+    function normalizeSummary(s){if(!s)return null;return{...s,classes:s.classes_count??s.classes??0,classValue:s.class_value??s.classValue??0,other:s.other_value??s.other??0,total:s.total_value??s.total??0,studentName:s.studentName||s.student_name||''}}
+    function render(summary){currentSummary=normalizeSummary(summary);$('monthLabel').textContent=monthLabel(MONTH);if(!currentSummary){$('studentName').textContent='Pago mensual';$('summaryArea').innerHTML='<div class="empty">No hay resumen pendiente cargado para este mes.</div>';$('paymentStatus').textContent='Sin pendientes';$('paidBtn').disabled=true;return}
+      $('studentName').textContent=currentSummary.studentName||'Pago mensual';$('summaryArea').innerHTML=`<div class="summary-grid"><div class="summary-box"><span>Clases a realizar</span><strong>${currentSummary.classes||0}</strong></div><div class="summary-box"><span>Valor por clase</span><strong>${money(currentSummary.classValue)}</strong></div><div class="summary-box total"><span>Total mensual</span><strong>${money(currentSummary.total)}</strong></div></div>`;
+      const paid=currentSummary.status==='paid';$('paymentStatus').textContent=paid?'Pagado':'Pendiente';$('paymentStatus').classList.toggle('paid',paid);$('paidBtn').textContent=paid?'Pagado':'Pago realizado';$('paidBtn').classList.toggle('paid',paid);$('paidBtn').disabled=paid;
+    }
+    async function load(){if(!STUDENT_ID){render(null);return}try{const [studentRes,summaryRes]=await Promise.all([fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}?cache=${Date.now()}`),fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}/payment-summary?month=${encodeURIComponent(MONTH)}&cache=${Date.now()}`)]);let student=null;if(studentRes.ok)student=await studentRes.json();let summary=null;if(summaryRes.ok)summary=await summaryRes.json();if(summary&&student){summary.studentName=student.full_name||student.name||summary.studentName}render(summary)}catch(e){console.error(e);$('summaryArea').innerHTML='<div class="empty">No se pudo cargar el resumen pendiente.</div>'}}
+    $('paidBtn').addEventListener('click',async()=>{if(!currentSummary||!currentSummary.id)return;try{$('paidBtn').disabled=true;$('paidBtn').textContent='Confirmando...';const r=await fetch(`${API_BASE}/api/payment-summaries/${encodeURIComponent(currentSummary.id)}/paid`,{method:'POST'});if(!r.ok)throw new Error('No se pudo marcar el pago.');const updated=await r.json();render({...currentSummary,...updated})}catch(e){console.error(e);alert(e.message||'No se pudo marcar el pago.');$('paidBtn').disabled=false;$('paidBtn').textContent='Pago realizado'}});
+    if(STUDENT_ID)$('backLink').href=`index.html?id=${encodeURIComponent(STUDENT_ID)}`;load();
+  </script>
+</body>
+</html>
+'''
+          p.write_text(pago, encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No changes"
+          else
+            git add admin/gestion-administrativa.html alumno/pago.html
+            git commit -m "Connect payment summaries to API"
+            git push
+          fi
