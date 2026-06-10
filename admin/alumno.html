@@ -2547,9 +2547,10 @@ return {
       document.getElementById("classCriteriaInput").value = found.planning_criteria || "";
 
       renderTimeline();
-      await loadRoutineFromBackend(activeBackendClassId);
+await loadRoutineFromBackend(activeBackendClassId);
+await renderAdminClassVideos(activeBackendClassId);
 
-      if (shouldScroll) scrollToPlan();
+if (shouldScroll) scrollToPlan();
     }
 
     function normalizeTimeForInput(value) {
@@ -2789,7 +2790,107 @@ async function createClassForStudent(dateKey = toISODate(startOfToday()), should
         };
       });
     }
+async function loadAdminClassVideos(classId) {
+  if (!studentId || !classId) return [];
 
+  const response = await fetch(
+    `${API_BASE}/api/students/${encodeURIComponent(studentId)}/videos?cache=${Date.now()}`
+  );
+
+  if (!response.ok) return [];
+
+  const data = await response.json();
+  return (Array.isArray(data) ? data : []).filter(video => {
+    return String(video.class_id || video.classId || "") === String(classId);
+  });
+}
+
+async function renderAdminClassVideos(classId) {
+  const box = document.getElementById("adminClassVideoList");
+  if (!box) return;
+
+  if (!classId) {
+    box.innerHTML = "Seleccioná una clase para ver los videos enviados por la alumna.";
+    return;
+  }
+
+  try {
+    const videos = await loadAdminClassVideos(classId);
+
+    if (!videos.length) {
+      box.innerHTML = "No hay videos enviados para esta clase.";
+      return;
+    }
+
+    box.innerHTML = videos.map(video => {
+      const reviewed = Boolean(video.reviewed_at || video.reviewedAt);
+
+      return `
+        <article class="measurement-card">
+          <div class="measurement-top">
+            <div>
+              <div class="measurement-date">
+                ${escapeHtml(video.original_name || video.file_name || video.name || "Video enviado")}
+              </div>
+              <p class="measurement-note">
+                ${escapeHtml(video.note || "Sin comentario de la alumna.")}
+              </p>
+            </div>
+            <span class="status-pill ${reviewed ? "completed" : "pending"}">
+              ${reviewed ? "Revisado" : "Pendiente"}
+            </span>
+          </div>
+
+          <div class="bottom-actions">
+            <a
+              class="btn btn-form-secondary"
+              href="${API_BASE}/api/student-videos/${encodeURIComponent(video.id)}/file"
+              target="_blank"
+            >
+              Ver video
+            </a>
+
+            <button
+              type="button"
+              class="btn btn-form-primary mark-video-reviewed-btn"
+              data-id="${escapeHtml(video.id)}"
+              ${reviewed ? "disabled" : ""}
+            >
+              ${reviewed ? "Revisado" : "Marcar revisado"}
+            </button>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    box.querySelectorAll(".mark-video-reviewed-btn").forEach(button => {
+      button.addEventListener("click", async () => {
+        const videoId = button.dataset.id;
+        if (!videoId) return;
+
+        button.disabled = true;
+        button.textContent = "Guardando...";
+
+        const response = await fetch(
+          `${API_BASE}/api/student-videos/${encodeURIComponent(videoId)}/reviewed`,
+          { method: "POST" }
+        );
+
+        if (!response.ok) {
+          button.disabled = false;
+          button.textContent = "Marcar revisado";
+          alert("No se pudo marcar el video como revisado.");
+          return;
+        }
+
+        await renderAdminClassVideos(classId);
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    box.innerHTML = "No se pudieron cargar los videos de esta clase.";
+  }
+}
     async function loadRoutineFromBackend(classId) {
       const response = await fetch(`${API_BASE}/api/classes/${classId}/routine?cache=${Date.now()}`);
       if (!response.ok) {
