@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Novedades | Yanina Trainer</title>
+  <script>
+    const SESSION_KEY = "yaninaAdminSession";
+    const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    if (!session || session.loggedIn !== true) window.location.href = "login.html";
+  </script>
+  <style>
+    :root{--green-dark:#183f35;--green-main:#7ec845;--green-soft:#d9f2cb;--cream:#f7f3ea;--white:#fff;--text:#24332e;--muted:#6f7d78;--border:rgba(24,63,53,.14);--shadow:0 18px 50px rgba(24,63,53,.12);--radius:22px;--alert-bg:#fff1dc;--alert:#9a5a00;--alert-border:#f1cf96}
+    *{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--cream),#eef7ea);color:var(--text);min-height:100vh}.admin-shell{max-width:980px;margin:0 auto;padding:24px}.topbar{background:var(--green-dark);color:#fff;border-radius:24px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:var(--shadow);margin-bottom:26px}.brand{display:flex;align-items:center;gap:18px}.brand img{width:260px;height:90px;object-fit:cover;object-position:center;display:block}.brand-text small{display:block;color:rgba(255,255,255,.72);font-size:13px;margin-top:3px}.top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.btn{border:0;border-radius:999px;padding:11px 17px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:inherit}.btn-secondary{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.24)}.btn-primary{background:var(--green-main);color:var(--green-dark)}.page-header{margin-bottom:22px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;color:var(--green-dark);font-size:12px;font-weight:800;margin-bottom:8px}h1{font-size:clamp(30px,4vw,48px);line-height:1.05;color:var(--green-dark);margin-bottom:8px}.subtitle{color:var(--muted);font-size:17px;line-height:1.5}.list{display:grid;gap:14px}.item{background:#fff;border:1px solid var(--border);border-radius:22px;padding:18px 20px;box-shadow:var(--shadow);display:grid;gap:10px}.item.unread{background:var(--alert-bg);border-color:var(--alert-border)}.item-title{font-size:18px;font-weight:900;color:var(--green-dark)}.item.unread .item-title{color:var(--alert)}.item-body{color:var(--muted);font-size:14px;line-height:1.45}.item-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px;font-weight:800}.empty{background:#fff;border:1px solid var(--border);border-radius:22px;padding:22px;color:var(--muted);box-shadow:var(--shadow);line-height:1.5}.status-pill{display:inline-flex;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900;background:var(--green-soft);color:var(--green-dark)}.status-pill.unread{background:var(--alert-bg);color:var(--alert);border:1px solid var(--alert-border)}@media(max-width:760px){.admin-shell{padding:16px}.topbar{align-items:flex-start;flex-direction:column}.brand img{width:220px;height:82px}.top-actions{justify-content:flex-start}}
+  </style>
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="topbar"><div class="brand"><img src="../assets/logo-transp.png" alt="Yanina Trainer"><div class="brand-text"><strong>Admin Trainer</strong><small>Novedades</small></div></div><div class="top-actions"><a href="index.html" class="btn btn-secondary">Panel Admin</a><button type="button" class="btn btn-primary" id="markAllBtn">Marcar leídas</button></div></header>
+    <section class="page-header"><div class="eyebrow">Plataforma Yanina Trainer</div><h1>Novedades</h1><p class="subtitle">Actividad reciente de alumnas/os: pagos, videos y comentarios.</p></section>
+    <section class="list" id="notificationsList"><div class="empty">Cargando novedades…</div></section>
+  </main>
+  <script>
+    const API_BASE="https://yanina-trainer-api.mberchillc.workers.dev";
+    const list=document.getElementById('notificationsList');
+    const markAllBtn=document.getElementById('markAllBtn');
+    function esc(v){return String(v||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
+    function formatDate(v){if(!v)return '';const d=new Date(String(v).replace(' ','T'));return Number.isNaN(d.getTime())?String(v):d.toLocaleString('es-US',{month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit'})}
+    function targetUrl(n){const url=String(n.target_url||'#');return url.startsWith('admin/')?url.replace(/^admin\//,''):url}
+    async function markRead(id){if(!id)return;try{await fetch(`${API_BASE}/api/notifications/${encodeURIComponent(id)}/read`,{method:'POST'})}catch(e){console.warn(e)}}
+    async function loadNotifications(){try{const r=await fetch(`${API_BASE}/api/notifications?cache=${Date.now()}`);if(!r.ok)throw new Error('No se pudieron cargar novedades');const items=await r.json();if(!Array.isArray(items)||!items.length){list.innerHTML='<div class="empty">No hay novedades por ahora.</div>';return}list.innerHTML=items.map(n=>{const unread=Number(n.is_read||0)===0;const href=targetUrl(n);return `<article class="item ${unread?'unread':''}"><div class="item-title">${esc(n.title)}</div><div class="item-body">${esc(n.body||'')}</div><div class="item-meta"><span>${esc(formatDate(n.created_at))}</span><span class="status-pill ${unread?'unread':''}">${unread?'Nueva':'Leída'}</span></div><a class="btn btn-primary" href="${esc(href)}" data-read-id="${esc(n.id)}">Ver detalle</a></article>`}).join('');list.querySelectorAll('[data-read-id]').forEach(a=>a.addEventListener('click',()=>markRead(a.dataset.readId)))}catch(e){console.error(e);list.innerHTML='<div class="empty">No se pudieron cargar las novedades.</div>'}}
+    markAllBtn.addEventListener('click',async()=>{markAllBtn.disabled=true;try{await fetch(`${API_BASE}/api/notifications/read-all`,{method:'POST'});await loadNotifications()}finally{markAllBtn.disabled=false}});
+    loadNotifications();
+  </script>
+</body>
+</html>
