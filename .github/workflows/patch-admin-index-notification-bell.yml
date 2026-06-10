@@ -1,0 +1,55 @@
+name: Patch admin index notification bell
+
+on:
+  push:
+    paths:
+      - patch-admin-index-notification-bell-trigger.txt
+      - .github/workflows/patch-admin-index-notification-bell.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch admin index bell
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin/index.html')
+          text=p.read_text(encoding='utf-8')
+          css_old='.btn-soft{background:var(--green-soft);color:var(--green-dark)}.page-header'
+          css_new='.btn-soft{background:var(--green-soft);color:var(--green-dark)}.notification-bell{width:44px;height:44px;border-radius:50%;font-size:19px;padding:0;position:relative}.notification-bell.has-unread{background:#fff1dc;color:#9a5a00;border-color:#f1cf96;box-shadow:0 12px 26px rgba(154,90,0,.18)}.notification-bell.has-unread:after{content:"";position:absolute;right:7px;top:7px;width:9px;height:9px;border-radius:50%;background:#9a5a00}.page-header'
+          if '.notification-bell' not in text:
+              if css_old not in text: raise SystemExit('css marker not found')
+              text=text.replace(css_old,css_new)
+          html_old='<a href="gestion-administrativa.html" class="btn btn-secondary">Gestión administrativa</a>\n        <button type="button" class="btn btn-secondary btn-link-reset" id="logoutBtn">Salir</button>'
+          html_new='<a href="gestion-administrativa.html" class="btn btn-secondary">Gestión administrativa</a>\n        <a href="notificaciones.html" class="btn btn-secondary notification-bell" id="notificationBell" aria-label="Novedades">🔔</a>\n        <button type="button" class="btn btn-secondary btn-link-reset" id="logoutBtn">Salir</button>'
+          if 'id="notificationBell"' not in text:
+              if html_old not in text: raise SystemExit('html marker not found')
+              text=text.replace(html_old,html_new)
+          js_old='const logoutBtn = document.getElementById("logoutBtn");\n    let allStudents = [];'
+          js_new='const logoutBtn = document.getElementById("logoutBtn");\n    const notificationBell = document.getElementById("notificationBell");\n    let allStudents = [];'
+          if 'const notificationBell' not in text:
+              if js_old not in text: raise SystemExit('js const marker not found')
+              text=text.replace(js_old,js_new)
+          load_old='if(logoutBtn){logoutBtn.addEventListener("click",()=>{localStorage.removeItem(SESSION_KEY);window.location.href="login.html"})}\n    loadStudents();'
+          load_new='async function refreshNotificationBell(){if(!notificationBell)return;try{const r=await fetch(`${API_BASE}/api/notifications?cache=${Date.now()}`);if(!r.ok)return;const items=await r.json();const unread=Array.isArray(items)&&items.some(n=>Number(n.is_read||0)===0);notificationBell.classList.toggle("has-unread",unread)}catch(e){console.warn(e)}}\n    if(logoutBtn){logoutBtn.addEventListener("click",()=>{localStorage.removeItem(SESSION_KEY);window.location.href="login.html"})}\n    loadStudents();refreshNotificationBell();'
+          if 'function refreshNotificationBell' not in text:
+              if load_old not in text: raise SystemExit('load marker not found')
+              text=text.replace(load_old,load_new)
+          p.write_text(text,encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No changes"
+          else
+            git add admin/index.html
+            git commit -m "Add notification bell to admin panel"
+            git push
+          fi
