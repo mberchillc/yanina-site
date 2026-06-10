@@ -110,6 +110,33 @@
       border: 1px solid rgba(255,255,255,0.24);
     }
 
+    .notification-bell {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      padding: 0;
+      position: relative;
+      font-size: 19px;
+    }
+
+    .notification-bell.has-unread {
+      background: #fff1dc;
+      color: #9a5a00;
+      border-color: #f1cf96;
+      box-shadow: 0 12px 26px rgba(154,90,0,0.18);
+    }
+
+    .notification-bell.has-unread::after {
+      content: "";
+      position: absolute;
+      right: 7px;
+      top: 7px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #9a5a00;
+    }
+
     .btn-form-primary {
       background: var(--green-dark);
       color: var(--white);
@@ -1143,6 +1170,7 @@
       <div class="top-actions">
         <a href="../index.html" class="btn btn-secondary">Volver al sitio</a>
         <a href="index.html" class="btn btn-secondary">Buscar alumno</a>
+        <a href="notificaciones.html" class="btn btn-secondary notification-bell" id="notificationBell" aria-label="Novedades">🔔</a>
         <a href="alumno.html?new=1" class="btn btn-primary">+ Nuevo alumno</a>
       </div>
     </header>
@@ -1407,7 +1435,10 @@
 
     const params = new URLSearchParams(window.location.search);
     const isNewStudent = params.get("new") === "1";
+    const targetClassId = params.get("classId");
+    const targetSection = params.get("section");
     let studentId = isNewStudent ? null : (params.get("id") || "1");
+    const notificationBell = document.getElementById("notificationBell");
     const starfitMeasurementsBtn = document.getElementById("starfitMeasurementsBtn");
     const starfitMeasurementsTab = null;
 
@@ -2299,8 +2330,18 @@ return {
 
       renderCalendarAndClasses();
 
+      const requestedClass = targetClassId
+        ? allClasses.find(item => String(item.id) === String(targetClassId))
+        : null;
       const firstMeaningfulClass = allClasses.find(isMeaningfulClass);
-      if (firstMeaningfulClass && !selectedClass) {
+
+      if (requestedClass) {
+        await selectClass(requestedClass.id, false);
+        const target = targetSection === "videos"
+          ? document.getElementById("classVideosAdmin")
+          : document.getElementById("clase-seleccionada");
+        requestAnimationFrame(() => target?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      } else if (firstMeaningfulClass && !selectedClass) {
         await selectClass(firstMeaningfulClass.id, false);
       }
 
@@ -2790,6 +2831,42 @@ async function createClassForStudent(dateKey = toISODate(startOfToday()), should
         };
       });
     }
+async function refreshNotificationBell() {
+  if (!notificationBell) return;
+  try {
+    const response = await fetch(`${API_BASE}/api/notifications?recipient=admin&cache=${Date.now()}`);
+    if (!response.ok) return;
+    const items = await response.json();
+    const unread = Array.isArray(items) && items.some(item => Number(item.is_read || 0) === 0);
+    notificationBell.classList.toggle("has-unread", unread);
+    notificationBell.setAttribute("aria-label", unread ? "Novedades nuevas" : "Novedades");
+  } catch (error) {
+    console.warn(error);
+  }
+}
+
+async function resolveVideoUploadNotifications(classId) {
+  if (!studentId || !classId) return;
+  try {
+    const response = await fetch(`${API_BASE}/api/notifications?recipient=admin&cache=${Date.now()}`);
+    if (!response.ok) return;
+    const items = await response.json();
+    const matches = (Array.isArray(items) ? items : []).filter(item => {
+      if (Number(item.is_read || 0) !== 0 || item.type !== "video_uploaded") return false;
+      if (String(item.student_id || "") !== String(studentId)) return false;
+      const target = String(item.target_url || "");
+      return target.includes(`classId=${encodeURIComponent(classId)}`) || target.includes(`classId=${classId}`);
+    });
+    await Promise.all(matches.map(item => fetch(
+      `${API_BASE}/api/notifications/${encodeURIComponent(item.id)}/read`,
+      { method: "POST" }
+    )));
+    await refreshNotificationBell();
+  } catch (error) {
+    console.warn(error);
+  }
+}
+
 async function loadAdminClassVideos(classId) {
   if (!studentId || !classId) return [];
 
@@ -2883,6 +2960,7 @@ async function renderAdminClassVideos(classId) {
           return;
         }
 
+        await resolveVideoUploadNotifications(classId);
         await renderAdminClassVideos(classId);
       });
     });
@@ -3136,6 +3214,7 @@ async function renderAdminClassVideos(classId) {
         updateGestionAdministrativaLink();
         updateStarfitHistoryLink();
         updateStudentIdentity();
+        refreshNotificationBell();
         bindCalendarDraftInputs();
         await loadExerciseLibrary();
 
