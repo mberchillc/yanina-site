@@ -38,3 +38,4 @@ jobs:
             git commit -m "Connect student video upload to API"
             git push
           fi
+# trigger run
