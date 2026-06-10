@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notificaciones | Yanina Trainer</title>
+  <style>
+    :root{--green:#73ad13;--green-dark:#5f9419;--green-soft:#eef8e7;--navy:#18223d;--ink:#354056;--muted:#738092;--line:#dfead9;--white:#fff;--peach:#fff1dc;--gold:#f7d77a;--shadow:0 22px 60px rgba(24,34,61,.12)}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,Montserrat,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#f9fcf7 0%,#fff 50%,#f7fbf7 100%);padding:28px}a{text-decoration:none;color:inherit}.shell{max-width:960px;margin:0 auto}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:18px}.brand-badge{width:76px;height:76px;border-radius:26px;background:radial-gradient(circle at 35% 28%,#1f6f48 0%,#14555b 48%,#083a40 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 18px 38px rgba(8,58,64,.25);overflow:hidden}.brand-badge img{width:58px}.brand h1{margin:0;color:var(--navy);font-size:24px;line-height:1.05}.brand p{margin:4px 0 0;color:var(--muted);font-size:14px}.pill-btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;border-radius:999px;padding:11px 16px;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border:1px solid var(--line);background:#fff;color:var(--green-dark);box-shadow:0 10px 22px rgba(24,34,61,.06);cursor:pointer}.card{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow);margin-bottom:16px}.card h2{margin:0 0 8px;color:var(--navy);font-size:34px}.muted{color:var(--muted);line-height:1.5}.notification-list{display:grid;gap:12px;margin-top:18px}.notification{width:100%;text-align:left;border:1px solid var(--line);border-radius:22px;background:#fff;padding:18px;display:grid;gap:8px;cursor:pointer;color:var(--ink);box-shadow:0 12px 28px rgba(24,34,61,.06)}.notification.unread{background:var(--peach);border-color:#f1cf96}.notification strong{color:var(--navy);font-size:18px}.notification p{margin:0;color:var(--muted);line-height:1.45}.notification small{color:var(--green-dark);font-weight:900}.empty{background:#f8fcf6;border:1px solid #edf4e9;border-radius:18px;padding:16px;color:var(--muted);line-height:1.5}@media(max-width:700px){body{padding:14px}.top{align-items:flex-start;flex-direction:column}.brand h1{font-size:22px}.card{padding:18px;border-radius:24px}.card h2{font-size:28px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top">
+      <div class="brand"><div class="brand-badge"><img src="../assets/logo-cropped.png" alt="Yanina Trainer"></div><div><h1>Notificaciones</h1><p>Mensajes y novedades de tu entrenamiento</p></div></div>
+      <a class="pill-btn" id="backLink" href="index.html">Volver</a>
+    </header>
+
+    <section class="card">
+      <h2>Campana</h2>
+      <p class="muted">Entrá a cada aviso para ir directo a la clase, video o seguimiento correspondiente.</p>
+      <div class="notification-list" id="notificationList"><div class="empty">Cargando notificaciones...</div></div>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
+    const params=new URLSearchParams(window.location.search);
+    const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');
+    const STUDENT_ID=String(params.get('id')||params.get('studentId')||sessionData.studentId||'6');
+    const list=document.getElementById('notificationList');
+    const backLink=document.getElementById('backLink');
+    backLink.href=`index.html?id=${encodeURIComponent(STUDENT_ID)}`;
+    function esc(v){return String(v||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
+    function normalizeTarget(target){const raw=String(target||'').trim();if(!raw)return `index.html?id=${encodeURIComponent(STUDENT_ID)}`;if(raw.startsWith('http'))return raw;let clean=raw.replace(/^\.\//,'').replace(/^alumno\//,'');if(clean.startsWith('admin/'))clean=clean.replace(/^admin\/alumno\.html/,'index.html');if(clean.startsWith('alumno.html'))clean=clean.replace(/^alumno\.html/,'index.html');if(clean.startsWith('index.html')){return clean.includes('?')?`${clean}&id=${encodeURIComponent(STUDENT_ID)}`:`${clean}?id=${encodeURIComponent(STUDENT_ID)}`}return clean}
+    async function markRead(id){if(!id)return;await fetch(`${API_BASE}/api/notifications/${encodeURIComponent(id)}/read`,{method:'POST'}).catch(()=>{});}
+    async function loadNotifications(){try{const r=await fetch(`${API_BASE}/api/notifications?recipient=student&student_id=${encodeURIComponent(STUDENT_ID)}&cache=${Date.now()}`);if(!r.ok)throw new Error('No se pudieron cargar notificaciones.');const items=await r.json();if(!Array.isArray(items)||!items.length){list.innerHTML='<div class="empty">No tenés notificaciones por ahora.</div>';return;}list.innerHTML=items.map(n=>`<button type="button" class="notification ${Number(n.is_read||0)===0?'unread':''}" data-id="${esc(n.id)}" data-target="${esc(n.target_url||'')}"><strong>${esc(n.title||'Notificación')}</strong><p>${esc(n.body||'')}</p><small>${Number(n.is_read||0)===0?'Nuevo':'Visto'} · ${esc(n.created_at||'')}</small></button>`).join('');list.querySelectorAll('.notification').forEach(btn=>{btn.addEventListener('click',async()=>{await markRead(btn.dataset.id);window.location.href=normalizeTarget(btn.dataset.target);});});}catch(error){console.error(error);list.innerHTML='<div class="empty">No se pudieron cargar las notificaciones.</div>';}}
+    loadNotifications();
+  </script>
+</body>
+</html>
