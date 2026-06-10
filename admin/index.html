@@ -116,7 +116,7 @@
       try{const response=await fetch(`${API_BASE}/api/students/${encodeURIComponent(studentId)}`,{method:"DELETE"});if(!response.ok){const errorData=await response.json().catch(()=>({}));throw new Error(errorData.error || "No se pudo eliminar el alumno.")}allStudents=allStudents.filter(student=>String(getStudentId(student))!==String(studentId));studentsCount.textContent=allStudents.length;renderBirthdayAlerts(allStudents);renderStudents(allStudents)}catch(error){console.error(error);alert(error.message || "No se pudo eliminar el alumno.");if(button)button.disabled=false}
     }
 
-    async function refreshNotificationBell(){if(!notificationBell)return;try{const r=await fetch(`${API_BASE}/api/notifications?cache=${Date.now()}`);if(!r.ok)return;const items=await r.json();const unread=Array.isArray(items)&&items.some(n=>Number(n.is_read||0)===0);notificationBell.classList.toggle("has-unread",unread)}catch(e){console.warn(e)}}
+    async function refreshNotificationBell(){if(!notificationBell)return;try{const r=await fetch(`${API_BASE}/api/notifications?recipient=admin&cache=${Date.now()}`);if(!r.ok)return;const items=await r.json();const unread=Array.isArray(items)&&items.some(n=>Number(n.is_read||0)===0);notificationBell.classList.toggle("has-unread",unread)}catch(e){console.warn(e)}}
     if(logoutBtn){logoutBtn.addEventListener("click",()=>{localStorage.removeItem(SESSION_KEY);window.location.href="login.html"})}
     loadStudents();refreshNotificationBell();
   </script>
