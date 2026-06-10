@@ -1420,6 +1420,16 @@
     Seleccioná una clase para ver los videos enviados por la alumna.
   </div>
 </section>
+<section class="selected-class-panel" id="classCommentsAdmin">
+  <h3>Comentarios de esta clase</h3>
+  <p class="card-subtitle">Conversación vinculada a la rutina seleccionada.</p>
+  <div class="empty-state" id="adminClassCommentsList">Seleccioná una clase para ver sus comentarios.</div>
+  <div class="field full" style="margin-top:14px;">
+    <label for="adminClassCommentInput">Responder o agregar comentario</label>
+    <textarea id="adminClassCommentInput" placeholder="Escribí un comentario para la alumna."></textarea>
+  </div>
+  <button type="button" class="btn btn-form-primary" id="saveAdminClassCommentBtn">Enviar comentario</button>
+</section>
 <div class="bottom-actions">
   <button type="button" class="btn btn-form-secondary" id="addExerciseBtn">+ Agregar ejercicio</button>
   <button type="button" class="btn btn-form-secondary" id="duplicateWorkoutBtn">Duplicar rutina</button>
@@ -2339,7 +2349,9 @@ return {
         await selectClass(requestedClass.id, false);
         const target = targetSection === "videos"
           ? document.getElementById("classVideosAdmin")
-          : document.getElementById("clase-seleccionada");
+          : targetSection === "comments"
+            ? document.getElementById("classCommentsAdmin")
+            : document.getElementById("clase-seleccionada");
         requestAnimationFrame(() => target?.scrollIntoView({ behavior: "smooth", block: "start" }));
       } else if (firstMeaningfulClass && !selectedClass) {
         await selectClass(firstMeaningfulClass.id, false);
@@ -2590,6 +2602,7 @@ return {
       renderTimeline();
 await loadRoutineFromBackend(activeBackendClassId);
 await renderAdminClassVideos(activeBackendClassId);
+await renderAdminClassComments(activeBackendClassId);
 
 if (shouldScroll) scrollToPlan();
     }
@@ -2845,6 +2858,29 @@ async function refreshNotificationBell() {
   }
 }
 
+async function resolveAdminClassNotifications(classId, types) {
+  if (!studentId || !classId) return;
+  const wanted = new Set(Array.isArray(types) ? types : [types]);
+  try {
+    const response = await fetch(`${API_BASE}/api/notifications?recipient=admin&cache=${Date.now()}`);
+    if (!response.ok) return;
+    const items = await response.json();
+    const matches = (Array.isArray(items) ? items : []).filter(item => {
+      if (Number(item.is_read || 0) !== 0 || !wanted.has(item.type)) return false;
+      if (String(item.student_id || "") !== String(studentId)) return false;
+      const target = String(item.target_url || "");
+      return target.includes(`classId=${encodeURIComponent(classId)}`) || target.includes(`classId=${classId}`);
+    });
+    await Promise.all(matches.map(item => fetch(
+      `${API_BASE}/api/notifications/${encodeURIComponent(item.id)}/read`,
+      { method: "POST" }
+    )));
+    await refreshNotificationBell();
+  } catch (error) {
+    console.warn(error);
+  }
+}
+
 async function resolveVideoUploadNotifications(classId) {
   if (!studentId || !classId) return;
   try {
@@ -2864,6 +2900,57 @@ async function resolveVideoUploadNotifications(classId) {
     await refreshNotificationBell();
   } catch (error) {
     console.warn(error);
+  }
+}
+
+async function loadAdminClassComments(classId) {
+  if (!classId) return [];
+  const response = await fetch(`${API_BASE}/api/classes/${encodeURIComponent(classId)}/comments?cache=${Date.now()}`);
+  if (!response.ok) return [];
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
+}
+
+async function renderAdminClassComments(classId) {
+  const box = document.getElementById("adminClassCommentsList");
+  if (!box) return;
+  if (!classId) {
+    box.innerHTML = "Seleccioná una clase para ver sus comentarios.";
+    return;
+  }
+  try {
+    const comments = await loadAdminClassComments(classId);
+    box.innerHTML = comments.length
+      ? comments.map(item => `<article class="measurement-card"><div class="measurement-date">${item.author_role === "student" ? "Alumna/o" : "Yanina"}</div><p class="measurement-note">${escapeHtml(item.message || "")}</p><small>${escapeHtml(item.created_at || "")}</small></article>`).join("")
+      : "Todavía no hay comentarios en esta clase.";
+  } catch (error) {
+    console.error(error);
+    box.innerHTML = "No se pudieron cargar los comentarios.";
+  }
+}
+
+async function saveAdminClassComment() {
+  const input = document.getElementById("adminClassCommentInput");
+  const button = document.getElementById("saveAdminClassCommentBtn");
+  const message = String(input?.value || "").trim();
+  if (!activeBackendClassId) return alert("Seleccioná una clase.");
+  if (!message) return;
+  button.disabled = true;
+  try {
+    const response = await fetch(`${API_BASE}/api/classes/${encodeURIComponent(activeBackendClassId)}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ author_role: "admin", message })
+    });
+    if (!response.ok) throw new Error("No se pudo enviar el comentario.");
+    input.value = "";
+    await resolveAdminClassNotifications(activeBackendClassId, "student_comment");
+    await renderAdminClassComments(activeBackendClassId);
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "No se pudo enviar el comentario.");
+  } finally {
+    button.disabled = false;
   }
 }
 
@@ -2936,9 +3023,53 @@ async function renderAdminClassVideos(classId) {
               ${reviewed ? "Revisado" : "Marcar revisado"}
             </button>
           </div>
+          <div class="field full" style="margin-top:14px;">
+            <label>Comentario sobre este video</label>
+            <textarea class="admin-video-comment-input" data-video-id="${escapeHtml(video.id)}" placeholder="Escribí una devolución para la alumna."></textarea>
+          </div>
+          <button type="button" class="btn btn-form-secondary send-video-comment-btn" data-video-id="${escapeHtml(video.id)}">Enviar comentario</button>
+          <div class="video-comments-list" data-video-comments="${escapeHtml(video.id)}"></div>
         </article>
       `;
     }).join("");
+
+    for (const video of videos) {
+      const commentsBox = box.querySelector(`[data-video-comments="${CSS.escape(String(video.id))}"]`);
+      if (!commentsBox) continue;
+      try {
+        const response = await fetch(`${API_BASE}/api/student-videos/${encodeURIComponent(video.id)}/comments?cache=${Date.now()}`);
+        const comments = response.ok ? await response.json() : [];
+        commentsBox.innerHTML = Array.isArray(comments) && comments.length
+          ? comments.map(item => `<p class="measurement-note"><strong>${item.author_role === "student" ? "Alumna/o" : "Yanina"}:</strong> ${escapeHtml(item.body || "")}</p>`).join("")
+          : '<p class="measurement-note">Sin comentarios sobre este video.</p>';
+      } catch (error) {
+        commentsBox.innerHTML = '<p class="measurement-note">No se pudieron cargar los comentarios.</p>';
+      }
+    }
+
+    box.querySelectorAll(".send-video-comment-btn").forEach(button => {
+      button.addEventListener("click", async () => {
+        const videoId = button.dataset.videoId;
+        const input = box.querySelector(`.admin-video-comment-input[data-video-id="${CSS.escape(String(videoId))}"]`);
+        const body = String(input?.value || "").trim();
+        if (!body) return;
+        button.disabled = true;
+        try {
+          const response = await fetch(`${API_BASE}/api/student-videos/${encodeURIComponent(videoId)}/comments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ author_role: "admin", body })
+          });
+          if (!response.ok) throw new Error("No se pudo enviar el comentario.");
+          await resolveAdminClassNotifications(classId, "video_comment");
+          await renderAdminClassVideos(classId);
+        } catch (error) {
+          console.error(error);
+          alert(error.message || "No se pudo enviar el comentario.");
+          button.disabled = false;
+        }
+      });
+    });
 
     box.querySelectorAll(".mark-video-reviewed-btn").forEach(button => {
       button.addEventListener("click", async () => {
@@ -2961,6 +3092,7 @@ async function renderAdminClassVideos(classId) {
         }
 
         await resolveVideoUploadNotifications(classId);
+        await resolveAdminClassNotifications(classId, "video_comment");
         await renderAdminClassVideos(classId);
       });
     });
@@ -3244,6 +3376,8 @@ if (backToTopBtn) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 }
+
+    document.getElementById("saveAdminClassCommentBtn")?.addEventListener("click", saveAdminClassComment);
 
     initializeStudentPage();
   </script>
