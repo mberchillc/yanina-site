@@ -1,0 +1,40 @@
+name: Patch student pending any month
+
+on:
+  push:
+    paths:
+      - patch-student-pending-any-month-trigger.txt
+      - .github/workflows/patch-student-pending-any-month.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch alumno pending logic
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('alumno/index.html')
+          text = p.read_text(encoding='utf-8')
+          old = "function currentPaymentMonth(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}function openPendingPayment(){window.location.href=`pago.html?id=${encodeURIComponent(STUDENT_ID)}&month=${encodeURIComponent(currentPaymentMonth())}`}async function refreshPendingNav(){const btn=$('pendingNavBtn');if(!btn)return;try{const r=await fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}/payment-summary?month=${encodeURIComponent(currentPaymentMonth())}&cache=${Date.now()}`);const summary=r.ok?await r.json():null;const pending=summary&&summary.status!=='paid';btn.textContent=pending?'Pendientes':'Sin pendientes';btn.classList.toggle('pending-alert',!!pending);btn.classList.toggle('no-pending',!pending)}catch(e){console.warn(e)}}"
+          new = "let pendingPaymentMonth=null;function paymentMonthFromDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}function currentPaymentMonth(){return paymentMonthFromDate(new Date())}function monthsToCheck(){const base=new Date();base.setDate(1);base.setHours(0,0,0,0);const months=[];for(let i=-2;i<=12;i++){const d=new Date(base);d.setMonth(base.getMonth()+i);months.push(paymentMonthFromDate(d))}return months}async function findPendingPaymentSummary(){for(const month of monthsToCheck()){const r=await fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}/payment-summary?month=${encodeURIComponent(month)}&cache=${Date.now()}`);if(!r.ok)continue;const summary=await r.json();if(summary&&summary.status!=='paid')return {summary,month}}return null}function openPendingPayment(){window.location.href=`pago.html?id=${encodeURIComponent(STUDENT_ID)}&month=${encodeURIComponent(pendingPaymentMonth||currentPaymentMonth())}`}async function refreshPendingNav(){const btn=$('pendingNavBtn');if(!btn)return;try{const found=await findPendingPaymentSummary();const pending=!!found;pendingPaymentMonth=found?found.month:null;btn.textContent=pending?'Pendientes':'Sin pendientes';btn.classList.toggle('pending-alert',pending);btn.classList.toggle('no-pending',!pending)}catch(e){console.warn(e)}}"
+          if old not in text:
+              raise SystemExit('pending payment block not found')
+          text = text.replace(old, new)
+          p.write_text(text, encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No changes"
+          else
+            git add alumno/index.html
+            git commit -m "Detect student pending payments across months"
+            git push
+          fi
