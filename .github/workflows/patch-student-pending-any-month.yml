@@ -38,3 +38,4 @@ jobs:
             git commit -m "Detect student pending payments across months"
             git push
           fi
+# trigger run
