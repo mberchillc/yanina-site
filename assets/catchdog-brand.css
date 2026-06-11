@@ -1,0 +1,76 @@
+.catchdog-site-footer {
+  margin-top: 56px;
+  min-height: 150px;
+  padding: 28px clamp(20px, 5vw, 72px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 18px;
+  color: #fff;
+  background: linear-gradient(135deg, #172038 0%, #111319 52%, #050608 100%);
+  border-top: 1px solid rgba(92, 87, 255, .32);
+}
+
+.catchdog-site-footer span {
+  font: 800 12px/1.2 Inter, Montserrat, Arial, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .72);
+}
+
+.catchdog-site-footer img {
+  width: 152px;
+  height: auto;
+  display: block;
+}
+
+.catchdog-platform-signature {
+  position: fixed;
+  z-index: 40;
+  right: 12px;
+  bottom: 9px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  border: 1px solid rgba(92, 87, 255, .3);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(23, 32, 56, .96), rgba(5, 6, 8, .96));
+  box-shadow: 0 6px 18px rgba(5, 6, 8, .2);
+  backdrop-filter: blur(8px);
+}
+
+.catchdog-platform-signature span {
+  font: 800 8px/1 Inter, Montserrat, Arial, sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .72);
+  white-space: nowrap;
+}
+
+.catchdog-platform-signature img {
+  display: block;
+  width: 68px;
+  height: auto;
+}
+
+@media (max-width: 700px) {
+  .catchdog-site-footer {
+    min-height: 125px;
+    justify-content: center;
+    padding: 24px 18px;
+  }
+
+  .catchdog-site-footer img { width: 132px; }
+  .catchdog-platform-signature { right: 7px; bottom: 6px; opacity: .92; }
+  .catchdog-platform-signature img { width: 58px; }
+}
+
+@media print {
+  .catchdog-platform-signature {
+    position: fixed;
+    box-shadow: none;
+    background: transparent;
+    border: 0;
+  }
+}
