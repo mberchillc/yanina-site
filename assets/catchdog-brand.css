@@ -73,8 +73,21 @@
     object-fit: contain;
     flex: 0 0 96px;
   }
-  .catchdog-platform-signature { right: 7px; bottom: 6px; opacity: .92; }
-  .catchdog-platform-signature img { width: 58px; }
+  .catchdog-platform-signature {
+    right: 6px;
+    bottom: max(6px, env(safe-area-inset-bottom));
+    max-width: 132px;
+    padding: 4px 6px;
+    gap: 5px;
+    border-radius: 10px;
+    opacity: .94;
+  }
+  .catchdog-platform-signature span { font-size: 6px; }
+  .catchdog-platform-signature img {
+    width: 52px !important;
+    max-width: 52px !important;
+    height: auto !important;
+  }
 }
 
 @media print {
