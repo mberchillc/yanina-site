@@ -2798,6 +2798,30 @@ async function createClassForStudent(dateKey = toISODate(startOfToday()), should
       [...exerciseTable.querySelectorAll(".exercise-row")].forEach(row => row.remove());
     }
 
+    function isPastClass(item = selectedClass) {
+      const classDate = String(item?.class_date || document.getElementById("classDateInput")?.value || "").slice(0, 10);
+      return Boolean(classDate && classDate < toISODate(startOfToday()));
+    }
+
+    function updateRoutineEditState() {
+      const readOnly = isPastClass();
+      [addExerciseBtn, duplicateWorkoutBtn, workoutSaveButton].forEach(button => {
+        if (!button) return;
+        button.disabled = readOnly;
+        button.title = readOnly ? "Las rutinas de clases pasadas son de solo lectura." : "";
+      });
+
+      exerciseTable.querySelectorAll(".exercise-row").forEach(row => {
+        const select = row.querySelector(".exercise-library-select");
+        const deleteButton = row.querySelector(".delete-exercise-btn");
+        if (select) select.disabled = readOnly;
+        if (deleteButton) deleteButton.disabled = readOnly;
+        row.querySelectorAll("[contenteditable]").forEach(field => {
+          field.contentEditable = readOnly ? "false" : "true";
+        });
+      });
+    }
+
     function createExerciseRow(exercise = {}) {
       const row = document.createElement("div");
       row.className = "exercise-row";
@@ -2821,6 +2845,7 @@ async function createClassForStudent(dateKey = toISODate(startOfToday()), should
 
       row.querySelector(".delete-exercise-btn").addEventListener("click", () => row.remove());
       exerciseTable.appendChild(row);
+      updateRoutineEditState();
     }
 
     function addBlankExerciseRow() {
@@ -3101,6 +3126,9 @@ async function renderAdminClassVideos(classId) {
     }
 
     async function saveClassAndRoutine() {
+      if (isPastClass()) {
+        throw new Error("Las rutinas de clases pasadas son de solo lectura.");
+      }
       const savedClass = await saveCalendarChanges();
       const classId = savedClass?.id || activeBackendClassId;
 
@@ -3221,7 +3249,10 @@ async function renderAdminClassVideos(classId) {
     }
 
     if (addExerciseBtn) {
-      addExerciseBtn.addEventListener("click", addBlankExerciseRow);
+      addExerciseBtn.addEventListener("click", () => {
+        if (isPastClass()) return alert("No se pueden agregar ejercicios a una clase pasada.");
+        addBlankExerciseRow();
+      });
     }
 
     if (duplicateWorkoutBtn) {

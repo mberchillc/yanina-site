@@ -338,6 +338,32 @@
     ]
   },
   {
+    "id": "puente-cadera",
+    "name": "Puente de cadera",
+    "category": "Tren inferior",
+    "equipment": "Colchoneta",
+    "default_sets": "3",
+    "default_reps": "12-15",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Acostate boca arriba, flexioná las rodillas, apoyá los pies firmes y mantené los brazos junto al cuerpo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Elevación",
+        "text": "Empujá desde los talones y elevá la cadera, activando glúteos y manteniendo el abdomen firme.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Descenso",
+        "text": "Bajá la cadera de forma controlada hasta el inicio, sin perder alineación ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
     "id": "press-banca",
     "name": "Press de banca con barra o mancuernas",
     "category": "Tren superior",
@@ -801,6 +827,32 @@
       {
         "title": "Control",
         "text": "Regresá lentamente a la posición inicial, sin perder postura ni tensión.",
+        "image": "assets/icono-ejercicio-3.png?v=icons-2"
+      }
+    ]
+  },
+  {
+    "id": "fondo-triceps-banco",
+    "name": "Fondo de tríceps en banco",
+    "category": "Tren superior",
+    "equipment": "Banco",
+    "default_sets": "3",
+    "default_reps": "10-12",
+    "default_load": "—",
+    "steps": [
+      {
+        "title": "Inicio",
+        "text": "Apoyá las manos en el borde del banco, brazos extendidos, piernas al frente y cadera cerca del apoyo.",
+        "image": "assets/icono-ejercicio-1.png?v=icons-2"
+      },
+      {
+        "title": "Descenso",
+        "text": "Flexioná los codos hacia atrás y bajá la cadera con control, manteniendo hombros estables.",
+        "image": "assets/icono-ejercicio-2.png?v=icons-2"
+      },
+      {
+        "title": "Subida",
+        "text": "Empujá el banco, extendé los codos y regresá al inicio sin alejar la cadera del apoyo.",
         "image": "assets/icono-ejercicio-3.png?v=icons-2"
       }
     ]
