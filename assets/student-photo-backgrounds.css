@@ -27,7 +27,7 @@
   background-position: var(--student-photo-position);
   background-size: cover;
   filter: saturate(.94) contrast(.92) brightness(1.08);
-  opacity: .83;
+  opacity: 1;
 }
 
 .student-photo-home::after {
@@ -36,13 +36,13 @@
   z-index: -1;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(249, 252, 246, .68), rgba(249, 252, 246, .12)),
-    linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(244, 250, 239, .48));
+    linear-gradient(90deg, rgba(249, 252, 246, .54), rgba(249, 252, 246, .04)),
+    linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(244, 250, 239, .34));
   pointer-events: none;
 }
 
 .student-photo-home .hero-card.light {
-  background: rgba(255, 255, 255, .54);
+  background: rgba(255, 255, 255, .40);
   backdrop-filter: blur(1px);
 }
 
@@ -62,14 +62,14 @@
   background-position: var(--student-photo-position);
   background-size: cover;
   filter: saturate(.94) contrast(.90) brightness(1.10);
-  opacity: .88;
+  opacity: 1;
 }
 
 .student-photo-panel::after {
   z-index: 0;
   height: 350px;
   background:
-    linear-gradient(90deg, rgba(250, 253, 247, .68) 0%, rgba(250, 253, 247, .22) 58%, rgba(250, 253, 247, .10) 100%),
+    linear-gradient(90deg, rgba(250, 253, 247, .54) 0%, rgba(250, 253, 247, .12) 58%, rgba(250, 253, 247, .04) 100%),
     linear-gradient(180deg, rgba(255, 255, 255, .04), #fff 96%);
 }
 
@@ -84,7 +84,7 @@
   padding: 24px;
   border: 1px solid rgba(118, 164, 77, .15);
   border-radius: 24px;
-  background: rgba(255, 255, 255, .20);
+  background: rgba(255, 255, 255, .12);
   backdrop-filter: blur(1px);
 }
 
@@ -104,56 +104,62 @@
 }
 
 @media (max-width: 760px) {
-  .app:has(#clases.active) .sidebar {
+  body {
+    --muted: #536174;
+  }
+  .nav-label {
+    color: #53654f;
+  }
+  .sidebar {
     position: relative;
     isolation: isolate;
     background: rgba(247, 251, 243, .38);
   }
-  .app:has(#clases.active) .sidebar::before,
-  .app:has(#clases.active) .sidebar::after {
+  .sidebar::before,
+  .sidebar::after {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
   }
-  .app:has(#clases.active) .sidebar::before {
+  .sidebar::before {
     z-index: -2;
     background: url("yanina/yanina-calendario-ui.webp") center 20% / cover no-repeat;
     filter: saturate(.94) contrast(.90) brightness(1.10);
-    opacity: .84;
+    opacity: 1;
   }
-  .app:has(#clases.active) .sidebar::after {
+  .sidebar::after {
     z-index: -1;
-    background: linear-gradient(180deg, rgba(248, 252, 245, .42), rgba(248, 252, 245, .68));
+    background: linear-gradient(180deg, rgba(248, 252, 245, .20), rgba(248, 252, 245, .42));
   }
-  .app:has(#clases.active) .sidebar > * {
+  .sidebar > * {
     position: relative;
     z-index: 1;
   }
-  .app:has(#clases.active) .tab-btn:not(.active) {
-    background: rgba(255, 255, 255, .78);
+  .sidebar .tab-btn:not(.active) {
+    background: rgba(255, 255, 255, .66);
   }
   .student-photo-home { border-radius: 24px; }
-  .student-photo-home::before { background-position: center 18%; opacity: .92; }
+  .student-photo-home::before { background-position: center 18%; opacity: 1; }
   .student-photo-home::after {
     background:
-      linear-gradient(180deg, rgba(249, 252, 246, .20), rgba(249, 252, 246, .58)),
-      linear-gradient(90deg, rgba(255, 255, 255, .12), rgba(244, 250, 239, .24));
+      linear-gradient(180deg, rgba(249, 252, 246, .08), rgba(249, 252, 246, .40)),
+      linear-gradient(90deg, rgba(255, 255, 255, .04), rgba(244, 250, 239, .12));
   }
   .student-photo-home .hero-card.light {
-    background: rgba(255, 255, 255, .38);
+    background: rgba(255, 255, 255, .24);
     backdrop-filter: none;
   }
-  .student-photo-panel::before { height: 290px; opacity: .78; }
+  .student-photo-panel::before { height: 310px; opacity: 1; }
   .student-photo-panel::after {
     height: 290px;
-    background: linear-gradient(180deg, rgba(249, 252, 246, .26), rgba(255, 255, 255, .88));
+    background: linear-gradient(180deg, rgba(249, 252, 246, .14), rgba(255, 255, 255, .82));
   }
   .student-photo-panel .panel-head {
     min-height: 116px;
     padding: 18px;
     border-radius: 20px;
-    background: rgba(255, 255, 255, .26);
+    background: rgba(255, 255, 255, .16);
   }
 }
 
