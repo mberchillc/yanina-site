@@ -26,8 +26,8 @@
   background-image: var(--student-photo);
   background-position: var(--student-photo-position);
   background-size: cover;
-  filter: saturate(.88) contrast(.88) brightness(1.06);
-  opacity: .40;
+  filter: saturate(.94) contrast(.92) brightness(1.08);
+  opacity: .64;
 }
 
 .student-photo-home::after {
@@ -36,14 +36,14 @@
   z-index: -1;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(249, 252, 246, .88), rgba(249, 252, 246, .48)),
-    linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(244, 250, 239, .78));
+    linear-gradient(90deg, rgba(249, 252, 246, .80), rgba(249, 252, 246, .24)),
+    linear-gradient(180deg, rgba(255, 255, 255, .10), rgba(244, 250, 239, .62));
   pointer-events: none;
 }
 
 .student-photo-home .hero-card.light {
-  background: rgba(255, 255, 255, .78);
-  backdrop-filter: blur(3px);
+  background: rgba(255, 255, 255, .68);
+  backdrop-filter: blur(2px);
 }
 
 .student-photo-home .hero-card.dark {
@@ -61,16 +61,16 @@
   background-image: var(--student-photo);
   background-position: var(--student-photo-position);
   background-size: cover;
-  filter: saturate(.86) contrast(.86) brightness(1.08);
-  opacity: .42;
+  filter: saturate(.94) contrast(.90) brightness(1.10);
+  opacity: .68;
 }
 
 .student-photo-panel::after {
   z-index: 0;
   height: 350px;
   background:
-    linear-gradient(90deg, rgba(250, 253, 247, .90) 0%, rgba(250, 253, 247, .58) 58%, rgba(250, 253, 247, .50) 100%),
-    linear-gradient(180deg, rgba(255, 255, 255, .08), #fff 96%);
+    linear-gradient(90deg, rgba(250, 253, 247, .80) 0%, rgba(250, 253, 247, .34) 58%, rgba(250, 253, 247, .22) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, .04), #fff 96%);
 }
 
 .student-photo-panel > * {
@@ -84,8 +84,8 @@
   padding: 24px;
   border: 1px solid rgba(118, 164, 77, .15);
   border-radius: 24px;
-  background: rgba(255, 255, 255, .42);
-  backdrop-filter: blur(2px);
+  background: rgba(255, 255, 255, .28);
+  backdrop-filter: blur(1px);
 }
 
 .student-photo-calendar {
@@ -105,22 +105,22 @@
 
 @media (max-width: 760px) {
   .student-photo-home { border-radius: 24px; }
-  .student-photo-home::before { background-position: center 18%; opacity: .36; }
+  .student-photo-home::before { background-position: center 18%; opacity: .58; }
   .student-photo-home::after {
     background:
-      linear-gradient(180deg, rgba(249, 252, 246, .58), rgba(249, 252, 246, .88)),
-      linear-gradient(90deg, rgba(255, 255, 255, .35), rgba(244, 250, 239, .68));
+      linear-gradient(180deg, rgba(249, 252, 246, .42), rgba(249, 252, 246, .78)),
+      linear-gradient(90deg, rgba(255, 255, 255, .25), rgba(244, 250, 239, .46));
   }
-  .student-photo-panel::before { height: 250px; opacity: .38; }
+  .student-photo-panel::before { height: 270px; opacity: .60; }
   .student-photo-panel::after {
-    height: 270px;
-    background: linear-gradient(180deg, rgba(249, 252, 246, .62), rgba(255, 255, 255, .95));
+    height: 290px;
+    background: linear-gradient(180deg, rgba(249, 252, 246, .40), rgba(255, 255, 255, .92));
   }
   .student-photo-panel .panel-head {
     min-height: 116px;
     padding: 18px;
     border-radius: 20px;
-    background: rgba(255, 255, 255, .54);
+    background: rgba(255, 255, 255, .38);
   }
 }
 
@@ -128,3 +128,4 @@
   .student-photo-home .hero-card.light,
   .student-photo-panel .panel-head { backdrop-filter: none; }
 }
+
