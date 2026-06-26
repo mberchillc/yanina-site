@@ -26,11 +26,11 @@
 
     <div class="mode-switch">
       <button type="button" id="loginModeBtn" class="active">Entrar</button>
-      <button type="button" id="setupModeBtn">Crear contraseña</button>
+      <button type="button" id="setupModeBtn">Crear contrasena</button>
     </div>
 
-    <div class="login-error" id="loginError">Usuario o contraseña incorrectos.</div>
-    <div class="login-success" id="loginSuccess">Contraseña creada. Ya podés entrar.</div>
+    <div class="login-error" id="loginError">Usuario o contrasena incorrectos.</div>
+    <div class="login-success" id="loginSuccess">Contrasena creada. Ya podes entrar.</div>
 
     <form id="loginForm">
       <div class="field">
@@ -39,20 +39,25 @@
       </div>
 
       <div class="field">
-        <label for="password">Contraseña</label>
-        <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" />
+        <label for="password">Contrasena</label>
+        <input id="password" type="password" placeholder="Contrasena" autocomplete="current-password" />
       </div>
 
       <div class="field hidden" id="confirmPasswordField">
-        <label for="confirmPassword">Repetir contraseña</label>
-        <input id="confirmPassword" type="password" placeholder="Repetir contraseña" autocomplete="new-password" />
+        <label for="confirmPassword">Repetir contrasena</label>
+        <input id="confirmPassword" type="password" placeholder="Repetir contrasena" autocomplete="new-password" />
+      </div>
+
+      <div class="field hidden" id="setupCodeField">
+        <label for="setupCode">Codigo de Yanina</label>
+        <input id="setupCode" type="text" placeholder="Codigo de acceso" autocomplete="one-time-code" autocapitalize="characters" />
       </div>
 
       <button type="submit" class="btn btn-primary" id="submitBtn">Entrar a plataforma</button>
     </form>
 
-    <div class="note" id="loginNote">Ingresá con tu usuario y contraseña.</div>
-    <a class="back-link" href="/">← Volver al sitio</a>
+    <div class="note" id="loginNote">Ingresa con tu usuario y contrasena.</div>
+    <a class="back-link" href="/">Volver al sitio</a>
   </main>
 
   <script>
@@ -64,11 +69,13 @@
     const loginError = document.getElementById("loginError");
     const loginSuccess = document.getElementById("loginSuccess");
     const confirmPasswordField = document.getElementById("confirmPasswordField");
+    const setupCodeField = document.getElementById("setupCodeField");
     const submitBtn = document.getElementById("submitBtn");
     const loginNote = document.getElementById("loginNote");
     const usernameInput = document.getElementById("username");
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirmPassword");
+    const setupCodeInput = document.getElementById("setupCode");
     const loginModeBtn = document.getElementById("loginModeBtn");
     const setupModeBtn = document.getElementById("setupModeBtn");
 
@@ -76,11 +83,9 @@
 
     function normalizeUser(value) { return String(value || "").trim(); }
     function validNewPassword(value) { return /^[A-Za-z0-9]{6,}$/.test(String(value || "")); }
-
     function showError(message) { loginSuccess.style.display = "none"; loginError.textContent = message; loginError.style.display = "block"; }
     function showSuccess(message) { loginError.style.display = "none"; loginSuccess.textContent = message; loginSuccess.style.display = "block"; }
-
-    function setLoading(active) { submitBtn.disabled = active; submitBtn.textContent = active ? "Validando..." : (setupMode ? "Crear contraseña" : "Entrar a plataforma"); }
+    function setLoading(active) { submitBtn.disabled = active; submitBtn.textContent = active ? "Validando..." : (setupMode ? "Crear contrasena" : "Entrar a plataforma"); }
 
     function setSetupMode(active) {
       setupMode = active;
@@ -89,13 +94,15 @@
       loginModeBtn.classList.toggle("active", !active);
       setupModeBtn.classList.toggle("active", active);
       confirmPasswordField.classList.toggle("hidden", !active);
-      submitBtn.textContent = active ? "Crear contraseña" : "Entrar a plataforma";
+      setupCodeField.classList.toggle("hidden", !active);
+      submitBtn.textContent = active ? "Crear contrasena" : "Entrar a plataforma";
       passwordInput.value = "";
       confirmPasswordInput.value = "";
+      setupCodeInput.value = "";
       passwordInput.autocomplete = active ? "new-password" : "current-password";
       loginNote.innerHTML = active
-        ? "Usá el usuario indicado por Yanina y creá una contraseña alfanumérica de al menos 6 caracteres."
-        : "Ingresá con tu usuario y contraseña.";
+        ? "Usa el usuario y el codigo que te dio Yanina. Solo pueden crear contrasena las alumnas con ficha guardada."
+        : "Ingresa con tu usuario y contrasena.";
     }
 
     async function postAuth(path, payload) {
@@ -121,7 +128,6 @@
 
     loginModeBtn.addEventListener("click", () => setSetupMode(false));
     setupModeBtn.addEventListener("click", () => setSetupMode(true));
-
     usernameInput.addEventListener("input", () => { loginError.style.display = "none"; loginSuccess.style.display = "none"; });
 
     loginForm.addEventListener("submit", async event => {
@@ -129,33 +135,41 @@
       const username = normalizeUser(usernameInput.value);
       const password = passwordInput.value || "";
       const confirmPassword = confirmPasswordInput.value || "";
+      const setupCode = String(setupCodeInput.value || "").trim();
 
-      if (!username) { showError("Completá usuario."); return; }
+      if (!username) { showError("Completa usuario."); return; }
 
       try {
         setLoading(true);
         if (setupMode) {
-          if (!validNewPassword(password)) throw new Error("La contraseña nueva debe ser alfanumérica y tener al menos 6 caracteres.");
-          if (password !== confirmPassword) throw new Error("Las contraseñas no coinciden.");
-          await postAuth("/api/student-auth/setup-password", { username, password });
-          showSuccess("Contraseña creada. Ya podés entrar.");
+          if (!validNewPassword(password)) throw new Error("La contrasena nueva debe ser alfanumerica y tener al menos 6 caracteres.");
+          if (password !== confirmPassword) throw new Error("Las contrasenas no coinciden.");
+          if (!setupCode) throw new Error("Ingresa el codigo que te dio Yanina.");
+          await postAuth("/api/student-auth/setup-password", { username, password, setup_code: setupCode });
+          showSuccess("Contrasena creada. Ya podes entrar.");
           setSetupMode(false);
           return;
         }
 
-        if (!password) throw new Error("Completá usuario y contraseña.");
+        if (!password) throw new Error("Completa usuario y contrasena.");
         const payload = await postAuth("/api/auth/login", { username, password });
         if (payload.role === "admin") { enterAdmin(payload); return; }
         if (payload.role === "student") { enterStudent(payload); return; }
-        throw new Error("Usuario o contraseña incorrectos.");
+        throw new Error("Usuario o contrasena incorrectos.");
       } catch (error) {
         const message = String(error.message || "No se pudo validar el acceso.");
         if (message === "PASSWORD_NOT_SET") {
           setSetupMode(true);
-          showError("Primero creá tu contraseña.");
+          showError("Tu ficha existe, pero todavia no creaste contrasena. Usa Crear contrasena con el codigo de Yanina.");
         } else if (message === "PASSWORD_ALREADY_SET") {
           setSetupMode(false);
-          showError("Ese usuario ya tiene contraseña. Usá Entrar.");
+          showError("Ese usuario ya tiene contrasena. Usa Entrar.");
+        } else if (message === "SETUP_CODE_REQUIRED" || message === "INVALID_SETUP_CODE") {
+          showError("El codigo no corresponde a ese usuario. Revisa el usuario y codigo exactos que te dio Yanina.");
+        } else if (message === "Student account not found") {
+          showError("No existe una ficha guardada para ese usuario. Yanina debe crear y guardar la ficha antes de que puedas crear contrasena.");
+        } else if (message === "Invalid username or password") {
+          showError("Usuario o contrasena incorrectos. Si es tu primer ingreso, usa Crear contrasena con el codigo de Yanina.");
         } else {
           showError(message);
         }
