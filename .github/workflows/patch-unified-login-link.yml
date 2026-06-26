@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'scripts/patch_unified_login_link.py'
+      - '.github/workflows/patch-unified-login-link.yml'
   workflow_dispatch:
 
 permissions:
@@ -16,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Patch platform login link
+      - name: Patch platform login and admin setup
         run: python scripts/patch_unified_login_link.py
       - name: Commit patch
         run: |
@@ -26,6 +27,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add plataforma-demo.html
-          git commit -m "Point platform account button to unified login"
+          git add _redirects login.html admin/login.html alumno/login.html admin/alumno.html plataforma-demo.html scripts/patch_unified_login_link.py
+          git commit -m "Apply unified login and admin setup patch"
           git push
