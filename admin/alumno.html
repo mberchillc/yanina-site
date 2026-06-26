@@ -1337,6 +1337,7 @@
             <a class="btn btn-form-secondary" id="starfitMeasurementsBtn" href="mediciones-starfit.html">Cargar medición Starfit</a>
             <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">Descargar rutina PDF</a>
             <span class="status-pill" id="studentUserBadge">Usuario: —</span>
+            <span class="status-pill pending" id="studentSetupCodeBadge">Codigo: —</span>
           </div>
 
           <div class="save-message" id="saveMessage">Datos guardados correctamente.</div>
@@ -1493,6 +1494,22 @@
 
   <script>
     const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
+    const adminSessionData = JSON.parse(localStorage.getItem("yaninaAdminSession") || "{}");
+    if (!adminSessionData.token) {
+      localStorage.removeItem("yaninaAdminSession");
+      window.location.href = "/login.html";
+      throw new Error("ADMIN_AUTH_REQUIRED");
+    }
+    const originalFetch = window.fetch.bind(window);
+    window.fetch = (input, init = {}) => {
+      const url = typeof input === "string" ? input : input?.url || "";
+      if (String(url).startsWith(API_BASE)) {
+        const headers = new Headers(init.headers || {});
+        headers.set("Authorization", `Bearer ${adminSessionData.token}`);
+        return originalFetch(input, { ...init, headers });
+      }
+      return originalFetch(input, init);
+    };
 
     const params = new URLSearchParams(window.location.search);
     const isNewStudent = params.get("new") === "1";
@@ -2266,6 +2283,25 @@ return {
       badge.textContent = username ? `Usuario: ${username}` : "Usuario: —";
     }
 
+    function updateStudentAccountBadges(account) {
+      const userBadge = document.getElementById("studentUserBadge");
+      const codeBadge = document.getElementById("studentSetupCodeBadge");
+      if (userBadge) {
+        const fallback = generateStudentUsername(studentNameInput?.value || "");
+        userBadge.textContent = account?.username ? `Usuario: ${account.username}` : (fallback ? `Usuario: ${fallback}` : "Usuario: —");
+      }
+      if (codeBadge) {
+        const hasPassword = Boolean(account?.password_hash) && Number(account?.password_requires_reset || 0) !== 1 && Number(account?.password_setup_version || 0) === 1;
+        codeBadge.textContent = hasPassword
+          ? "Contrasena creada"
+          : account?.setup_code
+            ? `Codigo: ${account.setup_code}`
+            : "Codigo: guardar ficha";
+        codeBadge.classList.toggle("pending", !hasPassword);
+        codeBadge.classList.toggle("completed", hasPassword);
+      }
+    }
+
     function updateStudentIdentity() {
       const currentName = studentNameInput?.value || "";
       const initials = getInitials(currentName);
@@ -2328,6 +2364,7 @@ return {
       setSelectValueByText("dias", student.frequency || "");
       setSelectValueByText("modalidad", student.modality || "");
       updateStudentIdentity();
+      updateStudentAccountBadges(student.student_account);
     }
 
     function resetForNewStudent() {
@@ -2368,7 +2405,13 @@ return {
       );
 
       if (!response.ok) {
-        throw new Error(isCreatingStudent ? "No se pudo crear el alumno" : "No se pudieron guardar los datos");
+        const errorData = await response.json().catch(() => ({}));
+        if (errorData.error === "ADMIN_AUTH_REQUIRED") {
+          localStorage.removeItem("yaninaAdminSession");
+          window.location.href = "/login.html";
+          throw new Error("Sesion admin vencida. Volve a entrar y guarda la ficha otra vez.");
+        }
+        throw new Error(errorData.error || (isCreatingStudent ? "No se pudo crear el alumno" : "No se pudieron guardar los datos"));
       }
 
       const savedStudent = await response.json();
@@ -3337,6 +3380,7 @@ async function renderAdminClassVideos(classId) {
           if (saved?.id || saved?.student?.id) {
             studentId = saved.id || saved.student.id;
           }
+          updateStudentAccountBadges(saved?.student_account || saved?.student?.student_account || null);
           updateStarfitLinks();
         updateGestionAdministrativaLink();
           updateStarfitHistoryLink();
