@@ -159,3 +159,5 @@ if text != original:
     print('patched admin/alumno.html')
 else:
     print('admin/alumno.html already patched')
+
+# Triggered 2026-06-26: publish admin ficha auth/setup-code patch.
