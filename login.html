@@ -126,6 +126,12 @@
       window.location.href = "/alumno/index.html?v=tracking-back";
     }
 
+    function enterPlatform(payload) {
+      if (payload.role === "admin") { enterAdmin(payload); return true; }
+      if (payload.role === "student") { enterStudent(payload); return true; }
+      return false;
+    }
+
     loginModeBtn.addEventListener("click", () => setSetupMode(false));
     setupModeBtn.addEventListener("click", () => setSetupMode(true));
     usernameInput.addEventListener("input", () => { loginError.style.display = "none"; loginSuccess.style.display = "none"; });
@@ -145,16 +151,16 @@
           if (!validNewPassword(password)) throw new Error("La contrasena nueva debe ser alfanumerica y tener al menos 6 caracteres.");
           if (password !== confirmPassword) throw new Error("Las contrasenas no coinciden.");
           if (!setupCode) throw new Error("Ingresa el codigo que te dio Yanina.");
-          await postAuth("/api/student-auth/setup-password", { username, password, setup_code: setupCode });
-          showSuccess("Contrasena creada. Ya podes entrar.");
-          setSetupMode(false);
-          return;
+          const setupPayload = await postAuth("/api/student-auth/setup-password", { username, password, setup_code: setupCode });
+          if (enterPlatform(setupPayload)) return;
+          const loginPayload = await postAuth("/api/auth/login", { username, password });
+          if (enterPlatform(loginPayload)) return;
+          throw new Error("Contrasena creada, pero no se pudo entrar automaticamente. Usa Entrar con tu usuario y contrasena.");
         }
 
         if (!password) throw new Error("Completa usuario y contrasena.");
         const payload = await postAuth("/api/auth/login", { username, password });
-        if (payload.role === "admin") { enterAdmin(payload); return; }
-        if (payload.role === "student") { enterStudent(payload); return; }
+        if (enterPlatform(payload)) return;
         throw new Error("Usuario o contrasena incorrectos.");
       } catch (error) {
         const message = String(error.message || "No se pudo validar el acceso.");
@@ -164,7 +170,11 @@
         } else if (message === "PASSWORD_ALREADY_SET") {
           setSetupMode(false);
           showError("Ese usuario ya tiene contrasena. Usa Entrar.");
-        } else if (message === "SETUP_CODE_REQUIRED" || message === "INVALID_SETUP_CODE") {
+        } else if (message === "SETUP_CODE_REQUIRED") {
+          setSetupMode(true);
+          showError("Ingresa el codigo que te dio Yanina.");
+        } else if (message === "INVALID_SETUP_CODE") {
+          setSetupMode(true);
           showError("El codigo no corresponde a ese usuario. Revisa el usuario y codigo exactos que te dio Yanina.");
         } else if (message === "Student account not found") {
           showError("No existe una ficha guardada para ese usuario. Yanina debe crear y guardar la ficha antes de que puedas crear contrasena.");
