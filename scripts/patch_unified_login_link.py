@@ -160,4 +160,27 @@ if text != original:
 else:
     print('admin/alumno.html already patched')
 
-# Triggered 2026-06-26: publish admin ficha auth/setup-code patch.
+# Patch student dashboard API calls so Mi ficha loads the real saved profile.
+student_path = Path('alumno/index.html')
+student_text = student_path.read_text(encoding='utf-8')
+student_original = student_text
+student_marker = "const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';const params=new URLSearchParams(window.location.search);const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');const STUDENT_ID=String(params.get('id')||params.get('studentId')||sessionData.studentId||'6');"
+student_replacement = "const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';const params=new URLSearchParams(window.location.search);const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');if(!sessionData.token||!sessionData.studentId){localStorage.removeItem('yaninaStudentSession');window.location.href='/login.html';throw new Error('STUDENT_AUTH_REQUIRED')}const originalFetch=window.fetch.bind(window);window.fetch=(input,init={})=>{const url=typeof input==='string'?input:input?.url||'';if(String(url).startsWith(API_BASE)){const headers=new Headers(init.headers||{});headers.set('Authorization',`Bearer ${sessionData.token}`);return originalFetch(input,{...init,headers})}return originalFetch(input,init)};const STUDENT_ID=String(params.get('id')||params.get('studentId')||sessionData.studentId);"
+if 'STUDENT_AUTH_REQUIRED' not in student_text and student_marker in student_text:
+    student_text = student_text.replace(student_marker, student_replacement, 1)
+
+# Keep the session display synchronized with the loaded ficha in case the login payload had a fallback name.
+if "localStorage.setItem('yaninaStudentSession',JSON.stringify({...sessionData,name,studentId:STUDENT_ID}))" not in student_text:
+    student_text = student_text.replace(
+        "function renderStudent(student){const name=student.full_name||student.name||'Alumna';$('sideName').textContent=name;",
+        "function renderStudent(student){const name=student.full_name||student.name||'Alumna';localStorage.setItem('yaninaStudentSession',JSON.stringify({...sessionData,name,studentId:STUDENT_ID}));$('sideName').textContent=name;",
+        1,
+    )
+
+if student_text != student_original:
+    student_path.write_text(student_text, encoding='utf-8')
+    print('patched alumno/index.html')
+else:
+    print('alumno/index.html already patched')
+
+# Triggered 2026-06-26: publish student dashboard auth patch.
