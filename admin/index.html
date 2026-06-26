@@ -8,7 +8,10 @@
   <script>
     const SESSION_KEY = "yaninaAdminSession";
     const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-    if (!session || session.loggedIn !== true) window.location.href = "login.html";
+    if (!session || session.loggedIn !== true || !session.token) {
+      localStorage.removeItem(SESSION_KEY);
+      window.location.href = "/login.html";
+    }
   </script>
 
   <style>
@@ -53,6 +56,7 @@
 
   <script>
     const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
+    const adminSession = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
     const studentsGrid = document.getElementById("studentsGrid");
     const studentsCount = document.getElementById("studentsCount");
     const classesCount = document.getElementById("classesCount");
@@ -61,6 +65,18 @@
     const logoutBtn = document.getElementById("logoutBtn");
     const notificationBell = document.getElementById("notificationBell");
     let allStudents = [];
+
+    async function apiFetch(url, options = {}) {
+      const headers = new Headers(options.headers || {});
+      headers.set("Authorization", `Bearer ${adminSession.token}`);
+      const response = await fetch(url, { ...options, headers });
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem(SESSION_KEY);
+        window.location.href = "/login.html";
+        throw new Error("Sesion admin vencida. Volve a entrar.");
+      }
+      return response;
+    }
 
     function escapeHtml(value){return String(value || "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
     function formatDate(value){if(!value)return "Sin datos";const date=new Date(value+"T00:00:00");if(Number.isNaN(date.getTime()))return value;return date.toLocaleDateString("es-US",{day:"2-digit",month:"2-digit",year:"numeric"})}
@@ -108,16 +124,16 @@
     }
 
     async function loadStudents(){
-      try{const response=await fetch(`${API_BASE}/api/students?cache=${Date.now()}`);if(!response.ok)throw new Error("No se pudo cargar la lista de alumnos desde D1");allStudents=await response.json();allStudents=Array.isArray(allStudents)?allStudents:[];studentsCount.textContent=allStudents.length;classesCount.textContent="—";routinesCount.textContent="—";renderBirthdayAlerts(allStudents);renderStudents(allStudents)}catch(error){console.error(error);studentsGrid.innerHTML=`<div class="empty-state">No se pudo conectar con la API. Revisá que el Worker esté activo.</div>`}
+      try{const response=await apiFetch(`${API_BASE}/api/students?cache=${Date.now()}`);if(!response.ok)throw new Error("No se pudo cargar la lista de alumnos desde D1");allStudents=await response.json();allStudents=Array.isArray(allStudents)?allStudents:[];studentsCount.textContent=allStudents.length;classesCount.textContent="—";routinesCount.textContent="—";renderBirthdayAlerts(allStudents);renderStudents(allStudents)}catch(error){console.error(error);studentsGrid.innerHTML=`<div class="empty-state">${escapeHtml(error.message || "No se pudo cargar el panel admin.")}</div>`}
     }
 
     async function deleteStudent(studentId){
       const found=allStudents.find(student=>String(getStudentId(student))===String(studentId));const name=found?getStudentName(found):`ID ${studentId}`;const confirmed=confirm(`¿Eliminar a ${name}? Esta acción borrará también sus clases y rutinas.`);if(!confirmed)return;const button=document.querySelector(`[data-delete-id="${CSS.escape(String(studentId))}"]`);if(button)button.disabled=true;
-      try{const response=await fetch(`${API_BASE}/api/students/${encodeURIComponent(studentId)}`,{method:"DELETE"});if(!response.ok){const errorData=await response.json().catch(()=>({}));throw new Error(errorData.error || "No se pudo eliminar el alumno.")}allStudents=allStudents.filter(student=>String(getStudentId(student))!==String(studentId));studentsCount.textContent=allStudents.length;renderBirthdayAlerts(allStudents);renderStudents(allStudents)}catch(error){console.error(error);alert(error.message || "No se pudo eliminar el alumno.");if(button)button.disabled=false}
+      try{const response=await apiFetch(`${API_BASE}/api/students/${encodeURIComponent(studentId)}`,{method:"DELETE"});if(!response.ok){const errorData=await response.json().catch(()=>({}));throw new Error(errorData.error || "No se pudo eliminar el alumno.")}allStudents=allStudents.filter(student=>String(getStudentId(student))!==String(studentId));studentsCount.textContent=allStudents.length;renderBirthdayAlerts(allStudents);renderStudents(allStudents)}catch(error){console.error(error);alert(error.message || "No se pudo eliminar el alumno.");if(button)button.disabled=false}
     }
 
-    async function refreshNotificationBell(){if(!notificationBell)return;try{const r=await fetch(`${API_BASE}/api/notifications?recipient=admin&cache=${Date.now()}`);if(!r.ok)return;const items=await r.json();const unread=Array.isArray(items)&&items.some(n=>Number(n.is_read||0)===0);notificationBell.classList.toggle("has-unread",unread)}catch(e){console.warn(e)}}
-    if(logoutBtn){logoutBtn.addEventListener("click",()=>{localStorage.removeItem(SESSION_KEY);window.location.href="login.html"})}
+    async function refreshNotificationBell(){if(!notificationBell)return;try{const r=await apiFetch(`${API_BASE}/api/notifications?recipient=admin&cache=${Date.now()}`);if(!r.ok)return;const items=await r.json();const unread=Array.isArray(items)&&items.some(n=>Number(n.is_read||0)===0);notificationBell.classList.toggle("has-unread",unread)}catch(e){console.warn(e)}}
+    if(logoutBtn){logoutBtn.addEventListener("click",()=>{localStorage.removeItem(SESSION_KEY);window.location.href="/login.html"})}
     loadStudents();refreshNotificationBell();
   </script>
 </body>
