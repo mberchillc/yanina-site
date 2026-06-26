@@ -1,3 +1,4 @@
+/api/* https://yanina-trainer-api.mberchillc.workers.dev/api/:splat 200
 /assets/exercises/extension-triceps-polea-alta.png /assets/exercises/extension-triceps-polea.png 200
 /assets/exercises/triceps-polea-alta.png /assets/exercises/extension-triceps-polea.png 200
 /assets/exercises/triceps-polea.png /assets/exercises/extension-triceps-polea.png 200
