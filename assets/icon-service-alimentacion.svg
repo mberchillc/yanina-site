@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-labelledby="title desc">
+  <title id="title">Planes de alimentación</title>
+  <desc id="desc">Plan nutricional con checklist, manzana y cubiertos.</desc>
+  <rect width="220" height="220" rx="54" fill="#eef9fb"/>
+  <ellipse cx="110" cy="174" rx="58" ry="8" fill="#d8ece9"/>
+  <path d="M68 48h84a8 8 0 0 1 8 8v110a8 8 0 0 1-8 8H68a8 8 0 0 1-8-8V56a8 8 0 0 1 8-8Z" fill="#fff" stroke="#43b65c" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M92 48v-8h36v8" fill="none" stroke="#43b65c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="110" cy="37" r="6" fill="#43b65c"/>
+  <path d="M82 78l8 8 14-17M82 105l8 8 14-17M82 132l8 8 14-17" fill="none" stroke="#43b65c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M118 79h25M118 106h22M118 133h18" stroke="#43b65c" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="157" cy="91" r="27" fill="#fff" stroke="#5b9df0" stroke-width="7"/>
+  <path d="M150 75v33M164 75v33M150 89h14M174 76c8 9 8 19 0 28v4" stroke="#5b9df0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M143 146c-4-16 7-28 20-24 13-4 24 8 20 24-3 17-11 31-20 31s-17-14-20-31Z" fill="#fff" stroke="#43b65c" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M164 121c1-13 11-20 24-18-3 12-12 18-24 18Z" fill="#fff" stroke="#43b65c" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M33 99h10M38 94v10M185 133h10M190 128v10" stroke="#5b9df0" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="183" cy="58" r="4" fill="#43b65c"/><circle cx="194" cy="64" r="3" fill="#43b65c"/>
+</svg>
