@@ -3207,6 +3207,37 @@ async function loadAdminClassVideos(classId) {
   });
 }
 
+async function openAdminStudentVideo(videoId, button) {
+  if (!videoId) return;
+
+  const originalText = button ? button.textContent : "";
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Abriendo...";
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/api/student-videos/${encodeURIComponent(videoId)}/file`);
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || "No se pudo abrir el video.");
+    }
+
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    window.open(objectUrl, "_blank", "noopener");
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 60 * 1000);
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "No se pudo abrir el video.");
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalText || "Ver video";
+    }
+  }
+}
+
 async function renderAdminClassVideos(classId) {
   const box = document.getElementById("adminClassVideoList");
   if (!box) return;
@@ -3244,13 +3275,13 @@ async function renderAdminClassVideos(classId) {
           </div>
 
           <div class="bottom-actions">
-            <a
+            <button
+              type="button"
               class="btn btn-form-secondary"
-              href="${API_BASE}/api/student-videos/${encodeURIComponent(video.id)}/file"
-              target="_blank"
+              data-video-id="${escapeHtml(video.id)}"
             >
               Ver video
-            </a>
+            </button>
 
             <button
               type="button"
@@ -3264,6 +3295,10 @@ async function renderAdminClassVideos(classId) {
         </article>
       `;
     }).join("");
+
+    box.querySelectorAll("[data-video-id]").forEach(button => {
+      button.addEventListener("click", () => openAdminStudentVideo(button.dataset.videoId, button));
+    });
 
     box.querySelectorAll(".mark-video-reviewed-btn").forEach(button => {
       button.addEventListener("click", async () => {
