@@ -42,6 +42,7 @@ def patch_student_page(rel_path):
     print(rel_path, "changed", text != original)
 
 
+# Triggered after workflow add-list was expanded for all visual pages.
 patch_admin_library()
 patch_student_page(Path("student") / "index.html")
 patch_student_page(Path("alumno") / "index.html")
