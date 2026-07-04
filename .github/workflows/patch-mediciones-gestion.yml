@@ -1,0 +1,78 @@
+name: Patch mediciones and gestion fixes
+
+on:
+  push:
+    paths:
+      - .github/workflows/patch-mediciones-gestion.yml
+      - patch-mediciones-gestion-trigger.txt
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch Starfit dates and Gestion auth/counting
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def write_if_changed(path, text):
+              p = Path(path)
+              old = p.read_text(encoding='utf-8')
+              if old != text:
+                  p.write_text(text, encoding='utf-8')
+
+          auth_block = '''const API_BASE="https://yanina-trainer-api.mberchillc.workers.dev";
+    const adminSessionData=JSON.parse(localStorage.getItem("yaninaAdminSession")||"{}");
+    if(!adminSessionData.token){localStorage.removeItem("yaninaAdminSession");window.location.href="login.html";throw new Error("ADMIN_AUTH_REQUIRED");}
+    const originalFetch=window.fetch.bind(window);
+    window.fetch=(input,init={})=>{const url=typeof input==="string"?input:input?.url||"";if(String(url).startsWith(API_BASE)&&adminSessionData.token){const headers=new Headers(init.headers||{});headers.set("Authorization",`Bearer ${adminSessionData.token}`);return originalFetch(input,{...init,headers});}return originalFetch(input,init);};'''
+
+          gestion = Path('admin/gestion-administrativa.html')
+          text = gestion.read_text(encoding='utf-8')
+          if 'const adminSessionData=JSON.parse(localStorage.getItem("yaninaAdminSession")||"{}");' not in text:
+              text = text.replace('const API_BASE="https://yanina-trainer-api.mberchillc.workers.dev";', auth_block, 1)
+          new_count = 'function normalizeStatus(status){return String(status||"scheduled").toLowerCase()}function isChargeableClass(c){if(!c)return false;const status=normalizeStatus(c.status);return Boolean(String(c.class_date||"").trim())&&status!=="cancelled"}function monthClasses(){const{st,en}=bounds();return selectedClasses.filter(c=>{const d=pdate(c.class_date);return d&&d>=st&&d<=en&&isChargeableClass(c)})}'
+          text = re.sub(r'function normalizeStatus\(status\).*?function monthClasses\(\)\{.*?\}\r?\n    function uniqueMonthDates', new_count + '\n    function uniqueMonthDates', text, count=1, flags=re.S)
+          old_load = re.search(r'async function loadStudents\(\)\{.*?\}\r?\n    async function loadClasses', text, flags=re.S)
+          if old_load:
+              new_load = '''async function loadStudents(){const r=await fetch(`${API_BASE}/api/students?cache=${Date.now()}`);if(!r.ok)throw new Error("No se pudieron cargar las alumnas");students=await r.json();students=Array.isArray(students)?students:[];studentSelect.innerHTML=`<option value="">Seleccionar alumna</option>`+students.filter(s=>sid(s)).map(s=>`<option value="${esc(sid(s))}">${esc(sname(s))}</option>`).join("");const pre=new URLSearchParams(location.search).get("studentId");if(pre){const exists=students.some(s=>String(sid(s))===String(pre));if(exists){studentSelect.value=pre;try{await loadClasses(pre)}catch(e){console.error(e);selectedStudent=students.find(s=>String(sid(s))===String(pre))||null;selectedClasses=[];update();statusNote.textContent=e.message||"No se pudo cargar el calendario de esta alumna.";}}else{statusNote.textContent="La alumna seleccionada no aparece en la lista actual.";}}}
+    async function loadClasses'''
+              text = text[:old_load.start()] + new_load + text[old_load.end():]
+          write_if_changed(gestion, text)
+
+          preview = Path('admin/gestion-preview.html')
+          text = preview.read_text(encoding='utf-8')
+          if 'const adminSessionData=JSON.parse(localStorage.getItem("yaninaAdminSession")||"{}");' not in text:
+              text = text.replace('const API_BASE="https://yanina-trainer-api.mberchillc.workers.dev",studentSelect=', auth_block + '\n    const studentSelect=', 1)
+          write_if_changed(preview, text)
+
+          starfit = Path('admin/mediciones-starfit.html')
+          text = starfit.read_text(encoding='utf-8')
+          if 'const adminSessionData=JSON.parse(localStorage.getItem(\'yaninaAdminSession\')||\'{}\');' not in text:
+              text = text.replace("const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';", "const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';\n    const adminSessionData=JSON.parse(localStorage.getItem('yaninaAdminSession')||'{}');\n    if(!adminSessionData.token){localStorage.removeItem('yaninaAdminSession');window.location.href='login.html';throw new Error('ADMIN_AUTH_REQUIRED');}\n    const originalFetch=window.fetch.bind(window);\n    window.fetch=(input,init={})=>{const url=typeof input==='string'?input:input?.url||'';if(String(url).startsWith(API_BASE)&&adminSessionData.token){const headers=new Headers(init.headers||{});headers.set('Authorization',`Bearer ${adminSessionData.token}`);return originalFetch(input,{...init,headers});}return originalFetch(input,init);};", 1)
+          text = text.replace("const params=new URLSearchParams(window.location.search);const studentId=params.get('studentId')||'';", "const params=new URLSearchParams(window.location.search);const studentId=params.get('studentId')||params.get('id')||params.get('student_id')||'';")
+          robust_date = "function normalizeDateInput(value){const raw=String(value||'').trim();if(!raw)return'';let text=raw.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();text=text.replace(/hora\\s+de\\s+la\\s+prueba:?/g,'').replace(/fecha\\s+(de\\s+)?medicion:?/g,'').replace(/,/g,' ').replace(/\\s+/g,' ').replace(/\\.+$/,'').trim();const months={ene:1,enero:1,jan:1,january:1,feb:2,febrero:2,february:2,mar:3,marzo:3,march:3,abr:4,abril:4,apr:4,april:4,may:5,mayo:5,jun:6,junio:6,june:6,jul:7,julio:7,july:7,ago:8,agosto:8,aug:8,august:8,sep:9,set:9,sept:9,septiembre:9,september:9,oct:10,octubre:10,october:10,nov:11,noviembre:11,november:11,dic:12,diciembre:12,dec:12,december:12};let m=text.match(/^(\\d{4})[-\\/\\.](\\d{1,2})[-\\/\\.](\\d{1,2})$/);if(m)return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;m=text.match(/^([a-z]+)\\.?\\s+(\\d{1,2})\\s+(\\d{2,4})$/);if(m&&months[m[1]]){let y=Number(m[3]);if(y<100)y+=2000;return `${y}-${String(months[m[1]]).padStart(2,'0')}-${String(m[2]).padStart(2,'0')}`;}m=text.match(/^(\\d{1,2})\\s+([a-z]+)\\.?\\s+(\\d{2,4})$/);if(m&&months[m[2]]){let y=Number(m[3]);if(y<100)y+=2000;return `${y}-${String(months[m[2]]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;}m=text.match(/^(\\d{1,2})[-\\/\\.](\\d{1,2})[-\\/\\.](\\d{2,4})$/);if(m){let a=Number(m[1]),b=Number(m[2]),y=Number(m[3]);if(y<100)y+=2000;let day=a,month=b;if(a<=12&&b>12){month=a;day=b}return `${y}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;}return'';}"
+          text = re.sub(r"function normalizeDateInput\(value\)\{.*?\}\r?\n    function setDateConfirmed", robust_date + "\n    function setDateConfirmed", text, count=1, flags=re.S)
+          old_fill = re.search(r"function fillFromPayload\(payload\)\{.*?\}\r?\n    document\.querySelectorAll", text, flags=re.S)
+          if old_fill:
+              new_fill = "function firstFilled(...values){for(const value of values){if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return''}\n    function fillInputWhenPresent(id,value){const next=String(value||'').trim();if(next&&$(id))$(id).value=next;}\n    function fillFromPayload(payload){let data=payload||{};if(payload&&payload.ai_raw_response){if(typeof payload.ai_raw_response==='object'){data={...payload,...payload.ai_raw_response};}else if(typeof payload.ai_raw_response==='string'){try{const parsed=JSON.parse(payload.ai_raw_response);data={...payload,...parsed};}catch(_){data=payload;}}}const extractedDate=normalizeDateInput(firstFilled(data.measured_date_iso,data.measured_at,data.measuredAt,data.measurement_date,data.date,data.fecha_medicion,data.fecha));if(extractedDate){$('measuredAt').value=extractedDate;setDateConfirmed(false);}fillInputWhenPresent('weight',firstFilled(data.weight_kg,data.weight));fillInputWhenPresent('bmi',data.bmi);fillInputWhenPresent('fat',firstFilled(data.body_fat_percent,data.fat));fillInputWhenPresent('skeletal',firstFilled(data.skeletal_muscle_kg,data.skeletal));fillInputWhenPresent('visceral',firstFilled(data.visceral_fat,data.visceral));fillInputWhenPresent('score',firstFilled(data.body_score,data.score));fillInputWhenPresent('goal',firstFilled(data.starfit_goal_kg,data.goal));fillInputWhenPresent('trainerNote',firstFilled(data.trainer_note,data.trainerNote));extractedImageUrl=firstFilled(payload.source_image_url,data.source_image_url,payload.image_url,data.image_url,extractedImageUrl);$('dataState').textContent='Extraído · revisar / carga manual habilitada';$('dataState').classList.remove('pill-warn');render();}\n    document.querySelectorAll"
+              text = text[:old_fill.start()] + new_fill + text[old_fill.end():]
+          write_if_changed(starfit, text)
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No changes"
+          else
+            git add admin/gestion-administrativa.html admin/gestion-preview.html admin/mediciones-starfit.html
+            git commit -m "Fix Starfit measurement dates and gestion class loading"
+            git push
+          fi
