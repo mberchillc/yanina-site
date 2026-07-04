@@ -42,7 +42,11 @@
     let selectedId = null;
     const $ = id => document.getElementById(id);
     const escapeHtml = value => String(value || '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
-    const assetPath = path => !path ? '' : String(path).startsWith('../') ? path : `../${path}`;
+    const assetPath = path => {
+      if(!path) return '';
+      const raw = String(path);
+      return raw.startsWith('../') || raw.startsWith('data:') || raw.startsWith('http') ? raw : `../${raw}`;
+    };
     const withCache = path => `${path}?v=full-4`;
     const exerciseImageCandidates = {
       'sentadilla-libre-barra': ['sentadilla-libre-barra'],
@@ -86,7 +90,11 @@
       'giros-rusos': ['giros-rusos'],
       'plancha-spiderman': ['plancha-spiderman']
     };
-    const candidatePaths = id => (exerciseImageCandidates[id] || [id]).map(name => withCache(`assets/exercises/${name}.png`));
+    const candidatePaths = item => {
+      if(item && item.visual_image) return [item.visual_image];
+      const id = item && item.id ? item.id : item;
+      return (exerciseImageCandidates[id] || [id]).map(name => withCache(`assets/exercises/${name}.png`));
+    };
     const stepImage = (exercise, step) => step.image;
     const handleImageError = image => {
       const candidates = JSON.parse(image.dataset.candidates || '[]');
@@ -97,7 +105,7 @@
       }
     };
     const renderVisual = item => {
-      const fullImages = candidatePaths(item.id);
+      const fullImages = candidatePaths(item);
       if(fullImages.length){
         return `<div class="full-exercise-card"><img src="${escapeHtml(assetPath(fullImages[0]))}" data-candidates='${escapeHtml(JSON.stringify(fullImages))}' data-next-index="1" onerror="handleImageError(this)" alt="${escapeHtml(item.name)}"></div>`;
       }
