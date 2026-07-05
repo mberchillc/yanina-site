@@ -73,7 +73,7 @@ def build_entry(raw):
         "default_sets": sets,
         "default_reps": reps,
         "default_load": load,
-        "visual_image": visual_data_uri(name, steps),
+        "visual_image": f"assets/exercises/{ex_id}.png?v=exercise-pro-1",
         "steps": [
             {"title": title, "text": text, "image": f"assets/icono-ejercicio-{index + 1}.png?v=icons-2"}
             for index, (title, text) in enumerate(steps)
