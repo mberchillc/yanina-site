@@ -1,0 +1,31 @@
+name: Patch professional exercise assets
+
+on:
+  push:
+    paths:
+      - 'scripts/patch_exercise_pro_assets.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Patch professional exercise assets
+        run: python scripts/patch_exercise_pro_assets.py
+      - name: Commit patch
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add exercises.json admin/biblioteca-ejercicios.html scripts/generate_exercise_library.py assets/exercises/*.png
+          git commit -m "Replace exercise placeholder graphics"
+          git push
