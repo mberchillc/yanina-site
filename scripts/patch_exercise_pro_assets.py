@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 PREVIEW_BASE = "https://845cbdc1.yanina-site.pages.dev"
@@ -22,10 +22,15 @@ IDS = [
     "jumping-jacks",
     "escaladores",
 ]
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (compatible; YaninaExercisePatch/1.0)",
+    "Accept": "*/*",
+}
 
 
 def download(path):
-    with urlopen(f"{PREVIEW_BASE}/{path}", timeout=90) as response:
+    req = Request(f"{PREVIEW_BASE}/{path}", headers=HEADERS)
+    with urlopen(req, timeout=90) as response:
         if response.status != 200:
             raise RuntimeError(f"{path} returned {response.status}")
         return response.read()
@@ -67,4 +72,4 @@ if generator_path.exists():
 
 print("patched professional exercise assets", len(IDS))
 
-# Triggered after workflow creation.
+# Triggered with browser-style downloader headers.
