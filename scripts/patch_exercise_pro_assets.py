@@ -66,3 +66,5 @@ if generator_path.exists():
     generator_path.write_text(generator, encoding="utf-8")
 
 print("patched professional exercise assets", len(IDS))
+
+# Triggered after workflow creation.
