@@ -4074,3 +4074,53 @@ async function renderAdminClassVideos(classId) {
           window.location.replace(studentTrainingUrl(targetClassId, targetSection));
           return;
         }
+        if (IS_TRAINING_PAGE && isNewStudent) {
+          window.location.replace("alumno.html?new=1");
+          return;
+        }
+
+        updateStarfitLinks();
+        updateGestionAdministrativaLink();
+        updateStarfitHistoryLink();
+        updateStudentNavigationLinks();
+        updateStudentIdentity();
+        updateTrainingSelectionState();
+        refreshNotificationBell();
+        if (IS_TRAINING_PAGE) bindCalendarDraftInputs();
+        await loadExerciseLibrary();
+
+        if (isNewStudent) {
+          resetForNewStudent();
+          updateStudentNavigationLinks();
+          return;
+        }
+
+        await loadStudentFromBackend();
+        if (!IS_TRAINING_PAGE) await loadMeasurementsFromBackend();
+        await loadClassesFromBackend();
+        updateStarfitLinks();
+        updateGestionAdministrativaLink();
+        updateStarfitHistoryLink();
+        updateStudentNavigationLinks();
+      } catch (error) {
+        console.error(error);
+        if (saveMessage) {
+          saveMessage.style.display = "block";
+          saveMessage.textContent = "No se pudo cargar esta ficha. Volvé al panel y probá nuevamente.";
+        }
+      }
+    }
+
+    const backToTopBtn = document.getElementById("backToTopBtn");
+if (backToTopBtn) {
+  backToTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+    document.getElementById("saveAdminClassCommentBtn")?.addEventListener("click", saveAdminClassComment);
+
+    initializeStudentPage();
+  </script>
+</body>
+</html>
