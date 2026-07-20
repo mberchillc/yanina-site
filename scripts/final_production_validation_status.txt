@@ -1,0 +1,9 @@
+result=PASS
+source_commit=8694c8f425a46bd398ffbc6dfb3d2dc87732f303
+profile_url=https://yaninatrainer.net/admin/alumno.html
+profile_sha256=321e7f1754a5c56d00ab0db637adaa4a1a8d0fc13a70a7ec6b5d3e2c64fd1d98
+training_url=https://yaninatrainer.net/admin/entrenamiento.html
+training_sha256=90e8450f0d158dd11cb1b8dc3292cbf47ac1cc357096edf28d923a8aeabbd632
+verified_at=2026-07-20T21:59:50Z
+attempt=1 profile_http=200 profile_sha256=321e7f1754a5c56d00ab0db637adaa4a1a8d0fc13a70a7ec6b5d3e2c64fd1d98 training_http=200 training_sha256=90e8450f0d158dd11cb1b8dc3292cbf47ac1cc357096edf28d923a8aeabbd632
+verified_attempt=1
