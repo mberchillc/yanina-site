@@ -7,6 +7,7 @@ on:
       - 'scripts/patch_appointments_training.py'
       - 'scripts/patch_appointments_training_followup.py'
       - 'scripts/patch_appointments_training_final.py'
+      - 'scripts/patch_appointment_time_dot_format.py'
       - 'scripts/trigger_appointments_training.txt'
   workflow_dispatch:
 
@@ -26,12 +27,14 @@ jobs:
           python -m py_compile scripts/patch_appointments_training.py
           python -m py_compile scripts/patch_appointments_training_followup.py
           python -m py_compile scripts/patch_appointments_training_final.py
+          python -m py_compile scripts/patch_appointment_time_dot_format.py
 
       - name: Patch appointment calendar and training page
         run: |
           python scripts/patch_appointments_training.py
           python scripts/patch_appointments_training_followup.py
           python scripts/patch_appointments_training_final.py
+          python scripts/patch_appointment_time_dot_format.py
 
       - name: Validate generated pages
         run: |
@@ -46,9 +49,10 @@ jobs:
               'YANINA_APPOINTMENT_MODAL_V2',
               'YANINA_APPOINTMENT_TRAINING_FOLLOWUP_V3',
               'YANINA_APPOINTMENT_TRAINING_FINAL_V4',
+              'YANINA_APPOINTMENT_TIME_DOT_V5',
               'id="appointmentModal"',
               'id="appointmentDateInput" type="date" readonly',
-              'id="appointmentTimeInput" type="time"',
+              'id="appointmentTimeInput" type="text" inputmode="numeric"',
               'id="appointmentCommentsInput"',
               'id="appointmentSaveBtn">Guardar',
               'id="appointmentEditBtn">Editar',
@@ -57,6 +61,8 @@ jobs:
               'let firstMonth = addMonths(base, -60);',
               'Primero guardá la ficha del alumno para crear una cita.',
               'const returnedClass = responseData?.class || responseData?.appointment || responseData;',
+              'function normalizeAppointmentTime(value)',
+              'formatAppointmentTime(appointment.class_time || "")',
           ]
           required_training = [
               'YANINA_TRAINING_PAGE_V2',
@@ -120,5 +126,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add admin/alumno.html admin/entrenamiento.html scripts/appointment_validation_status.txt
-          git commit -m "Finalize appointment and training safeguards"
+          git commit -m "Apply strict hh.mm appointment time format"
           git push
