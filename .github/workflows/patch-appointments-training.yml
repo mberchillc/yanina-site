@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/patch-appointments-training.yml
       - scripts/patch_appointments_training.py
+      - scripts/patch_appointments_training_followup.py
   workflow_dispatch:
 
 permissions:
@@ -19,7 +20,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Patch pages
-        run: python scripts/patch_appointments_training.py
+        run: |
+          python scripts/patch_appointments_training.py
+          python scripts/patch_appointments_training_followup.py
 
       - name: Validate inline JavaScript
         run: |
@@ -39,14 +42,20 @@ jobs:
           node --check /tmp/alumno.js
           node --check /tmp/entrenamiento.js
 
-      - name: Validate required UI
+      - name: Validate required UI and behavior markers
         run: |
           grep -q 'id="appointmentModal"' admin/alumno.html
           grep -q 'id="appointmentSaveBtn">Guardar' admin/alumno.html
           grep -q 'id="appointmentEditBtn">Editar' admin/alumno.html
           grep -q 'id="appointmentDeleteBtn"' admin/alumno.html
+          grep -q 'id="appointmentDateInput" type="date" readonly' admin/alumno.html
+          grep -q 'id="appointmentTimeInput" type="time"' admin/alumno.html
+          grep -q 'id="createTrainingPlanBtn"' admin/alumno.html
+          ! grep -q 'id="saveClassBtn"' admin/alumno.html
           grep -q '<body class="training-page">' admin/entrenamiento.html
           grep -q 'Guardar clase y rutina' admin/entrenamiento.html
+          grep -q 'calendarStartDate = startOfMonth(selectedDate)' admin/entrenamiento.html
+          grep -q 'const classChanged = Boolean' admin/entrenamiento.html
 
       - name: Commit generated pages
         run: |
@@ -56,6 +65,6 @@ jobs:
             echo "No changes"
           else
             git add admin/alumno.html admin/entrenamiento.html
-            git commit -m "Separate appointment calendar from training"
+            git commit -m "Refine appointment and historical training flow"
             git push
           fi
