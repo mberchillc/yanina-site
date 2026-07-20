@@ -461,7 +461,7 @@
 
   <div class="actions">
     <button class="btn btn-primary" onclick="window.print()">Guardar como PDF</button>
-    <a class="btn btn-secondary" href="alumno.html#plan">Volver a la ficha</a>
+    <a class="btn btn-secondary" href="entrenamiento.html">Volver al entrenamiento</a>
   </div>
 
 <script>
@@ -593,7 +593,7 @@ function formatClassStatus(status) {
 
       const backLink = document.querySelector(".actions a");
       if (backLink) {
-        backLink.href = `alumno.html?id=${studentId}#plan`;
+        backLink.href = `entrenamiento.html?id=${encodeURIComponent(studentId)}&classId=${encodeURIComponent(classId)}`;
       }
     } catch (error) {
       console.error("No se pudo cargar el PDF desde backend", error);

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ficha del Alumno | Yanina Trainer</title>
+  <title>Entrenamiento | Yanina Trainer</title>
   <style>
     :root {
       --green-dark: #183f35;
@@ -1310,7 +1310,7 @@
   </style>
 </head>
 
-<body class="student-profile-page">
+<body class="training-page no-training-selection">
   <main class="admin-shell">
 
     <header class="topbar">
@@ -1318,7 +1318,7 @@
         <img src="../assets/logo-transp.png" alt="Yanina Trainer" />
         <div class="brand-text">
           <strong>Admin Trainer</strong>
-          <small>Ficha del alumno</small>
+          <small>Entrenamiento</small>
         </div>
       </div>
 
@@ -1332,9 +1332,9 @@
 
     <section class="page-header">
       <div class="eyebrow">Plataforma Yanina Trainer</div>
-      <h1>Ficha del alumno</h1>
+      <h1>Entrenamiento</h1>
       <p class="subtitle">
-        Gestioná los datos, el calendario y el plan de entrenamiento de cada alumno desde acá.
+        Seleccioná una fecha verde para preparar o revisar la rutina, observaciones, comentarios y videos de esa clase.
       </p>
     </section>
 
@@ -1347,9 +1347,9 @@
         </div>
       </div>
 
-      <a href="#datos" class="student-tab active" id="profileTabLink" data-student-page="profile">Datos del alumno</a>
+      <a href="#datos" class="student-tab" id="profileTabLink" data-student-page="profile">Datos del alumno</a>
       <a href="#calendario-mensual" class="student-tab" id="calendarTabLink" data-student-page="calendar">Calendario de clases</a>
-      <a href="entrenamiento.html" class="student-tab" id="trainingTabLink" data-student-page="training">Entrenamiento</a>
+      <a href="entrenamiento.html" class="student-tab active" id="trainingTabLink" data-student-page="training">Entrenamiento</a>
       <a href="#mediciones" class="student-tab" id="measurementsTabLink" data-student-page="measurements">Hist. Mediciones</a>
       <button type="button" class="student-tab student-tab-arrow" id="backToTopBtn" aria-label="Volver arriba">↑</button>
     </nav>
@@ -1445,7 +1445,7 @@
             <button type="button" class="btn btn-form-primary" id="saveStudentBtn">Guardar datos</button>
             <a href="entrenamiento.html" class="btn btn-form-secondary" id="createTrainingLink">Crear plan de entrenamiento</a>
             <a class="btn btn-form-secondary" id="starfitMeasurementsBtn" href="mediciones-starfit.html">Cargar medición Starfit</a>
-            <a class="btn btn-primary" id="openTrainingLink" href="entrenamiento.html">Abrir entrenamiento</a>
+            <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">Descargar rutina PDF</a>
             <span class="status-pill" id="studentUserBadge">Usuario: —</span>
             <span class="status-pill pending" id="studentSetupCodeBadge">Codigo: —</span>
           </div>
@@ -1485,7 +1485,7 @@
         <div class="card-header">
           <div>
             <div class="card-title">Próximas clases</div>
-            <p class="card-subtitle">Turnos guardados para el alumno. Desde cada cita podés editar la agenda o abrir su entrenamiento.</p>
+            <p class="card-subtitle">Lista real de clases del alumno. Editar clase selecciona la clase y baja al entrenamiento.</p>
           </div>
           <button type="button" class="btn btn-form-primary profile-only" id="addClassBtn">+ Agregar clase</button>
         </div>
@@ -1506,8 +1506,8 @@
         <section class="plan-timeline" id="calendario-mensual">
           <div class="plan-timeline-header">
             <div>
-              <h3>Calendario de clases</h3>
-              <p>Seleccioná cualquier fecha para crear, revisar, editar o eliminar una cita. Las fechas guardadas se muestran en verde claro.</p>
+              <h3>Clases guardadas</h3>
+              <p>Las fechas verdes tienen una cita guardada. Seleccioná una para cargar toda la clase y su rutina; podés navegar también por meses anteriores.</p>
             </div>
           </div>
 
@@ -1529,7 +1529,7 @@
         </section>
 
         <section class="selected-class-panel training-only" id="clase-seleccionada">
-          <h3>Clase seleccionada</h3>
+          <h3>Clase y rutina seleccionada</h3>
           <div class="empty-state" id="trainingNoAppointmentState">
             Primero guardá una cita en el Calendario de clases. Después seleccioná una fecha verde para preparar o revisar su entrenamiento.
           </div>
@@ -1559,6 +1559,7 @@
 
             <div class="bottom-actions">
               <button type="button" class="delete-class-btn" id="deleteSelectedClassBtn" title="Eliminar clase" aria-label="Eliminar clase">E</button>
+              <a class="btn btn-form-secondary" id="editSelectedAppointmentLink" href="alumno.html#calendario-mensual">Editar turno</a>
               <button type="button" class="btn btn-form-secondary" id="markCompletedBtn">Marcar realizada</button>
             </div>
           </div>
@@ -1738,7 +1739,6 @@
       const trainingTabLink = document.getElementById("trainingTabLink");
       const measurementsTabLink = document.getElementById("measurementsTabLink");
       const createTrainingLink = document.getElementById("createTrainingLink");
-      const openTrainingLink = document.getElementById("openTrainingLink");
       const openTrainingBtn = document.getElementById("openTrainingBtn");
       const trainingCalendarBackLink = document.getElementById("trainingCalendarBackLink");
 
@@ -1747,7 +1747,7 @@
       if (measurementsTabLink) measurementsTabLink.href = IS_TRAINING_PAGE ? studentProfileUrl("mediciones") : "#mediciones";
       if (trainingCalendarBackLink) trainingCalendarBackLink.href = studentProfileUrl("calendario-mensual");
 
-      [trainingTabLink, createTrainingLink, openTrainingLink, openTrainingBtn].filter(Boolean).forEach(link => {
+      [trainingTabLink, createTrainingLink, openTrainingBtn].filter(Boolean).forEach(link => {
         link.href = studentTrainingUrl();
         link.style.pointerEvents = studentId ? "auto" : "none";
         link.style.opacity = studentId ? "1" : ".5";
@@ -2318,32 +2318,26 @@ async function loadMeasurementsFromBackend() {
       if (!calendarMonthSelect) return;
 
       const currentValue = monthKey(calendarStartDate);
-      const todayMonth = startOfMonth(startOfToday());
-      const storedMonths = allClasses
+      const base = startOfMonth(startOfToday());
+      const savedDates = allClasses
         .filter(isMeaningfulClass)
         .map(item => parseISODate(item.class_date))
         .filter(Boolean)
-        .map(startOfMonth)
-        .sort((a, b) => a - b);
+        .map(startOfMonth);
 
-      let firstMonth = addMonths(todayMonth, -12);
-      let lastMonth = addMonths(todayMonth, 24);
-
-      if (storedMonths.length) {
-        const earliestStored = addMonths(storedMonths[0], -1);
-        const latestStored = addMonths(storedMonths[storedMonths.length - 1], 12);
-        if (earliestStored < firstMonth) firstMonth = earliestStored;
-        if (latestStored > lastMonth) lastMonth = latestStored;
-      }
-
-      if (calendarStartDate < firstMonth) firstMonth = startOfMonth(calendarStartDate);
-      if (calendarStartDate > lastMonth) lastMonth = startOfMonth(calendarStartDate);
+      let rangeStart = addMonths(base, -36);
+      let rangeEnd = addMonths(base, 12);
+      savedDates.forEach(date => {
+        if (date < rangeStart) rangeStart = date;
+        if (date > rangeEnd) rangeEnd = date;
+      });
+      if (calendarStartDate < rangeStart) rangeStart = startOfMonth(calendarStartDate);
+      if (calendarStartDate > rangeEnd) rangeEnd = startOfMonth(calendarStartDate);
 
       const options = [];
-      let cursor = startOfMonth(firstMonth);
+      let cursor = startOfMonth(rangeStart);
       let guard = 0;
-
-      while (cursor <= lastMonth && guard < 600) {
+      while (cursor <= rangeEnd && guard < 1200) {
         const value = monthKey(cursor);
         const label = cursor.toLocaleDateString("es-AR", { month: "long", year: "numeric" });
         options.push(`<option value="${value}" ${value === currentValue ? "selected" : ""}>${label}</option>`);
@@ -2672,32 +2666,44 @@ return {
 
       const data = await response.json();
       allClasses = Array.isArray(data) ? data : [];
-      allClasses.sort((a, b) => String(a.class_date || "").localeCompare(String(b.class_date || "")) || String(a.class_time || "").localeCompare(String(b.class_time || "")));
+      sortClassesInMemory();
 
-      const requestedClass = targetClassId
-        ? allClasses.find(item => String(item.id) === String(targetClassId) && isMeaningfulClass(item))
-        : null;
-      const requestedAppointment = targetAppointmentId
-        ? allClasses.find(item => String(item.id) === String(targetAppointmentId) && isMeaningfulClass(item))
-        : null;
-
-      if (requestedClass) {
-        window.location.replace(studentTrainingUrl(requestedClass.id, targetSection));
+      if (!IS_TRAINING_PAGE) {
+        selectedClass = null;
+        activeBackendClassId = null;
+        updateTrainingSelectionState();
+        renderCalendarAndClasses();
         return allClasses;
       }
 
-      if (requestedAppointment) {
-        const appointmentDate = parseISODate(requestedAppointment.class_date);
-        if (appointmentDate) calendarStartDate = startOfMonth(appointmentDate);
-      }
+      const meaningfulClasses = allClasses.filter(isMeaningfulClass);
+      const currentSelection = activeBackendClassId
+        ? meaningfulClasses.find(item => String(item.id) === String(activeBackendClassId))
+        : null;
+      const requestedClass = targetClassId
+        ? meaningfulClasses.find(item => String(item.id) === String(targetClassId))
+        : null;
+      const todayKey = toISODate(startOfToday());
+      const upcomingClass = meaningfulClasses.find(item => String(item.class_date || "") >= todayKey);
+      const latestHistoricalClass = meaningfulClasses.length ? meaningfulClasses[meaningfulClasses.length - 1] : null;
+      const classToOpen = currentSelection || requestedClass || upcomingClass || latestHistoricalClass;
 
-      renderCalendarAndClasses();
+      if (classToOpen) {
+        const selectedDate = parseISODate(classToOpen.class_date);
+        if (selectedDate) calendarStartDate = startOfMonth(selectedDate);
+        await selectClass(classToOpen.id, false);
 
-      if (requestedAppointment) {
-        requestAnimationFrame(() => {
-          document.getElementById("calendario-mensual")?.scrollIntoView({ behavior: "smooth", block: "start" });
-          openAppointmentModal(requestedAppointment.class_date, requestedAppointment.id);
-        });
+        if (requestedClass) {
+          const target = targetSection === "videos"
+            ? document.getElementById("classVideosAdmin")
+            : targetSection === "comments"
+              ? document.getElementById("classCommentsAdmin")
+              : document.getElementById("clase-seleccionada");
+          requestAnimationFrame(() => target?.scrollIntoView({ behavior: "smooth", block: "start" }));
+        }
+      } else {
+        clearSelectedTrainingClass();
+        renderCalendarAndClasses();
       }
 
       return allClasses;
@@ -2847,13 +2853,16 @@ return {
       const todayKey = toISODate(startOfToday());
       const visibleClasses = allClasses
         .filter(item => isMeaningfulClass(item) && String(item.class_date || "") >= todayKey)
-        .sort((a, b) => String(a.class_date || "").localeCompare(String(b.class_date || "")) || String(a.class_time || "").localeCompare(String(b.class_time || "")))
-        .slice(0, 6);
+        .sort((a, b) =>
+          String(a.class_date || "").localeCompare(String(b.class_date || "")) ||
+          String(a.class_time || "").localeCompare(String(b.class_time || ""))
+        )
+        .slice(0, 4);
 
       if (!visibleClasses.length) {
         classList.innerHTML = `
           <div class="empty-state">
-            Todavía no hay próximas clases agendadas. Usá <strong>+ Agregar clase</strong> o tocá una fecha vacía del calendario.
+            Todavía no hay próximas clases cargadas para este alumno. Usá <strong>+ Agregar clase</strong> o seleccioná una fecha del calendario.
           </div>
         `;
         return;
@@ -2861,6 +2870,8 @@ return {
 
       classList.innerHTML = visibleClasses.map(item => {
         const label = formatDateShort(item.class_date);
+        const state = getClassState(item);
+
         return `
           <article class="class-item">
             <div class="class-date">
@@ -2870,34 +2881,48 @@ return {
 
             <div class="class-info">
               <div class="class-topline">
-                <strong>${escapeHtml(formatAppointmentTime(item.class_time) || "Sin hora")}</strong>
-                <span class="status-pill">Clase agendada</span>
+                <strong>${escapeHtml(formatAppointmentTime(item.class_time) || "Sin hora")} · ${escapeHtml(item.routine_type || "Clase")}</strong>
+                <span class="status-pill ${state.className}">${state.label}</span>
               </div>
 
               <p><strong>Comentarios:</strong> ${escapeHtml(item.planning_criteria || "Sin comentarios.")}</p>
               <p><strong>Fecha:</strong> ${escapeHtml(formatDateReadable(item.class_date))}</p>
 
               <div class="class-actions">
-                <button type="button" class="btn btn-form-secondary" data-action="edit-appointment" data-id="${item.id}">Editar turno</button>
-                <a class="btn btn-form-secondary" href="entrenamiento.html?id=${encodeURIComponent(studentId || "")}&classId=${encodeURIComponent(item.id)}">Entrenamiento</a>
-                <button type="button" class="delete-class-btn" data-action="delete-appointment" data-id="${item.id}" title="Eliminar clase" aria-label="Eliminar clase">E</button>
+                <button type="button" class="btn btn-form-secondary" data-action="edit-appointment" data-id="${escapeHtml(item.id)}" data-date="${escapeHtml(item.class_date)}">Editar cita</button>
+                <button type="button" class="btn btn-form-primary" data-action="open-training" data-id="${escapeHtml(item.id)}">Entrenamiento</button>
+                ${state.canComplete ? `<button type="button" class="btn btn-form-secondary" data-action="complete-class" data-id="${escapeHtml(item.id)}">Marcar realizada</button>` : ""}
+                ${state.canOther ? `<button type="button" class="btn btn-form-secondary" data-action="other-class" data-id="${escapeHtml(item.id)}">Otro</button>` : ""}
+                <button type="button" class="btn btn-form-secondary" data-action="delete-class" data-id="${escapeHtml(item.id)}">Eliminar</button>
+                ${state.canPdf ? `<a class="btn btn-primary" href="rutina-pdf.html?classId=${encodeURIComponent(item.id)}" target="_blank">Descargar rutina PDF</a>` : ""}
               </div>
             </div>
           </article>
         `;
       }).join("");
 
-      classList.querySelectorAll("[data-action='edit-appointment']").forEach(button => {
-        button.addEventListener("click", () => {
-          const item = allClasses.find(entry => String(entry.id) === String(button.dataset.id));
-          if (item?.class_date) openAppointmentModal(item.class_date, item.id);
+      classList.querySelectorAll("[data-action='edit-appointment']").forEach(btn => {
+        btn.addEventListener("click", () => openAppointmentModal(btn.dataset.date, btn.dataset.id));
+      });
+
+      classList.querySelectorAll("[data-action='open-training']").forEach(btn => {
+        btn.addEventListener("click", () => {
+          window.location.href = studentTrainingUrl(btn.dataset.id);
         });
       });
 
-      classList.querySelectorAll("[data-action='delete-appointment']").forEach(button => {
-        button.addEventListener("click", async () => {
+      classList.querySelectorAll("[data-action='complete-class']").forEach(btn => {
+        btn.addEventListener("click", () => markClassCompleted(btn.dataset.id));
+      });
+
+      classList.querySelectorAll("[data-action='other-class']").forEach(btn => {
+        btn.addEventListener("click", () => handleOtherClass(btn.dataset.id));
+      });
+
+      classList.querySelectorAll("[data-action='delete-class']").forEach(btn => {
+        btn.addEventListener("click", async () => {
           try {
-            await deleteClass(button.dataset.id);
+            await deleteClass(btn.dataset.id);
           } catch (error) {
             console.error(error);
             alert(error.message || "No se pudo eliminar la clase.");
@@ -2947,6 +2972,10 @@ return {
       document.getElementById("classRoutineInput").value = found.routine_type || "";
       document.getElementById("classCriteriaInput").value = found.planning_criteria || "";
       updateTrainingSelectionState();
+      const editSelectedAppointmentLink = document.getElementById("editSelectedAppointmentLink");
+      if (editSelectedAppointmentLink) {
+        editSelectedAppointmentLink.href = studentProfileUrl("calendario-mensual", { appointmentId: found.id });
+      }
 
       renderTimeline();
       await loadRoutineFromBackend(activeBackendClassId);
@@ -3184,26 +3213,31 @@ async function createClassForStudent(dateKey = toISODate(startOfToday())) {
 }
     async function saveSelectedClass(statusOverride) {
       if (!selectedClass || !activeBackendClassId) {
-        alert("Seleccioná o agregá una clase primero.");
-        return null;
+        throw new Error("Seleccioná una clase guardada primero.");
       }
 
       const payload = selectedClassPayload(statusOverride);
-
-      const response = await fetch(`${API_BASE}/api/classes/${activeBackendClassId}`, {
+      const response = await fetch(`${API_BASE}/api/classes/${encodeURIComponent(activeBackendClassId)}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
 
-      if (!response.ok) throw new Error("No se pudo guardar la clase");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "No se pudo guardar la clase.");
+      }
 
-      const updated = await response.json();
-      allClasses = allClasses.map(item => Number(item.id) === Number(updated.id) ? updated : item);
-      selectedClass = updated;
-
+      const responseData = await response.json();
+      const updated = responseData.class || responseData;
+      const normalizedUpdated = { ...selectedClass, ...payload, ...updated };
+      allClasses = allClasses.map(item => String(item.id) === String(activeBackendClassId) ? normalizedUpdated : item);
+      selectedClass = normalizedUpdated;
+      activeBackendClassId = String(normalizedUpdated.id || activeBackendClassId);
+      dirtyClassIds.delete(activeBackendClassId);
+      sortClassesInMemory();
       renderCalendarAndClasses();
-      return updated;
+      return normalizedUpdated;
     }
 
     async function deleteClass(classId) {
@@ -3322,6 +3356,7 @@ async function createClassForStudent(dateKey = toISODate(startOfToday())) {
     function currentRoutineSnapshot() {
       return {
         routine_type: String(document.getElementById("classRoutineInput")?.value || "").trim(),
+        planning_criteria: String(document.getElementById("classCriteriaInput")?.value || "").trim(),
         technical_notes: String(document.getElementById("notas-rutina")?.value || "").trim(),
         exercises: collectExercises().map(item => ({
           exercise_name: item.exercise_name,
@@ -3337,10 +3372,11 @@ async function createClassForStudent(dateKey = toISODate(startOfToday())) {
     }
 
     function historicalChangeMap() {
-      const map = { routine_type: false, technical_notes: false, exercises: new Map() };
+      const map = { routine_type: false, planning_criteria: false, technical_notes: false, exercises: new Map() };
       historicalRoutineEdits.forEach(edit => {
         const changes = edit?.changes || {};
         if (changes.routine_type) map.routine_type = true;
+        if (changes.planning_criteria) map.planning_criteria = true;
         if (changes.technical_notes) map.technical_notes = true;
         (changes.exercises || []).forEach(change => {
           if (change.kind === "removed") return;
@@ -3357,6 +3393,7 @@ async function createClassForStudent(dateKey = toISODate(startOfToday())) {
       if (isClassStarted() && loadedRoutineSnapshot) {
         const current = currentRoutineSnapshot();
         if (current.routine_type !== loadedRoutineSnapshot.routine_type) map.routine_type = true;
+        if (current.planning_criteria !== loadedRoutineSnapshot.planning_criteria) map.planning_criteria = true;
         if (current.technical_notes !== loadedRoutineSnapshot.technical_notes) map.technical_notes = true;
         const fields = ["exercise_name", "sets", "reps_time", "load"];
         current.exercises.forEach((exercise, index) => {
@@ -3369,6 +3406,7 @@ async function createClassForStudent(dateKey = toISODate(startOfToday())) {
         });
       }
       document.getElementById("classRoutineInput")?.classList.toggle("historical-edit-field", map.routine_type);
+      document.getElementById("classCriteriaInput")?.classList.toggle("historical-edit-field", map.planning_criteria);
       document.querySelector(".workout-notes")?.classList.toggle("historical-edit-field", map.technical_notes);
       exerciseTable.querySelectorAll(".exercise-row").forEach((row, index) => {
         row.querySelectorAll(".historical-edit-field").forEach(field => field.classList.remove("historical-edit-field"));
@@ -3759,6 +3797,10 @@ async function renderAdminClassVideos(classId) {
     }
 
     async function saveClassAndRoutine() {
+      if (!selectedClass || !activeBackendClassId) {
+        throw new Error("Seleccioná una fecha verde antes de guardar la rutina.");
+      }
+
       const historicalEdit = isClassStarted();
       const changed = routineIsDirty();
       const editComment = String(historicalEditComment?.value || "").trim();
@@ -3770,13 +3812,9 @@ async function renderAdminClassVideos(classId) {
         throw new Error("Agregá un comentario sobre la edición antes de guardar la rutina.");
       }
 
-      const savedClass = historicalEdit ? selectedClass : await saveCalendarChanges();
+      const savedClass = await saveSelectedClass();
       const classId = savedClass?.id || activeBackendClassId;
-
-      if (!classId) {
-        throw new Error("Primero guardá la clase en el calendario.");
-      }
-
+      if (!classId) throw new Error("No se pudo identificar la clase seleccionada.");
       activeBackendClassId = String(classId);
 
       const payload = {
@@ -3787,7 +3825,7 @@ async function renderAdminClassVideos(classId) {
         exercises: collectExercises()
       };
 
-      const response = await fetch(`${API_BASE}/api/classes/${activeBackendClassId}/routine`, {
+      const response = await fetch(`${API_BASE}/api/classes/${encodeURIComponent(activeBackendClassId)}/routine`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -3921,7 +3959,7 @@ async function renderAdminClassVideos(classId) {
       });
     }
 
-    [document.getElementById("classRoutineInput"), document.getElementById("notas-rutina")].forEach(field => {
+    [document.getElementById("classRoutineInput"), document.getElementById("classCriteriaInput"), document.getElementById("notas-rutina")].forEach(field => {
       field?.addEventListener("input", updateHistoricalEditPrompt);
     });
     historicalEditComment?.addEventListener("input", updateHistoricalEditPrompt);
