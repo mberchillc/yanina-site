@@ -96,7 +96,7 @@ jobs:
           assert 'id="appointmentDateInput"' in profile
           assert 'id="appointmentTimeInput"' in profile
           assert 'inputmode="numeric"' in profile
-          assert 'placeholder="18.30"' in profile
+          assert 'placeholder="Ej. 18.30"' in profile
           assert 'id="appointmentCommentsInput"' in profile
           assert 'id="appointmentSaveBtn">Guardar<' in profile
           assert 'id="appointmentEditBtn">Editar<' in profile
