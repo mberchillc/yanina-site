@@ -48,7 +48,7 @@ jobs:
           printf '%s  %s\n' '28e934bedfd88051ff4df64cad671de77dcda60f6b7926cd79c2f03ea509f588' /tmp/current-to-feature.patch | sha256sum -c -
           patch -p1 --forward --batch < /tmp/current-to-feature.patch
 
-      - name: Validate HTML, JavaScript and exact file contents
+      - name: Validate exact artifacts and executable JavaScript
         shell: bash
         run: |
           set -euo pipefail
@@ -67,9 +67,6 @@ jobs:
               admin/entrenamiento.html \
               functions/admin/alumno.html.js \
               'functions/admin/[[path]].js'
-            echo '=== MARKERS ==='
-            grep -nE 'student-profile-page|training-page no-training-selection|appointmentTimeInput|editSelectedAppointmentLink' \
-              admin/alumno.html admin/entrenamiento.html | head -80 || true
           } > "$report" 2>&1
 
           python - <<'PY' >> "$report" 2>&1
@@ -85,32 +82,15 @@ jobs:
               'functions/admin/[[path]].js': 'e48cbce5007d1a48c287a91135fe4b4e0231a1a5b23cfd66810194b832995ee0',
           }
           for path, digest in expected.items():
-              data = Path(path).read_bytes()
-              actual = sha256(data).hexdigest()
+              actual = sha256(Path(path).read_bytes()).hexdigest()
               assert actual == digest, f'{path}: {actual} != {digest}'
 
           profile = Path('admin/alumno.html').read_text(encoding='utf-8')
           training = Path('admin/entrenamiento.html').read_text(encoding='utf-8')
-          assert '<body class="student-profile-page">' in profile
-          assert 'id="appointmentModal"' in profile
-          assert 'id="appointmentDateInput"' in profile
-          assert 'id="appointmentTimeInput"' in profile
-          assert 'inputmode="numeric"' in profile
-          assert 'placeholder="Ej. 18.30"' in profile
-          assert 'id="appointmentCommentsInput"' in profile
-          assert 'id="appointmentSaveBtn">Guardar<' in profile
-          assert 'id="appointmentEditBtn">Editar<' in profile
-          assert 'id="appointmentDeleteBtn"' in profile
-          assert 'entrenamiento.html' in profile
-          assert '<body class="training-page no-training-selection">' in training
-          assert '<title>Entrenamiento | Yanina Trainer</title>' in training
-          assert 'id="editSelectedAppointmentLink"' in training
-          assert 'id="classVideosAdmin"' in training
-          assert 'id="classCommentsAdmin"' in training
 
           class Parser(HTMLParser):
               pass
-          for name, html in [('profile', profile), ('training', training)]:
+          for html in (profile, training):
               parser = Parser()
               parser.feed(html)
               parser.close()
