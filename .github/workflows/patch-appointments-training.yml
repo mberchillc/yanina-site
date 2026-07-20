@@ -46,6 +46,8 @@ jobs:
           PY
           node --check /tmp/alumno.js
           node --check /tmp/entrenamiento.js
+      - name: Record successful validation
+        run: echo "validated $GITHUB_SHA" > scripts/appointment_validation_status.txt
       - name: Upload generated pages for verification
         uses: actions/upload-artifact@v4
         with:
@@ -54,14 +56,14 @@ jobs:
             admin/alumno.html
             admin/entrenamiento.html
           retention-days: 3
-      - name: Commit generated pages
+      - name: Commit generated pages and validation status
         run: |
-          if git diff --quiet -- admin/alumno.html admin/entrenamiento.html; then
+          if git diff --quiet -- admin/alumno.html admin/entrenamiento.html scripts/appointment_validation_status.txt; then
             echo "No changes to commit"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add admin/alumno.html admin/entrenamiento.html
-          git commit -m "Split appointments from training workflow"
+          git add admin/alumno.html admin/entrenamiento.html scripts/appointment_validation_status.txt
+          git commit -m "Validate appointment and training pages"
           git push
