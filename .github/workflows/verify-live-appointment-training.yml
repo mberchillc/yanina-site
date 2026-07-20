@@ -41,14 +41,16 @@ jobs:
                   'YANINA_APPOINTMENT_MODAL_V2',
                   'YANINA_APPOINTMENT_TRAINING_FOLLOWUP_V3',
                   'YANINA_APPOINTMENT_TRAINING_FINAL_V4',
+                  'YANINA_APPOINTMENT_TIME_DOT_V5',
                   'id="appointmentModal"',
                   'id="appointmentDateInput" type="date" readonly',
-                  'id="appointmentTimeInput" type="time"',
+                  'id="appointmentTimeInput" type="text" inputmode="numeric"',
                   'id="appointmentCommentsInput"',
                   'id="appointmentSaveBtn">Guardar',
                   'id="appointmentEditBtn">Editar',
                   'id="appointmentDeleteBtn"',
                   'id="trainingTab"',
+                  'function normalizeAppointmentTime(value)',
               ],
               'admin/entrenamiento.html': [
                   'YANINA_TRAINING_PAGE_V2',
@@ -114,7 +116,9 @@ jobs:
             if [ "$alumno_curl" -eq 0 ] && [ "$training_curl" -eq 0 ] \
               && [ "$alumno_http" = "200" ] && [ "$training_http" = "200" ] \
               && grep -Fq 'YANINA_APPOINTMENT_TRAINING_FINAL_V4' /tmp/live-alumno.html \
+              && grep -Fq 'YANINA_APPOINTMENT_TIME_DOT_V5' /tmp/live-alumno.html \
               && grep -Fq 'id="appointmentDateInput" type="date" readonly' /tmp/live-alumno.html \
+              && grep -Fq 'id="appointmentTimeInput" type="text" inputmode="numeric"' /tmp/live-alumno.html \
               && grep -Fq 'id="appointmentSaveBtn">Guardar' /tmp/live-alumno.html \
               && grep -Fq 'id="appointmentEditBtn">Editar' /tmp/live-alumno.html \
               && grep -Fq 'id="appointmentDeleteBtn"' /tmp/live-alumno.html \
