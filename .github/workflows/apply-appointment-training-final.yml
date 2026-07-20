@@ -10,6 +10,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: finalize-appointment-training-main
+  cancel-in-progress: false
+
 jobs:
   apply:
     runs-on: ubuntu-latest
@@ -68,6 +72,8 @@ jobs:
           assert 'id="appointmentModal"' in profile
           assert 'id="appointmentDateInput"' in profile
           assert 'id="appointmentTimeInput"' in profile
+          assert 'inputmode="numeric"' in profile
+          assert 'placeholder="18.30"' in profile
           assert 'id="appointmentCommentsInput"' in profile
           assert 'id="appointmentSaveBtn">Guardar<' in profile
           assert 'id="appointmentEditBtn">Editar<' in profile
@@ -113,6 +119,7 @@ jobs:
           rm -f scripts/patch_appointments_training.py
           rm -f scripts/patch_appointments_training_followup.py
           rm -f scripts/patch_appointments_training_final.py
+          rm -f scripts/patch_appointment_time_dot_format.py
           rm -f scripts/trigger_appointments_training.txt
           rm -f scripts/trigger_live_appointment_training_check.txt
           rm -f scripts/appointment_validation_status.txt
