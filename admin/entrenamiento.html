@@ -1208,13 +1208,27 @@
     .training-page #calendario,
     .training-page #calendario-mensual { display: none !important; }
     .training-page .workout-card > .card-header { display: none !important; }
-    .training-page.no-training-selection #trainingSessionDetails,
-    .training-page.no-training-selection .training-session-content { display: none !important; }
-    #trainingNoAppointmentState { display: none; margin-bottom: 0; }
+    .training-page.no-training-selection .training-session-content,
+    .training-page.no-training-selection #trainingSessionDetails .field:not(.training-date-field),
+    .training-page.no-training-selection #trainingSessionDetails .bottom-actions { display: none !important; }
+    #trainingNoAppointmentState { display: none; margin: 14px 0 0; }
     .training-page.no-training-selection #trainingNoAppointmentState { display: block; }
     .training-page #clase-seleccionada { margin-top: 22px; }
     .training-page #classDateInput,
     .training-page #classTimeInput { background: rgba(247, 243, 234, 0.75); color: var(--green-dark); font-weight: 800; }
+    .training-page #classDateInput.has-appointment {
+      background: rgba(126, 200, 69, .24);
+      border-color: rgba(86, 157, 39, .55);
+    }
+    .training-page #classDateInput option.has-appointment {
+      background: #dff3d1;
+      color: var(--green-dark);
+      font-weight: 800;
+    }
+    .training-page #classDateInput option:disabled {
+      background: #fff;
+      color: #8d9892;
+    }
 
     .timeline-day {
       appearance: none;
@@ -1531,15 +1545,13 @@
 
         <section class="selected-class-panel training-only" id="clase-seleccionada">
           <h3>Clase seleccionada</h3>
-          <div class="empty-state" id="trainingNoAppointmentState">
-            Primero guardá una cita en el Calendario de clases. Después seleccioná una fecha verde para preparar o revisar su entrenamiento.
-          </div>
-
           <div id="trainingSessionDetails">
             <div class="class-form-grid">
-              <div class="field">
+              <div class="field training-date-field">
                 <label for="classDateInput">Fecha</label>
-                <input id="classDateInput" type="date" readonly />
+                <select id="classDateInput" aria-label="Seleccionar fecha de clase">
+                  <option value="">Seleccionar fecha</option>
+                </select>
               </div>
 
               <div class="field">
@@ -1563,6 +1575,9 @@
               <a class="btn btn-form-secondary" id="editSelectedAppointmentLink" href="alumno.html#calendario-mensual">Editar turno</a>
               <button type="button" class="btn btn-form-secondary" id="markCompletedBtn">Marcar realizada</button>
             </div>
+          </div>
+          <div class="empty-state" id="trainingNoAppointmentState">
+            Seleccioná una de las fechas verdes para preparar o revisar el entrenamiento de esa clase.
           </div>
         </section>
 
@@ -2701,10 +2716,9 @@ return {
       const requestedClass = targetClassId
         ? meaningfulClasses.find(item => String(item.id) === String(targetClassId))
         : null;
-      const todayKey = toISODate(startOfToday());
-      const upcomingClass = meaningfulClasses.find(item => String(item.class_date || "") >= todayKey);
-      const latestHistoricalClass = meaningfulClasses.length ? meaningfulClasses[meaningfulClasses.length - 1] : null;
-      const classToOpen = requestedClass || currentSelection || upcomingClass || latestHistoricalClass;
+      const classToOpen = requestedClass || currentSelection;
+
+      renderTrainingDateOptions();
 
       if (classToOpen) {
         const selectedDate = parseISODate(classToOpen.class_date);
@@ -2744,6 +2758,71 @@ return {
 
       if (status && status !== "draft") return true;
       return hasTime || hasCustomRoutineType || hasComments || hasRoutine;
+    }
+
+    function renderTrainingDateOptions() {
+      if (!IS_TRAINING_PAGE) return;
+      const select = document.getElementById("classDateInput");
+      if (!select || select.tagName !== "SELECT") return;
+
+      const monthStart = startOfMonth(startOfToday());
+      const year = monthStart.getFullYear();
+      const month = monthStart.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const monthLabel = monthStart.toLocaleDateString("es-AR", { month: "long", year: "numeric" });
+      const appointmentsByDate = new Map();
+
+      allClasses.filter(isMeaningfulClass).forEach(item => {
+        const key = String(item.class_date || "").slice(0, 10);
+        if (key && !appointmentsByDate.has(key)) appointmentsByDate.set(key, item);
+      });
+
+      select.innerHTML = "";
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = `Seleccionar fecha · ${monthLabel}`;
+      select.appendChild(placeholder);
+
+      const selectedItem = activeBackendClassId
+        ? allClasses.find(item => String(item.id) === String(activeBackendClassId) && isMeaningfulClass(item))
+        : null;
+      const selectedDate = String(selectedItem?.class_date || "").slice(0, 10);
+      const currentMonthPrefix = `${year}-${String(month + 1).padStart(2, "0")}-`;
+
+      if (selectedItem && selectedDate && !selectedDate.startsWith(currentMonthPrefix)) {
+        const option = document.createElement("option");
+        option.value = selectedDate;
+        option.dataset.classId = String(selectedItem.id);
+        option.className = "has-appointment";
+        option.textContent = `● ${formatDateReadable(selectedDate)} · ${formatAppointmentTime(selectedItem.class_time) || "sin hora"}`;
+        select.appendChild(option);
+      }
+
+      for (let day = 1; day <= daysInMonth; day += 1) {
+        const date = new Date(year, month, day);
+        const key = toISODate(date);
+        const appointment = appointmentsByDate.get(key);
+        const option = document.createElement("option");
+        option.value = key;
+        const dayLabel = date.toLocaleDateString("es-AR", {
+          weekday: "long",
+          day: "2-digit",
+          month: "2-digit"
+        });
+
+        if (appointment) {
+          option.dataset.classId = String(appointment.id);
+          option.className = "has-appointment";
+          option.textContent = `● ${dayLabel} · ${formatAppointmentTime(appointment.class_time) || "sin hora"}`;
+        } else {
+          option.disabled = true;
+          option.textContent = `${dayLabel} · sin clase`;
+        }
+        select.appendChild(option);
+      }
+
+      select.value = selectedDate || "";
+      select.classList.toggle("has-appointment", Boolean(selectedDate));
     }
 
     function sortClassesInMemory() {
@@ -2962,6 +3041,7 @@ return {
         const input = document.getElementById(id);
         if (input) input.value = "";
       });
+      document.getElementById("classDateInput")?.classList.remove("has-appointment");
       const notes = document.getElementById("notas-rutina");
       if (notes) notes.value = "";
       clearExerciseRows();
@@ -2979,6 +3059,7 @@ return {
       loadedRoutineSnapshot = null;
       historicalRoutineEdits = [];
       historicalEditBox?.classList.remove("is-visible");
+      renderTrainingDateOptions();
       if (historicalEditComment) historicalEditComment.value = "";
 
       const selectedDate = parseISODate(found.class_date);
@@ -4052,6 +4133,25 @@ async function renderAdminClassVideos(classId) {
       ["classDateInput", "classTimeInput", "classRoutineInput", "classCriteriaInput"].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
+
+        if (id === "classDateInput") {
+          el.addEventListener("change", async () => {
+            const classId = el.selectedOptions?.[0]?.dataset?.classId || "";
+            if (!classId) {
+              clearSelectedTrainingClass();
+              return;
+            }
+
+            try {
+              await selectClass(classId, false);
+            } catch (error) {
+              console.error(error);
+              alert(error.message || "No se pudo cargar el entrenamiento de esa fecha.");
+              clearSelectedTrainingClass();
+            }
+          });
+          return;
+        }
 
         const syncDraft = () => {
           if (selectedClass && selectedClass._isNewCalendarSelection) {
