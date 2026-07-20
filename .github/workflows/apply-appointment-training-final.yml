@@ -3,7 +3,7 @@ name: Apply final appointment and training implementation
 on:
   push:
     branches:
-      - codex/appointment-training-split-20260720
+      - main
     paths:
       - appointment-training-final-trigger.txt
 
@@ -19,10 +19,20 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify and apply exact implementation delta
+      - name: Restore validated source baseline and apply exact implementation delta
         shell: bash
         run: |
           set -euo pipefail
+          git checkout 77ff9a0541c5ddd4acfa80413b66e8291e3bdd9d -- \
+            admin/alumno.html \
+            admin/entrenamiento.html \
+            functions/admin/alumno.html.js \
+            'functions/admin/[[path]].js'
+          test "$(git hash-object admin/alumno.html)" = 'd804148d72c53073d820503c6690b355612235ec'
+          test "$(git hash-object admin/entrenamiento.html)" = 'a01e352601031a5f2aeeb22b7b6a4a496b0544cf'
+          test "$(git hash-object functions/admin/alumno.html.js)" = '8bb1b92016234a91ac9c206499d8d41dfa8aee82'
+          test "$(git hash-object 'functions/admin/[[path]].js')" = '734127a218c4dcf67b18a2bfe88db860f63e08b9'
+
           cat .github/appointment-training-final/chunk-*.txt > /tmp/current-to-feature.patch.xz.b64
           printf '%s  %s\n' '3c6b56ca03ec5f54d9deb1056f4e2c97478e7826eac56386344c46394ef8b2bf' /tmp/current-to-feature.patch.xz.b64 | sha256sum -c -
           base64 -d /tmp/current-to-feature.patch.xz.b64 > /tmp/current-to-feature.patch.xz
@@ -99,9 +109,14 @@ jobs:
           rm -f .github/workflows/apply-appointment-training-final.yml
           rm -f appointment-training-final-trigger.txt
           rm -f .github/workflows/patch-appointments-training.yml
+          rm -f .github/workflows/verify-live-appointment-training.yml
           rm -f scripts/patch_appointments_training.py
+          rm -f scripts/patch_appointments_training_followup.py
+          rm -f scripts/patch_appointments_training_final.py
           rm -f scripts/trigger_appointments_training.txt
+          rm -f scripts/trigger_live_appointment_training_check.txt
           rm -f scripts/appointment_validation_status.txt
+          rm -f scripts/live_appointment_training_status.txt
           git diff --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
