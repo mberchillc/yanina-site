@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'scripts/patch_appointments_training.py'
+      - 'scripts/trigger_appointments_training.txt'
   workflow_dispatch:
 
 permissions:
