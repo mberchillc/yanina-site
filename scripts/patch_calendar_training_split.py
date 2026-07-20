@@ -1,3 +1,4 @@
+# Generates the appointment calendar behavior and the dedicated training workspace.
 from pathlib import Path
 
 SOURCE = Path("admin/alumno.html")
