@@ -22,8 +22,12 @@ jobs:
       - name: Apply calendar and training refactor
         run: python scripts/patch_calendar_training_split.py
 
-      - name: Validate embedded JavaScript
+      - name: Validate generated pages and JavaScript
         run: |
+          test -f admin/calendar-training.css
+          test -f admin/calendar-training.js
+          test -f admin/entrenamiento.html
+          node --check admin/calendar-training.js
           python - <<'PY'
           from pathlib import Path
           import re
@@ -36,6 +40,8 @@ jobs:
               match = re.search(r'<script>([\s\S]*?)</script>', text)
               if not match:
                   raise SystemExit(f'No embedded script found in {source}')
+              if 'calendar-training.css' not in text or 'calendar-training.js' not in text:
+                  raise SystemExit(f'Calendar/training assets not wired in {source}')
               Path(target).write_text(match.group(1), encoding='utf-8')
           PY
           node --check /tmp/admin-alumno.js
