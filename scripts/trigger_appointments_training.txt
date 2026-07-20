@@ -1,1 +1,0 @@
-validate appointment calendar and training split: node check

@@ -1,2 +1,0 @@
-apply exact final appointment and training implementation
-triggered after workflow was present on main
