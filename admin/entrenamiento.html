@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ficha del Alumno | Yanina Trainer</title>
+  <title>Entrenamiento | Yanina Trainer</title>
   <style>
     :root {
       --green-dark: #183f35;
@@ -1375,7 +1375,7 @@ body.appointment-modal-open {
   </style>
 </head>
 
-<body class="student-record-page">
+<body class="training-page">
   <main class="admin-shell">
 
     <header class="topbar">
@@ -1383,7 +1383,7 @@ body.appointment-modal-open {
         <img src="../assets/logo-transp.png" alt="Yanina Trainer" />
         <div class="brand-text">
           <strong>Admin Trainer</strong>
-          <small>Ficha del alumno</small>
+          <small>Entrenamiento</small>
         </div>
       </div>
 
@@ -1397,9 +1397,9 @@ body.appointment-modal-open {
 
     <section class="page-header">
       <div class="eyebrow">Plataforma Yanina Trainer</div>
-      <h1>Ficha del alumno</h1>
+      <h1>Entrenamiento</h1>
       <p class="subtitle">
-        Gestioná los datos, el calendario y el plan de entrenamiento de cada alumno desde acá.
+        Elegí una fecha guardada en verde para cargar o revisar la clase, la rutina, las observaciones, los comentarios y los videos.
       </p>
     </section>
 
@@ -1412,9 +1412,9 @@ body.appointment-modal-open {
         </div>
       </div>
 
-      <a id="studentDataTab" href="#datos" class="student-tab active">Datos del alumno</a>
+      <a id="studentDataTab" href="#datos" class="student-tab">Datos del alumno</a>
       <a id="studentCalendarTab" href="#calendario-mensual" class="student-tab">Calendario de clases</a>
-      <a id="studentTrainingTab" href="entrenamiento.html" class="student-tab">Entrenamiento</a>
+      <a id="studentTrainingTab" href="entrenamiento.html" class="student-tab active">Entrenamiento</a>
       <a id="studentMeasurementsTab" href="#mediciones" class="student-tab">Hist. Mediciones</a>
       <button type="button" class="student-tab student-tab-arrow" id="backToTopBtn">↑</button>
     </nav>
@@ -1571,8 +1571,8 @@ body.appointment-modal-open {
         <section class="plan-timeline" id="calendario-mensual">
           <div class="plan-timeline-header">
             <div>
-              <h3>Calendario de clases</h3>
-              <p>Seleccioná una fecha para crear, editar o eliminar el turno. Las fechas guardadas aparecen en verde.</p>
+              <h3>Calendario de entrenamientos</h3>
+              <p>Seleccioná una fecha verde para cargar o consultar el entrenamiento. También podés navegar a meses anteriores.</p>
             </div>
           </div>
 
@@ -1592,7 +1592,7 @@ body.appointment-modal-open {
         </section>
 
         <section class="selected-class-panel" id="clase-seleccionada">
-          <h3>Clase seleccionada</h3>
+          <h3>Clase y rutina seleccionada</h3>
           <div class="class-form-grid">
             <div class="field">
               <label for="classDateInput">Fecha</label>
@@ -1663,7 +1663,7 @@ body.appointment-modal-open {
 <div class="bottom-actions">
   <button type="button" class="btn btn-form-secondary" id="addExerciseBtn">+ Agregar ejercicio</button>
   <button type="button" class="btn btn-form-secondary" id="duplicateWorkoutBtn">Duplicar rutina</button>
-  <button type="button" class="btn btn-form-primary" id="saveWorkoutBtn">Guardar rutina</button>
+  <button type="button" class="btn btn-form-primary" id="saveWorkoutBtn">Guardar clase y rutina</button>
   <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">Descargar rutina PDF</a>
 </div>
       </article>
