@@ -1,0 +1,180 @@
+(() => {
+  const pageMode = document.body.dataset.page || "calendar";
+  const isCalendarPage = pageMode === "calendar";
+  const isTrainingPage = pageMode === "training";
+
+  const originalSelectClass = selectClass;
+  const originalDeleteClass = deleteClass;
+
+  function classTrainingUrl(classId = "") {
+    const search = new URLSearchParams();
+    if (studentId) search.set("id", studentId);
+    if (classId) search.set("classId", classId);
+    return `entrenamiento.html?${search.toString()}`;
+  }
+
+  function updateNavigation() {
+    const links = [...document.querySelectorAll(".student-tab")].filter(node => node.tagName === "A");
+    const byText = label => links.find(link => link.textContent.trim() === label);
+    const dataLink = byText("Datos del alumno");
+    const calendarLink = byText("Calendario de clases");
+    const trainingLink = byText("Entrenamiento");
+    const measurementsLink = byText("Hist. Mediciones");
+    const idQuery = studentId ? `?id=${encodeURIComponent(studentId)}` : "?new=1";
+
+    links.forEach(link => link.classList.remove("active"));
+
+    if (isTrainingPage) {
+      if (dataLink) dataLink.href = `alumno.html${idQuery}#datos`;
+      if (calendarLink) calendarLink.href = `alumno.html${idQuery}#calendario-mensual`;
+      if (trainingLink) {
+        trainingLink.href = `entrenamiento.html${idQuery}`;
+        trainingLink.classList.add("active");
+      }
+      if (measurementsLink) measurementsLink.href = `alumno.html${idQuery}#mediciones`;
+    } else {
+      if (dataLink) dataLink.href = "#datos";
+      if (calendarLink) {
+        calendarLink.href = "#calendario-mensual";
+        calendarLink.classList.add("active");
+      }
+      if (trainingLink) trainingLink.href = studentId ? `entrenamiento.html${idQuery}` : "#";
+      if (measurementsLink) measurementsLink.href = "#mediciones";
+    }
+
+    const createPlanLink = [...document.querySelectorAll("a.btn")]
+      .find(link => link.textContent.trim() === "Crear plan de entrenamiento");
+    if (createPlanLink) createPlanLink.href = studentId ? `entrenamiento.html${idQuery}` : "#";
+  }
+
+  function configurePageCopy() {
+    if (isCalendarPage) {
+      const upcomingTitle = document.querySelector("#calendario .card-title");
+      const upcomingHelp = document.querySelector("#calendario .card-subtitle");
+      const calendarTitle = document.querySelector("#calendario-mensual h3");
+      const calendarHelp = document.querySelector("#calendario-mensual .plan-timeline-header p");
+      if (upcomingTitle) upcomingTitle.textContent = "Próximas citas";
+      if (upcomingHelp) upcomingHelp.textContent = "Citas guardadas para la alumna. Desde acá podés editarlas, eliminarlas o abrir su entrenamiento.";
+      if (calendarTitle) calendarTitle.textContent = "Calendario de citas";
+      if (calendarHelp) calendarHelp.textContent = "Tocá cualquier fecha para crear, ver, editar o eliminar una cita.";
+      if (saveClassBtn) saveClassBtn.hidden = true;
+    }
+
+    if (isTrainingPage) {
+      document.title = "Entrenamiento | Yanina Trainer";
+      const brandSmall = document.querySelector(".brand-text small");
+      if (brandSmall) brandSmall.textContent = "Entrenamiento del alumno";
+      const heading = document.querySelector(".page-header h1");
+      if (heading) heading.textContent = "Entrenamiento";
+      const subtitle = document.querySelector(".page-header .subtitle");
+      if (subtitle) subtitle.textContent = "Seleccioná una cita guardada para crear, revisar o editar la clase, la rutina, los comentarios y los videos vinculados.";
+      const calendarTitle = document.querySelector("#calendario-mensual h3");
+      if (calendarTitle) calendarTitle.textContent = "Elegir clase";
+      const calendarHelp = document.querySelector("#calendario-mensual .plan-timeline-header p");
+      if (calendarHelp) calendarHelp.textContent = "Las fechas verdes tienen una cita guardada. Seleccioná una para abrir toda la actividad de esa clase.";
+      const dateField = document.getElementById("classDateInput");
+      const dateLabel = document.querySelector('label[for="classDateInput"]');
+      if (dateField) dateField.readOnly = true;
+      if (dateLabel) dateLabel.textContent = "Fecha de la cita";
+      const criteriaLabel = document.querySelector('label[for="classCriteriaInput"]');
+      if (criteriaLabel) criteriaLabel.textContent = "Comentarios / criterio de planificación";
+      if (workoutSaveButton) workoutSaveButton.textContent = "Guardar clase y rutina";
+
+      if (!document.getElementById("trainingSelectionHint")) {
+        const hint = document.createElement("div");
+        hint.id = "trainingSelectionHint";
+        hint.className = "empty-state training-selection-hint";
+        hint.textContent = "Seleccioná una fecha verde del calendario para abrir la clase y su rutina.";
+        document.getElementById("clase-seleccionada")?.before(hint);
+      }
+    }
+
+    updateNavigation();
+  }
+
+  if (isCalendarPage && targetClassId) {
+    const redirect = new URLSearchParams();
+    if (studentId) redirect.set("id", studentId);
+    redirect.set("classId", targetClassId);
+    if (targetSection) redirect.set("section", targetSection);
+    window.location.replace(`entrenamiento.html?${redirect.toString()}`);
+    return;
+  }
+
+  const modal = document.createElement("div");
+  modal.className = "appointment-modal";
+  modal.id = "appointmentModal";
+  modal.hidden = true;
+  modal.innerHTML = `
+    <section class="appointment-dialog" role="dialog" aria-modal="true" aria-labelledby="appointmentModalTitle">
+      <div class="appointment-dialog-header">
+        <div>
+          <h2 id="appointmentModalTitle">Cita</h2>
+          <p>Programá la fecha y hora de la clase. Una cita guardada queda marcada en verde.</p>
+        </div>
+        <button type="button" class="appointment-close-btn" data-appointment-close aria-label="Cerrar">×</button>
+      </div>
+      <div class="appointment-form-grid">
+        <div class="field">
+          <label for="appointmentDateInput">Fecha</label>
+          <input id="appointmentDateInput" type="date" readonly />
+        </div>
+        <div class="field">
+          <label for="appointmentTimeInput">Hora (hh:mm)</label>
+          <input id="appointmentTimeInput" type="time" step="60" />
+        </div>
+        <div class="field full">
+          <label for="appointmentCommentsInput">Comentarios</label>
+          <textarea id="appointmentCommentsInput" placeholder="Comentarios sobre la cita o indicaciones previas."></textarea>
+        </div>
+      </div>
+      <div class="appointment-modal-actions">
+        <button type="button" class="delete-class-btn" id="deleteAppointmentBtn" title="Eliminar cita" aria-label="Eliminar cita">E</button>
+        <button type="button" class="btn btn-form-secondary" id="editAppointmentBtn">Editar</button>
+        <button type="button" class="btn btn-form-primary" id="saveAppointmentBtn">Guardar</button>
+      </div>
+      <div class="appointment-modal-status" id="appointmentModalStatus" aria-live="polite"></div>
+    </section>
+  `;
+  document.body.appendChild(modal);
+
+  const appointmentDateInput = modal.querySelector("#appointmentDateInput");
+  const appointmentTimeInput = modal.querySelector("#appointmentTimeInput");
+  const appointmentCommentsInput = modal.querySelector("#appointmentCommentsInput");
+  const appointmentStatus = modal.querySelector("#appointmentModalStatus");
+  const deleteAppointmentButton = modal.querySelector("#deleteAppointmentBtn");
+  const editAppointmentButton = modal.querySelector("#editAppointmentBtn");
+  const saveAppointmentButton = modal.querySelector("#saveAppointmentBtn");
+  let modalClass = null;
+
+  function setAppointmentStatus(message = "", kind = "") {
+    appointmentStatus.textContent = message;
+    appointmentStatus.classList.toggle("is-error", kind === "error");
+    appointmentStatus.classList.toggle("is-success", kind === "success");
+  }
+
+  function setAppointmentEditable(editable) {
+    appointmentTimeInput.disabled = !editable;
+    appointmentCommentsInput.disabled = !editable;
+    saveAppointmentButton.disabled = !editable;
+    editAppointmentButton.disabled = editable || !modalClass?.id;
+  }
+
+  function openAppointmentModal(dateKey, item = null) {
+    if (!isCalendarPage) return;
+    modalClass = item ? { ...item } : null;
+    appointmentDateInput.value = dateKey || item?.class_date || "";
+    appointmentTimeInput.value = normalizeTimeForInput(item?.class_time || "");
+    appointmentCommentsInput.value = item?.planning_criteria || "";
+    deleteAppointmentButton.hidden = !item?.id;
+    setAppointmentEditable(!item?.id);
+    setAppointmentStatus(item?.id ? "Cita guardada. Tocá Editar para modificarla." : "Completá la hora y guardá la cita.");
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+    requestAnimationFrame(() => (item?.id ? editAppointmentButton : appointmentTimeInput).focus());
+  }
+
+  function closeAppointmentModal() {
+    modal.hidden = true;
+    document.body.style.overflow = "";
+    modalClass = null;
