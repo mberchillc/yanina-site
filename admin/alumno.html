@@ -1231,6 +1231,8 @@
 
     /* YANINA_APPOINTMENT_TRAINING_FOLLOWUP_V3 */
     /* YANINA_APPOINTMENT_TRAINING_FINAL_V4 */
+    /* YANINA_APPOINTMENT_TIME_DOT_V5 */
+    #appointmentTimeInput { font-variant-numeric: tabular-nums; letter-spacing: .05em; }
   </style>
 </head>
 
@@ -1536,7 +1538,7 @@
         </div>
         <div class="appointment-fields">
           <div class="field"><label for="appointmentDateInput">Fecha</label><input id="appointmentDateInput" type="date" readonly /></div>
-          <div class="field"><label for="appointmentTimeInput">Hora (hh.mm)</label><input id="appointmentTimeInput" type="time" step="300" /></div>
+          <div class="field"><label for="appointmentTimeInput">Hora (hh.mm)</label><input id="appointmentTimeInput" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="Ej. 18.30" /></div>
           <div class="field"><label for="appointmentCommentsInput">Comentarios</label><textarea id="appointmentCommentsInput" placeholder="Modalidad, indicaciones o información de la cita."></textarea></div>
         </div>
         <div class="appointment-actions">
@@ -3677,6 +3679,29 @@ async function renderAdminClassVideos(classId) {
     let appointmentClassId = null;
     let appointmentClassSnapshot = null;
 
+    function formatAppointmentTime(value) {
+      const match = String(value || "").trim().match(/^(\d{1,2})[.:](\d{2})/);
+      if (!match) return "";
+      const hours = Number(match[1]);
+      const minutes = Number(match[2]);
+      if (!Number.isInteger(hours) || !Number.isInteger(minutes) || hours > 23 || minutes > 59) return "";
+      return `${String(hours).padStart(2, "0")}.${String(minutes).padStart(2, "0")}`;
+    }
+
+    function normalizeAppointmentTime(value) {
+      const match = String(value || "").trim().match(/^(\d{1,2})[.:](\d{2})$/);
+      if (!match) return "";
+      const hours = Number(match[1]);
+      const minutes = Number(match[2]);
+      if (!Number.isInteger(hours) || !Number.isInteger(minutes) || hours > 23 || minutes > 59) return "";
+      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    }
+
+    appointmentTimeInput?.addEventListener("blur", () => {
+      const normalized = normalizeAppointmentTime(appointmentTimeInput.value);
+      if (normalized) appointmentTimeInput.value = formatAppointmentTime(normalized);
+    });
+
     function updateTrainingTabLink() {
       const target = studentId ? `entrenamiento.html?id=${encodeURIComponent(studentId)}` : "#";
       [trainingTab, createTrainingPlanBtn].filter(Boolean).forEach(link => {
@@ -3693,7 +3718,7 @@ async function renderAdminClassVideos(classId) {
       appointmentClassId = item?.id ? String(item.id) : null;
       appointmentClassSnapshot = item ? { ...item } : null;
       appointmentDateInput.value = String(dateKey || item?.class_date || "").slice(0,10);
-      appointmentTimeInput.value = normalizeTimeForInput(item?.class_time || "");
+      appointmentTimeInput.value = formatAppointmentTime(item?.class_time || "");
       appointmentCommentsInput.value = item?.planning_criteria || "";
       appointmentState.style.display = "none";
       appointmentModal.classList.add("is-open"); appointmentModal.setAttribute("aria-hidden","false"); document.body.classList.add("modal-open");
@@ -3705,9 +3730,10 @@ async function renderAdminClassVideos(classId) {
         showAppointmentState("Primero guardá la ficha del alumno para crear una cita.", true);
         return;
       }
-      const classDate = appointmentDateInput.value, classTime = appointmentTimeInput.value, comments = appointmentCommentsInput.value || "";
+      const classDate = appointmentDateInput.value, classTime = normalizeAppointmentTime(appointmentTimeInput.value), comments = appointmentCommentsInput.value || "";
       if (!classDate) return showAppointmentState("La fecha no es válida.", true);
-      if (!classTime) return showAppointmentState("Cargá la hora de la cita.", true);
+      if (!classTime) return showAppointmentState("Cargá una hora válida en formato hh.mm, por ejemplo 18.30.", true);
+      appointmentTimeInput.value = formatAppointmentTime(classTime);
       const previous = appointmentClassSnapshot || {}, previousStatus = normalizeStatus(previous.status);
       const payload = { class_date:classDate, class_time:classTime, routine_type:previous.routine_type || "Clase", status:previousStatus && previousStatus !== "draft" ? previousStatus : "scheduled", planning_criteria:comments };
       appointmentSaveBtn.disabled = true; appointmentSaveBtn.textContent = "Guardando...";
@@ -3731,7 +3757,7 @@ async function renderAdminClassVideos(classId) {
       try {
         let response = await fetch(`${API_BASE}/api/classes/${encodeURIComponent(appointmentClassId)}`, {method:"DELETE"});
         if (!response.ok && appointmentClassSnapshot) {
-          const forced = { class_date:appointmentClassSnapshot.class_date || appointmentDateInput.value, class_time:appointmentClassSnapshot.class_time || appointmentTimeInput.value, routine_type:appointmentClassSnapshot.routine_type || "Clase", status:"scheduled", planning_criteria:appointmentClassSnapshot.planning_criteria || appointmentCommentsInput.value || "" };
+          const forced = { class_date:appointmentClassSnapshot.class_date || appointmentDateInput.value, class_time:appointmentClassSnapshot.class_time || normalizeAppointmentTime(appointmentTimeInput.value) || "", routine_type:appointmentClassSnapshot.routine_type || "Clase", status:"scheduled", planning_criteria:appointmentClassSnapshot.planning_criteria || appointmentCommentsInput.value || "" };
           const put = await fetch(`${API_BASE}/api/classes/${encodeURIComponent(appointmentClassId)}`, {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(forced)});
           if (put.ok) response = await fetch(`${API_BASE}/api/classes/${encodeURIComponent(appointmentClassId)}`, {method:"DELETE"});
         }
@@ -3753,7 +3779,7 @@ async function renderAdminClassVideos(classId) {
         if (!currentMonth) cell.classList.add("is-outside");
         if (currentMonth && appointment) cell.classList.add("has-appointment","is-selectable");
         if (currentMonth && !appointment) cell.classList.add("appointment-empty","is-empty","is-selectable");
-        cell.innerHTML = `<span>${date.toLocaleDateString("es-AR",{weekday:"short"}).replace(".","")}</span><strong>${date.getDate()}</strong>${appointment ? `<em>${escapeHtml(normalizeTimeForInput(appointment.class_time || "") || "Cita")}</em>${dayClasses.length > 1 ? `<small>${dayClasses.length} citas</small>` : ""}` : ""}`;
+        cell.innerHTML = `<span>${date.toLocaleDateString("es-AR",{weekday:"short"}).replace(".","")}</span><strong>${date.getDate()}</strong>${appointment ? `<em>${escapeHtml(formatAppointmentTime(appointment.class_time || "") || "Cita")}</em>${dayClasses.length > 1 ? `<small>${dayClasses.length} citas</small>` : ""}` : ""}`;
         if (currentMonth) { cell.type = "button"; cell.setAttribute("aria-label", appointment ? `Editar cita del ${dateKey}` : `Crear cita el ${dateKey}`); cell.addEventListener("click", () => openAppointmentModal(dateKey,appointment)); }
         timelineGrid.appendChild(cell);
       }
