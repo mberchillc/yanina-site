@@ -1,0 +1,54 @@
+name: Patch calendar appointments and training page
+
+on:
+  push:
+    branches:
+      - codex/calendar-appointments-entrenamiento
+    paths:
+      - scripts/patch_calendar_training_split.py
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply calendar and training refactor
+        run: python scripts/patch_calendar_training_split.py
+
+      - name: Validate embedded JavaScript
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          for source, target in [
+              ('admin/alumno.html', '/tmp/admin-alumno.js'),
+              ('admin/entrenamiento.html', '/tmp/admin-entrenamiento.js'),
+          ]:
+              text = Path(source).read_text(encoding='utf-8')
+              match = re.search(r'<script>([\s\S]*?)</script>', text)
+              if not match:
+                  raise SystemExit(f'No embedded script found in {source}')
+              Path(target).write_text(match.group(1), encoding='utf-8')
+          PY
+          node --check /tmp/admin-alumno.js
+          node --check /tmp/admin-entrenamiento.js
+
+      - name: Commit generated pages
+        run: |
+          if git diff --quiet -- admin/alumno.html admin/entrenamiento.html; then
+            echo "No page changes to commit"
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin/alumno.html admin/entrenamiento.html
+          git commit -m "Split appointments calendar from training workspace"
+          git push
