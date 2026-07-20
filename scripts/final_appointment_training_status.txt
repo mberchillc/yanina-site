@@ -1,5 +1,5 @@
 result=FAIL
 phase=validate-exact-output
-source_sha=33ff21ad19709e42a244ff8020cc4689a0081e9f
-run_id=29781774157
-recorded_at=2026-07-20T21:51:26Z
+source_sha=266a086c6165d23490b9a40d0c77a130f6291e08
+run_id=29781878485
+recorded_at=2026-07-20T21:53:05Z

@@ -1,0 +1,46 @@
+=== SHA256 ===
+321e7f1754a5c56d00ab0db637adaa4a1a8d0fc13a70a7ec6b5d3e2c64fd1d98  admin/alumno.html
+90e8450f0d158dd11cb1b8dc3292cbf47ac1cc357096edf28d923a8aeabbd632  admin/entrenamiento.html
+e48cbce5007d1a48c287a91135fe4b4e0231a1a5b23cfd66810194b832995ee0  functions/admin/alumno.html.js
+e48cbce5007d1a48c287a91135fe4b4e0231a1a5b23cfd66810194b832995ee0  functions/admin/[[path]].js
+=== GIT BLOBS ===
+7d6f1e572997226bb7eccd1156b00b83262b1483
+f81c37ed8280ef936a943feda531487d962c0072
+d2195831f9cc40590899c08da9a22543bf7b8bd5
+d2195831f9cc40590899c08da9a22543bf7b8bd5
+=== MARKERS ===
+admin/alumno.html:1204:    .student-profile-page .training-only { display: none !important; }
+admin/alumno.html:1233:    .student-profile-page .timeline-day.is-empty { cursor: pointer; }
+admin/alumno.html:1313:<body class="student-profile-page">
+admin/alumno.html:1562:              <a class="btn btn-form-secondary" id="editSelectedAppointmentLink" href="alumno.html#calendario-mensual">Editar turno</a>
+admin/alumno.html:1637:          <label for="appointmentTimeInput">Hora (hh.mm)</label>
+admin/alumno.html:1638:          <input id="appointmentTimeInput" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej. 18.30" maxlength="5" />
+admin/alumno.html:2077:    const appointmentTimeInput = document.getElementById("appointmentTimeInput");
+admin/alumno.html:2991:      const editSelectedAppointmentLink = document.getElementById("editSelectedAppointmentLink");
+admin/alumno.html:2992:      if (editSelectedAppointmentLink) {
+admin/alumno.html:2993:        editSelectedAppointmentLink.href = studentProfileUrl("calendario-mensual", { appointmentId: found.id });
+admin/alumno.html:3050:      if (appointmentTimeInput) appointmentTimeInput.readOnly = !editable;
+admin/alumno.html:3056:      if (editable) requestAnimationFrame(() => appointmentTimeInput?.focus({ preventScroll: true }));
+admin/alumno.html:3065:      if (appointmentTimeInput) appointmentTimeInput.value = appointmentModalClass ? formatAppointmentTime(appointmentModalClass.class_time) : "";
+admin/alumno.html:3093:        classTime = normalizeAppointmentTime(appointmentTimeInput?.value || "");
+admin/alumno.html:3096:        appointmentTimeInput?.focus();
+admin/alumno.html:3143:        if (appointmentTimeInput) appointmentTimeInput.value = formatAppointmentTime(normalizedSaved.class_time);
+admin/entrenamiento.html:1204:    .student-profile-page .training-only { display: none !important; }
+admin/entrenamiento.html:1233:    .student-profile-page .timeline-day.is-empty { cursor: pointer; }
+admin/entrenamiento.html:1313:<body class="training-page no-training-selection">
+admin/entrenamiento.html:1562:              <a class="btn btn-form-secondary" id="editSelectedAppointmentLink" href="alumno.html#calendario-mensual">Editar turno</a>
+admin/entrenamiento.html:1637:          <label for="appointmentTimeInput">Hora (hh.mm)</label>
+admin/entrenamiento.html:1638:          <input id="appointmentTimeInput" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej. 18.30" maxlength="5" />
+admin/entrenamiento.html:2077:    const appointmentTimeInput = document.getElementById("appointmentTimeInput");
+admin/entrenamiento.html:2991:      const editSelectedAppointmentLink = document.getElementById("editSelectedAppointmentLink");
+admin/entrenamiento.html:2992:      if (editSelectedAppointmentLink) {
+admin/entrenamiento.html:2993:        editSelectedAppointmentLink.href = studentProfileUrl("calendario-mensual", { appointmentId: found.id });
+admin/entrenamiento.html:3050:      if (appointmentTimeInput) appointmentTimeInput.readOnly = !editable;
+admin/entrenamiento.html:3056:      if (editable) requestAnimationFrame(() => appointmentTimeInput?.focus({ preventScroll: true }));
+admin/entrenamiento.html:3065:      if (appointmentTimeInput) appointmentTimeInput.value = appointmentModalClass ? formatAppointmentTime(appointmentModalClass.class_time) : "";
+admin/entrenamiento.html:3093:        classTime = normalizeAppointmentTime(appointmentTimeInput?.value || "");
+admin/entrenamiento.html:3096:        appointmentTimeInput?.focus();
+admin/entrenamiento.html:3143:        if (appointmentTimeInput) appointmentTimeInput.value = formatAppointmentTime(normalizedSaved.class_time);
+Traceback (most recent call last):
+  File "<stdin>", line 24, in <module>
+AssertionError
