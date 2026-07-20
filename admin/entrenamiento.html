@@ -732,7 +732,8 @@
 
     .exercise-row .historical-edit-field,
     .workout-notes.historical-edit-field textarea,
-    #classRoutineInput.historical-edit-field {
+    #classRoutineInput.historical-edit-field,
+    #classCriteriaInput.historical-edit-field {
       background: #fff0df;
       border-color: #efb77b;
       box-shadow: inset 0 0 0 1px rgba(218, 132, 54, 0.28);
@@ -1261,6 +1262,22 @@
     .appointment-actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; }
     .appointment-actions-main { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
     @media (max-width: 620px) {
+      .topbar { overflow: hidden; }
+      .brand {
+        width: 100%;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+      }
+      .brand img {
+        width: min(260px, 100%);
+        max-width: 100%;
+        height: auto;
+        max-height: 90px;
+        object-fit: contain;
+      }
+      .brand-text { min-width: 0; }
       .appointment-dialog { padding: 20px; border-radius: 22px; }
       .appointment-form { grid-template-columns: 1fr; }
       .appointment-form .full { grid-column: auto; }
@@ -1484,7 +1501,7 @@
       <article class="card calendar-card" id="calendario">
         <div class="card-header">
           <div>
-            <div class="card-title">Próximas clases</div>
+            <div class="card-title">Próximas citas</div>
             <p class="card-subtitle">Lista real de clases del alumno. Editar clase selecciona la clase y baja al entrenamiento.</p>
           </div>
           <button type="button" class="btn btn-form-primary profile-only" id="addClassBtn">+ Agregar clase</button>
@@ -1500,7 +1517,7 @@
           <div>
             <div class="card-title">Plan de entrenamiento</div>
           </div>
-          
+
         </div>
 
         <section class="plan-timeline" id="calendario-mensual">
@@ -1521,7 +1538,7 @@
 
           <div class="timeline-grid" id="timelineGrid"></div>
           <div class="bottom-actions calendar-save-actions">
-            <span class="status-pill" id="plannedCounter">0 clases guardadas</span>
+            <span class="status-pill" id="plannedCounter">0 citas guardadas</span>
             <a class="btn btn-form-primary profile-only" id="openTrainingBtn" href="entrenamiento.html">Abrir Entrenamiento</a>
             <a class="btn btn-form-secondary profile-only" id="goGestionBtn" href="gestion-administrativa.html">Gestión administrativa</a>
             <a class="btn btn-form-secondary training-only" id="trainingCalendarBackLink" href="alumno.html#calendario-mensual">Editar agenda</a>
@@ -2665,7 +2682,8 @@ return {
       if (!response.ok) throw new Error("No se pudieron cargar las clases del alumno");
 
       const data = await response.json();
-      allClasses = Array.isArray(data) ? data : [];
+      const classItems = Array.isArray(data) ? data : (Array.isArray(data?.classes) ? data.classes : []);
+      allClasses = classItems;
       sortClassesInMemory();
 
       if (!IS_TRAINING_PAGE) {
@@ -2772,8 +2790,9 @@ return {
 
       const monthStart = startOfMonth(calendarStartDate);
       const monthEnd = addDays(addMonths(monthStart, 1), -1);
-      const visibleStart = addDays(monthStart, -monthStart.getDay());
-      const weekdays = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+      const mondayOffset = (monthStart.getDay() + 6) % 7;
+      const visibleStart = addDays(monthStart, -mondayOffset);
+      const weekdays = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
       weekdays.forEach(day => {
         const header = document.createElement("div");
@@ -2798,7 +2817,7 @@ return {
             })
             .map(item => String(item.class_date || "").slice(0, 10))
         ).size;
-        plannedCounter.textContent = `${savedDateCount} ${savedDateCount === 1 ? "clase guardada" : "clases guardadas"}`;
+        plannedCounter.textContent = `${savedDateCount} ${savedDateCount === 1 ? "cita guardada" : "citas guardadas"}`;
       }
 
       for (let i = 0; i < 42; i++) {
@@ -2813,6 +2832,8 @@ return {
         const cell = document.createElement(isClickable ? "button" : "div");
 
         cell.className = "timeline-day";
+        cell.dataset.date = dateKey;
+        if (firstClass?.id) cell.dataset.classId = String(firstClass.id);
         if (!isCurrentMonth) cell.classList.add("is-outside");
         if (isCurrentMonth && !firstClass) cell.classList.add("is-empty");
         if (firstClass) cell.classList.add("has-class");
