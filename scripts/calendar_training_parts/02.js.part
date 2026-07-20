@@ -1,0 +1,180 @@
+    setAppointmentStatus("");
+  }
+
+  async function saveAppointment() {
+    if (!studentId) throw new Error("Primero guardá la ficha del alumno.");
+
+    const classDate = appointmentDateInput.value;
+    const classTime = normalizeTimeForInput(appointmentTimeInput.value);
+    const comments = appointmentCommentsInput.value.trim();
+
+    if (!classDate) throw new Error("La cita necesita una fecha.");
+    if (!/^\d{2}:\d{2}$/.test(classTime)) throw new Error("Ingresá la hora de la cita en formato hh:mm.");
+
+    const payload = {
+      class_date: classDate,
+      class_time: classTime,
+      routine_type: modalClass?.routine_type || "Clase",
+      status: normalizeStatus(modalClass?.status) === "draft" ? "scheduled" : (modalClass?.status || "scheduled"),
+      planning_criteria: comments
+    };
+    const url = modalClass?.id
+      ? `${API_BASE}/api/classes/${encodeURIComponent(modalClass.id)}`
+      : `${API_BASE}/api/students/${encodeURIComponent(studentId)}/classes`;
+
+    setAppointmentStatus("Guardando...");
+    saveAppointmentButton.disabled = true;
+    editAppointmentButton.disabled = true;
+
+    const response = await fetch(url, {
+      method: modalClass?.id ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || "No se pudo guardar la cita.");
+    }
+
+    const saved = await response.json();
+    const savedClass = { ...modalClass, ...payload, ...saved };
+    if (modalClass?.id) {
+      allClasses = allClasses.map(item => String(item.id) === String(modalClass.id) ? savedClass : item);
+    } else {
+      allClasses.push(savedClass);
+    }
+    allClasses.sort((a, b) => String(a.class_date || "").localeCompare(String(b.class_date || "")) || String(a.class_time || "").localeCompare(String(b.class_time || "")));
+    modalClass = savedClass;
+    deleteAppointmentButton.hidden = false;
+    renderCalendarAndClasses();
+    setAppointmentEditable(false);
+    setAppointmentStatus("Cita guardada. La fecha quedó marcada en verde.", "success");
+  }
+
+  populateCalendarMonthSelect = function populateCalendarMonthSelectOverride() {
+    if (!calendarMonthSelect) return;
+    const currentValue = monthKey(calendarStartDate);
+    const base = startOfMonth(startOfToday());
+    const months = new Map();
+
+    for (let offset = -24; offset <= 12; offset++) {
+      const date = addMonths(base, offset);
+      months.set(monthKey(date), date);
+    }
+    allClasses.forEach(item => {
+      const date = parseISODate(item.class_date);
+      if (date) months.set(monthKey(date), startOfMonth(date));
+    });
+    months.set(currentValue, startOfMonth(calendarStartDate));
+
+    calendarMonthSelect.innerHTML = [...months.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([value, date]) => {
+        const label = date.toLocaleDateString("es-US", { month: "long", year: "numeric" });
+        return `<option value="${value}" ${value === currentValue ? "selected" : ""}>${label}</option>`;
+      })
+      .join("");
+  };
+
+  renderTimeline = function renderTimelineOverride() {
+    if (!timelineGrid) return;
+    const map = classesByDate();
+    timelineGrid.innerHTML = "";
+
+    const monthStart = startOfMonth(calendarStartDate);
+    const monthEnd = addDays(addMonths(monthStart, 1), -1);
+    const visibleStart = addDays(monthStart, -monthStart.getDay());
+    const weekdays = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+    weekdays.forEach(day => {
+      const header = document.createElement("div");
+      header.className = "timeline-weekday";
+      header.textContent = day;
+      timelineGrid.appendChild(header);
+    });
+
+    if (calendarRangeLabel) {
+      calendarRangeLabel.textContent = monthStart.toLocaleDateString("es-US", { month: "long", year: "numeric" });
+    }
+    populateCalendarMonthSelect();
+
+    if (plannedCounter) {
+      const savedCount = allClasses.filter(item => {
+        if (!isMeaningfulClass(item)) return false;
+        const date = parseISODate(item.class_date);
+        return date && date >= monthStart && date <= monthEnd;
+      }).length;
+      plannedCounter.textContent = `${savedCount} ${savedCount === 1 ? "cita guardada" : "citas guardadas"}`;
+    }
+
+    for (let index = 0; index < 42; index++) {
+      const date = addDays(visibleStart, index);
+      const dateKey = toISODate(date);
+      const isCurrentMonth = date.getMonth() === monthStart.getMonth();
+      const label = formatDateShort(dateKey);
+      const classesForDay = map.get(dateKey) || [];
+      const firstClass = classesForDay[0];
+      const isActive = Boolean(firstClass && selectedClass && Number(firstClass.id) === Number(selectedClass.id));
+      const isClickable = isCurrentMonth && (isCalendarPage || Boolean(firstClass));
+      const cell = document.createElement(isClickable ? "button" : "div");
+
+      cell.className = "timeline-day";
+      if (!isCurrentMonth) cell.classList.add("is-outside");
+      if (!firstClass) cell.classList.add("is-empty");
+      if (firstClass) cell.classList.add("has-class");
+      if (isClickable) cell.classList.add("is-selectable");
+      if (isActive) cell.classList.add("is-active");
+      if (firstClass && !firstClass.has_routine) cell.classList.add("no-routine");
+
+      const detail = firstClass
+        ? (firstClass.planning_criteria || (firstClass.has_routine ? firstClass.routine_type : "Cita guardada"))
+        : "";
+      cell.innerHTML = `
+        <span>${label.weekday}</span>
+        <strong>${label.day}</strong>
+        ${firstClass ? `
+          <em>${escapeHtml(firstClass.class_time || "Sin hora")}</em>
+          <small>${escapeHtml(detail || "Cita guardada")}</small>
+          ${classesForDay.length > 1 ? `<small>${classesForDay.length} citas este día</small>` : ""}
+        ` : isCurrentMonth && isCalendarPage ? `<small class="slot-action">Agregar cita</small>` : `<small></small>`}
+      `;
+
+      if (isClickable) {
+        cell.type = "button";
+        cell.addEventListener("click", async () => {
+          if (isCalendarPage) {
+            openAppointmentModal(dateKey, firstClass || null);
+          } else if (firstClass) {
+            await selectClass(firstClass.id, true);
+          }
+        });
+      }
+      timelineGrid.appendChild(cell);
+    }
+  };
+
+  renderClassList = function renderClassListOverride() {
+    if (!classList) return;
+    const todayKey = toISODate(startOfToday());
+    const visibleClasses = allClasses
+      .filter(item => isMeaningfulClass(item) && String(item.class_date || "") >= todayKey)
+      .sort((a, b) => String(a.class_date || "").localeCompare(String(b.class_date || "")) || String(a.class_time || "").localeCompare(String(b.class_time || "")))
+      .slice(0, 6);
+
+    if (!visibleClasses.length) {
+      classList.innerHTML = '<div class="empty-state">Todavía no hay próximas citas guardadas. Elegí un día del calendario para programar la primera.</div>';
+      return;
+    }
+
+    classList.innerHTML = visibleClasses.map(item => {
+      const label = formatDateShort(item.class_date);
+      const state = getClassState(item);
+      return `
+        <article class="class-item">
+          <div class="class-date"><strong>${escapeHtml(label.weekday)}</strong><span>${escapeHtml(label.day)}</span></div>
+          <div class="class-info">
+            <div class="class-topline">
+              <strong>${escapeHtml(item.class_time || "Sin hora")}</strong>
+              <span class="status-pill ${state.className}">${state.label}</span>
+            </div>
+            <p><strong>Comentarios:</strong> ${escapeHtml(item.planning_criteria || "Sin comentarios.")}</p>
