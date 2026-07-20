@@ -1,0 +1,5 @@
+result=FAIL
+phase=validate-exact-output
+source_sha=33ff21ad19709e42a244ff8020cc4689a0081e9f
+run_id=29781774157
+recorded_at=2026-07-20T21:51:26Z
