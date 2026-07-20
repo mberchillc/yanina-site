@@ -3,7 +3,9 @@ name: Patch appointments and training
 on:
   push:
     paths:
+      - '.github/workflows/patch-appointments-training.yml'
       - 'scripts/patch_appointments_training.py'
+      - 'scripts/patch_appointments_training_followup.py'
       - 'scripts/trigger_appointments_training.txt'
   workflow_dispatch:
 
@@ -17,10 +19,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Validate patch script
-        run: python -m py_compile scripts/patch_appointments_training.py
+
+      - name: Validate patch scripts
+        run: |
+          python -m py_compile scripts/patch_appointments_training.py
+          python -m py_compile scripts/patch_appointments_training_followup.py
+
       - name: Patch appointment calendar and training page
-        run: python scripts/patch_appointments_training.py
+        run: |
+          python scripts/patch_appointments_training.py
+          python scripts/patch_appointments_training_followup.py
+
       - name: Validate generated pages
         run: |
           python - <<'PY'
@@ -29,13 +38,46 @@ jobs:
 
           alumno = Path('admin/alumno.html').read_text(encoding='utf-8')
           training = Path('admin/entrenamiento.html').read_text(encoding='utf-8')
-          assert 'YANINA_APPOINTMENT_MODAL_V2' in alumno
-          assert 'id="appointmentModal"' in alumno
-          assert 'entrenamiento.html' in alumno
-          assert 'YANINA_TRAINING_PAGE_V2' in training
-          assert '<title>Entrenamiento | Yanina Trainer</title>' in training
-          assert '/api/classes/' in training
-          assert 'Calendario de citas guardadas' in training
+
+          required_alumno = [
+              'YANINA_APPOINTMENT_MODAL_V2',
+              'YANINA_APPOINTMENT_TRAINING_FOLLOWUP_V3',
+              'id="appointmentModal"',
+              'id="appointmentDateInput" type="date" readonly',
+              'id="appointmentTimeInput" type="time"',
+              'id="appointmentCommentsInput"',
+              'id="appointmentSaveBtn">Guardar',
+              'id="appointmentEditBtn">Editar',
+              'id="appointmentDeleteBtn"',
+              'id="createTrainingPlanBtn"',
+              'let firstMonth = addMonths(base, -60);',
+              'const responseData = await response.json();',
+          ]
+          required_training = [
+              'YANINA_TRAINING_PAGE_V2',
+              'YANINA_APPOINTMENT_TRAINING_FOLLOWUP_V3',
+              '<title>Entrenamiento | Yanina Trainer</title>',
+              'Calendario de citas guardadas',
+              'Guardar clase y rutina',
+              'let firstMonth = addMonths(base, -60);',
+              'calendarStartDate = startOfMonth(selectedDate);',
+              'const classChanged = Boolean',
+              '/api/classes/',
+              'id="classVideosAdmin"',
+              'id="classCommentsAdmin"',
+          ]
+
+          for marker in required_alumno:
+              assert marker in alumno, f'Missing alumno marker: {marker}'
+          for marker in required_training:
+              assert marker in training, f'Missing training marker: {marker}'
+
+          hidden_measurement_sequence = (
+              'await loadStudentFromBackend();\n'
+              '        await loadMeasurementsFromBackend();\n'
+              '        await loadClassesFromBackend();'
+          )
+          assert hidden_measurement_sequence not in training, 'Training page still loads hidden measurements before classes'
 
           for name, html in [('alumno', alumno), ('entrenamiento', training)]:
               scripts = re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', html, flags=re.S | re.I)
@@ -46,8 +88,10 @@ jobs:
           PY
           node --check /tmp/alumno.js
           node --check /tmp/entrenamiento.js
+
       - name: Record successful validation
         run: echo "validated $GITHUB_SHA" > scripts/appointment_validation_status.txt
+
       - name: Upload generated pages for verification
         uses: actions/upload-artifact@v4
         with:
@@ -56,6 +100,7 @@ jobs:
             admin/alumno.html
             admin/entrenamiento.html
           retention-days: 3
+
       - name: Commit generated pages and validation status
         run: |
           if git diff --quiet -- admin/alumno.html admin/entrenamiento.html scripts/appointment_validation_status.txt; then
@@ -65,5 +110,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add admin/alumno.html admin/entrenamiento.html scripts/appointment_validation_status.txt
-          git commit -m "Validate appointment and training pages"
+          git commit -m "Finalize appointment history and training flow"
           git push
