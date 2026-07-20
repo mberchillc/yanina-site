@@ -1,0 +1,48 @@
+name: Patch appointments and training
+
+on:
+  push:
+    paths:
+      - 'scripts/patch_appointments_training.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Validate patch script
+        run: python -m py_compile scripts/patch_appointments_training.py
+      - name: Patch appointment calendar and training page
+        run: python scripts/patch_appointments_training.py
+      - name: Validate generated pages
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          alumno = Path('admin/alumno.html').read_text(encoding='utf-8')
+          training = Path('admin/entrenamiento.html').read_text(encoding='utf-8')
+          assert 'YANINA_APPOINTMENT_MODAL_V2' in alumno
+          assert 'id="appointmentModal"' in alumno
+          assert 'entrenamiento.html' in alumno
+          assert 'YANINA_TRAINING_PAGE_V2' in training
+          assert '<title>Entrenamiento | Yanina Trainer</title>' in training
+          assert '/api/classes/' in training
+          assert 'Calendario de citas guardadas' in training
+          print('appointment/training pages validated')
+          PY
+      - name: Commit generated pages
+        run: |
+          if git diff --quiet -- admin/alumno.html admin/entrenamiento.html; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin/alumno.html admin/entrenamiento.html
+          git commit -m "Split appointments from training workflow"
+          git push
