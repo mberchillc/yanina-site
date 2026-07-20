@@ -6,11 +6,15 @@ on:
       - codex/calendar-appointments-entrenamiento
     paths:
       - scripts/patch_calendar_training_split.py
+      - scripts/calendar_training_parts/**
+      - .github/workflows/patch-calendar-training-split.yml
   pull_request:
     branches:
       - main
     paths:
       - scripts/patch_calendar_training_split.py
+      - scripts/calendar_training_parts/**
+      - .github/workflows/patch-calendar-training-split.yml
 
 permissions:
   contents: write
@@ -31,13 +35,18 @@ jobs:
 
       - name: Validate generated pages and JavaScript
         run: |
-          test -f admin/calendar-training.css
-          test -f admin/calendar-training.js
-          test -f admin/entrenamiento.html
+          test -s admin/calendar-training.css
+          test -s admin/calendar-training.js
+          test -s admin/entrenamiento.html
           node --check admin/calendar-training.js
           python - <<'PY'
           from pathlib import Path
           import re
+
+          calendar_html = Path('admin/alumno.html').read_text(encoding='utf-8')
+          training_html = Path('admin/entrenamiento.html').read_text(encoding='utf-8')
+          calendar_js = Path('admin/calendar-training.js').read_text(encoding='utf-8')
+          calendar_css = Path('admin/calendar-training.css').read_text(encoding='utf-8')
 
           for source, target in [
               ('admin/alumno.html', '/tmp/admin-alumno.js'),
@@ -50,6 +59,56 @@ jobs:
               if 'calendar-training.css' not in text or 'calendar-training.js' not in text:
                   raise SystemExit(f'Calendar/training assets not wired in {source}')
               Path(target).write_text(match.group(1), encoding='utf-8')
+
+          required_calendar_html = [
+              '<body data-page="calendar">',
+              'calendar-training.css',
+              'calendar-training.js',
+              'id="calendario-mensual"',
+          ]
+          required_training_html = [
+              '<body data-page="training">',
+              '<title>Entrenamiento | Yanina Trainer</title>',
+              'calendar-training.css',
+              'calendar-training.js',
+              'id="clase-seleccionada"',
+              'id="exerciseTable"',
+              'id="classVideosAdmin"',
+              'id="classCommentsAdmin"',
+          ]
+          required_js = [
+              'id="appointmentDateInput" type="date" readonly',
+              'id="appointmentTimeInput" type="time"',
+              'id="appointmentCommentsInput"',
+              'id="saveAppointmentBtn">Guardar',
+              'id="editAppointmentBtn">Editar',
+              'id="deleteAppointmentBtn"',
+              'openAppointmentModal(dateKey, firstClass || null)',
+              'isTrainingPage || Boolean(firstClass)',
+              'entrenamiento.html?',
+              'months.set(monthKey(date)',
+              'await loadRoutineFromBackend(activeBackendClassId)',
+              'await renderAdminClassVideos(activeBackendClassId)',
+              'await renderAdminClassComments(activeBackendClassId)',
+          ]
+          required_css = [
+              'body[data-page="calendar"] #clase-seleccionada',
+              'body[data-page="training"] #datos',
+              '.timeline-day.has-class',
+              'background: #d9f2cb',
+              '.appointment-modal',
+          ]
+
+          checks = [
+              ('calendar HTML', calendar_html, required_calendar_html),
+              ('training HTML', training_html, required_training_html),
+              ('calendar JavaScript', calendar_js, required_js),
+              ('calendar CSS', calendar_css, required_css),
+          ]
+          for label, text, needles in checks:
+              missing = [needle for needle in needles if needle not in text]
+              if missing:
+                  raise SystemExit(f'{label} missing required behavior: {missing}')
           PY
           node --check /tmp/admin-alumno.js
           node --check /tmp/admin-entrenamiento.js
@@ -59,10 +118,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if git diff --quiet -- admin/alumno.html admin/entrenamiento.html admin/calendar-training.js; then
-            echo "No page changes to commit"
-            exit 1
+          changes=$(git status --porcelain -- admin/alumno.html admin/entrenamiento.html admin/calendar-training.js)
+          if [ -z "$changes" ]; then
+            echo "Generated pages are already current"
+            exit 0
           fi
+          printf '%s\n' "$changes"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add admin/alumno.html admin/entrenamiento.html admin/calendar-training.js
