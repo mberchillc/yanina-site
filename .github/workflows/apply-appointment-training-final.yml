@@ -6,13 +6,15 @@ on:
       - main
     paths:
       - appointment-training-final-trigger.txt
+      - .github/workflows/apply-appointment-training-final.yml
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
   group: finalize-appointment-training-main
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply:
@@ -27,6 +29,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo restore-and-apply > /tmp/final-appointment-training-phase
           git checkout 77ff9a0541c5ddd4acfa80413b66e8291e3bdd9d -- \
             admin/alumno.html \
             admin/entrenamiento.html \
@@ -49,6 +52,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo validate-exact-output > /tmp/final-appointment-training-phase
           python - <<'PY'
           from hashlib import sha256
           from html.parser import HTMLParser
@@ -111,6 +115,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo cleanup-and-push > /tmp/final-appointment-training-phase
           rm -rf .github/appointment-training-final
           rm -f .github/workflows/apply-appointment-training-final.yml
           rm -f appointment-training-final-trigger.txt
@@ -124,9 +129,32 @@ jobs:
           rm -f scripts/trigger_live_appointment_training_check.txt
           rm -f scripts/appointment_validation_status.txt
           rm -f scripts/live_appointment_training_status.txt
+          rm -f scripts/final_appointment_training_status.txt
           git diff --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
           git commit -m 'Finalize appointment calendar and dedicated training page'
+          git push origin HEAD:${GITHUB_REF_NAME}
+
+      - name: Record exact failure phase
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          phase=$(cat /tmp/final-appointment-training-phase 2>/dev/null || echo checkout-or-workflow)
+          git reset --hard HEAD
+          git clean -fd
+          mkdir -p scripts
+          {
+            echo 'result=FAIL'
+            echo "phase=${phase}"
+            echo "source_sha=${GITHUB_SHA}"
+            echo "run_id=${GITHUB_RUN_ID}"
+            echo "recorded_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > scripts/final_appointment_training_status.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add scripts/final_appointment_training_status.txt
+          git commit -m "Record final appointment/training failure at ${phase}"
           git push origin HEAD:${GITHUB_REF_NAME}
