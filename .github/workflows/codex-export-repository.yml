@@ -1,0 +1,28 @@
+name: Codex export repository
+
+on:
+  push:
+    branches:
+      - codex/appointments-training-page-20260720
+    paths:
+      - .github/workflows/codex-export-repository.yml
+      - .codex-export-trigger
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Create source archive
+        run: tar --exclude=.git -czf yanina-site-source.tgz .
+      - name: Upload source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: yanina-site-source
+          path: yanina-site-source.tgz
+          if-no-files-found: error
+          retention-days: 1
