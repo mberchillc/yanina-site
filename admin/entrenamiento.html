@@ -1216,6 +1216,8 @@
     .timeline-day.training-appointment:hover { transform: translateY(-1px); }
     #classDateInput[readonly], #classTimeInput[readonly] { background: #f3f6f4; color: #596760; }
 
+
+    /* YANINA_APPOINTMENT_TRAINING_FOLLOWUP_V3 */
   </style>
 </head>
 
@@ -1507,7 +1509,7 @@
 <div class="bottom-actions">
   <button type="button" class="btn btn-form-secondary" id="addExerciseBtn">+ Agregar ejercicio</button>
   <button type="button" class="btn btn-form-secondary" id="duplicateWorkoutBtn">Duplicar rutina</button>
-  <button type="button" class="btn btn-form-primary" id="saveWorkoutBtn">Guardar rutina</button>
+  <button type="button" class="btn btn-form-primary" id="saveWorkoutBtn">Guardar clase y rutina</button>
   <a class="btn btn-primary pdf-link" href="rutina-pdf.html" target="_blank">Descargar rutina PDF</a>
 </div>
       </article>
@@ -2119,20 +2121,29 @@ async function loadMeasurementsFromBackend() {
 
     function populateCalendarMonthSelect() {
       if (!calendarMonthSelect) return;
+
       const currentValue = monthKey(calendarStartDate);
       const base = startOfMonth(startOfToday());
+      let firstMonth = addMonths(base, -60);
+      let lastMonth = addMonths(base, 24);
+
+      allClasses.filter(isMeaningfulClass).forEach(item => {
+        const classDate = parseISODate(item.class_date);
+        if (!classDate) return;
+        const classMonth = startOfMonth(classDate);
+        if (classMonth < firstMonth) firstMonth = classMonth;
+        if (classMonth > lastMonth) lastMonth = classMonth;
+      });
+
+      const selectedMonth = startOfMonth(calendarStartDate);
+      if (selectedMonth < firstMonth) firstMonth = selectedMonth;
+      if (selectedMonth > lastMonth) lastMonth = selectedMonth;
+
       const options = [];
-
-      for (let offset = -3; offset <= 12; offset++) {
-        const date = addMonths(base, offset);
-        const value = monthKey(date);
-        const label = date.toLocaleDateString("es-US", { month: "long", year: "numeric" });
+      for (let cursor = new Date(firstMonth); cursor <= lastMonth; cursor = addMonths(cursor, 1)) {
+        const value = monthKey(cursor);
+        const label = cursor.toLocaleDateString("es-AR", { month: "long", year: "numeric" });
         options.push(`<option value="${value}" ${value === currentValue ? "selected" : ""}>${label}</option>`);
-      }
-
-      if (!options.some(option => option.includes(`value="${currentValue}"`))) {
-        const label = calendarStartDate.toLocaleDateString("es-US", { month: "long", year: "numeric" });
-        options.unshift(`<option value="${currentValue}" selected>${label}</option>`);
       }
 
       calendarMonthSelect.innerHTML = options.join("");
@@ -2463,18 +2474,23 @@ return {
       const requestedClass = targetClassId
         ? allClasses.find(item => String(item.id) === String(targetClassId))
         : null;
-      const firstMeaningfulClass = allClasses.find(isMeaningfulClass);
+      const meaningfulClasses = allClasses.filter(isMeaningfulClass);
+      const todayKey = toISODate(startOfToday());
+      const nextClass = meaningfulClasses.find(item => String(item.class_date || "") >= todayKey) || null;
+      const pastClasses = meaningfulClasses.filter(item => String(item.class_date || "") < todayKey);
+      const defaultClass = nextClass || pastClasses[pastClasses.length - 1] || meaningfulClasses[0] || null;
+      const classToOpen = requestedClass || defaultClass;
 
-      if (requestedClass) {
-        await selectClass(requestedClass.id, false);
-        const target = targetSection === "videos"
-          ? document.getElementById("classVideosAdmin")
-          : targetSection === "comments"
-            ? document.getElementById("classCommentsAdmin")
-            : document.getElementById("clase-seleccionada");
-        requestAnimationFrame(() => target?.scrollIntoView({ behavior: "smooth", block: "start" }));
-      } else if (firstMeaningfulClass && !selectedClass) {
-        await selectClass(firstMeaningfulClass.id, false);
+      if (classToOpen) {
+        await selectClass(classToOpen.id, false);
+        if (requestedClass) {
+          const target = targetSection === "videos"
+            ? document.getElementById("classVideosAdmin")
+            : targetSection === "comments"
+              ? document.getElementById("classCommentsAdmin")
+              : document.getElementById("clase-seleccionada");
+          requestAnimationFrame(() => target?.scrollIntoView({ behavior: "smooth", block: "start" }));
+        }
       }
 
       return allClasses;
@@ -2710,6 +2726,9 @@ return {
       persistActiveCalendarDraft();
       const found = allClasses.find(item => Number(item.id) === Number(classId));
       if (!found) return;
+
+      const selectedDate = parseISODate(found.class_date);
+      if (selectedDate) calendarStartDate = startOfMonth(selectedDate);
 
       selectedClass = found;
       activeBackendClassId = String(found.id);
@@ -3384,16 +3403,17 @@ async function renderAdminClassVideos(classId) {
     async function saveClassAndRoutine() {
       const historicalEdit = isClassStarted();
       const changed = routineIsDirty();
+      const classChanged = Boolean(selectedClass?.id && dirtyClassIds.has(String(selectedClass.id)));
       const editComment = String(historicalEditComment?.value || "").trim();
 
-      if (historicalEdit && !changed) return { unchanged: true };
-      if (historicalEdit && !editComment) {
+      if (historicalEdit && !changed && !classChanged) return { unchanged: true };
+      if (historicalEdit && changed && !editComment) {
         historicalEditBox?.classList.add("is-visible");
         historicalEditComment?.focus();
         throw new Error("Agregá un comentario sobre la edición antes de guardar la rutina.");
       }
 
-      const savedClass = historicalEdit ? selectedClass : await saveCalendarChanges();
+      const savedClass = await saveCalendarChanges();
       const classId = savedClass?.id || activeBackendClassId;
 
       if (!classId) {
@@ -3401,6 +3421,7 @@ async function renderAdminClassVideos(classId) {
       }
 
       activeBackendClassId = String(classId);
+      if (!changed) return savedClass;
 
       const payload = {
         routine_type: document.getElementById("classRoutineInput").value || "",
@@ -3710,7 +3731,6 @@ async function renderAdminClassVideos(classId) {
         }
 
         await loadStudentFromBackend();
-        await loadMeasurementsFromBackend();
         await loadClassesFromBackend();
         updateStarfitLinks();
         updateGestionAdministrativaLink();
