@@ -42,5 +42,5 @@ admin/entrenamiento.html:3093:        classTime = normalizeAppointmentTime(appoi
 admin/entrenamiento.html:3096:        appointmentTimeInput?.focus();
 admin/entrenamiento.html:3143:        if (appointmentTimeInput) appointmentTimeInput.value = formatAppointmentTime(normalizedSaved.class_time);
 Traceback (most recent call last):
-  File "<stdin>", line 24, in <module>
+  File "<stdin>", line 26, in <module>
 AssertionError
