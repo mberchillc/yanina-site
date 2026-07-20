@@ -1,0 +1,172 @@
+name: Verify live appointment and training deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/verify-live-appointment-training.yml'
+      - 'scripts/trigger_live_appointment_training_check.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-live-appointment-training
+  cancel-in-progress: true
+
+jobs:
+  verify-live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run static and production smoke checks
+        id: smoke
+        shell: bash
+        run: |
+          set +e
+          result="PASS"
+          reason=""
+
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          required = {
+              'admin/alumno.html': [
+                  'YANINA_APPOINTMENT_MODAL_V2',
+                  'YANINA_APPOINTMENT_TRAINING_FOLLOWUP_V3',
+                  'YANINA_APPOINTMENT_TRAINING_FINAL_V4',
+                  'id="appointmentModal"',
+                  'id="appointmentDateInput" type="date" readonly',
+                  'id="appointmentTimeInput" type="time"',
+                  'id="appointmentCommentsInput"',
+                  'id="appointmentSaveBtn">Guardar',
+                  'id="appointmentEditBtn">Editar',
+                  'id="appointmentDeleteBtn"',
+                  'id="trainingTab"',
+              ],
+              'admin/entrenamiento.html': [
+                  'YANINA_TRAINING_PAGE_V2',
+                  'YANINA_APPOINTMENT_TRAINING_FOLLOWUP_V3',
+                  'YANINA_APPOINTMENT_TRAINING_FINAL_V4',
+                  '<title>Entrenamiento | Yanina Trainer</title>',
+                  'Calendario de citas guardadas',
+                  'Guardar clase y rutina',
+                  'id="classVideosAdmin"',
+                  'id="classCommentsAdmin"',
+                  'let firstMonth = addMonths(base, -60);',
+              ],
+          }
+
+          for source, markers in required.items():
+              text = Path(source).read_text(encoding='utf-8')
+              missing = [marker for marker in markers if marker not in text]
+              if missing:
+                  raise SystemExit(f'{source} missing markers: {missing}')
+              scripts = re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', text, flags=re.S | re.I)
+              if not scripts:
+                  raise SystemExit(f'No inline JavaScript found in {source}')
+              Path('/tmp/' + Path(source).stem + '.js').write_text('\n'.join(scripts), encoding='utf-8')
+          PY
+          static_status=$?
+
+          if [ "$static_status" -eq 0 ]; then
+            node --check /tmp/alumno.js
+            alumno_js_status=$?
+            node --check /tmp/entrenamiento.js
+            training_js_status=$?
+          else
+            alumno_js_status=1
+            training_js_status=1
+          fi
+
+          if [ "$static_status" -ne 0 ] || [ "$alumno_js_status" -ne 0 ] || [ "$training_js_status" -ne 0 ]; then
+            result="FAIL"
+            reason="Static page or JavaScript validation failed"
+          fi
+
+          live_ok=0
+          alumno_http="000"
+          training_http="000"
+          for attempt in $(seq 1 36); do
+            cache_key="${GITHUB_SHA}-${attempt}-$(date +%s)"
+            alumno_http=$(curl -L -sS --connect-timeout 10 --max-time 30 \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              -D /tmp/alumno-headers.txt \
+              -o /tmp/live-alumno.html \
+              -w '%{http_code}' \
+              "https://yaninatrainer.net/admin/alumno.html?deployment-check=${cache_key}")
+            alumno_curl=$?
+
+            training_http=$(curl -L -sS --connect-timeout 10 --max-time 30 \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              -D /tmp/training-headers.txt \
+              -o /tmp/live-entrenamiento.html \
+              -w '%{http_code}' \
+              "https://yaninatrainer.net/admin/entrenamiento.html?deployment-check=${cache_key}")
+            training_curl=$?
+
+            if [ "$alumno_curl" -eq 0 ] && [ "$training_curl" -eq 0 ] \
+              && [ "$alumno_http" = "200" ] && [ "$training_http" = "200" ] \
+              && grep -Fq 'YANINA_APPOINTMENT_TRAINING_FINAL_V4' /tmp/live-alumno.html \
+              && grep -Fq 'id="appointmentDateInput" type="date" readonly' /tmp/live-alumno.html \
+              && grep -Fq 'id="appointmentSaveBtn">Guardar' /tmp/live-alumno.html \
+              && grep -Fq 'id="appointmentEditBtn">Editar' /tmp/live-alumno.html \
+              && grep -Fq 'id="appointmentDeleteBtn"' /tmp/live-alumno.html \
+              && grep -Fq 'YANINA_APPOINTMENT_TRAINING_FINAL_V4' /tmp/live-entrenamiento.html \
+              && grep -Fq '<title>Entrenamiento | Yanina Trainer</title>' /tmp/live-entrenamiento.html \
+              && grep -Fq 'Calendario de citas guardadas' /tmp/live-entrenamiento.html \
+              && grep -Fq 'Guardar clase y rutina' /tmp/live-entrenamiento.html \
+              && grep -Fq 'id="classVideosAdmin"' /tmp/live-entrenamiento.html \
+              && grep -Fq 'id="classCommentsAdmin"' /tmp/live-entrenamiento.html; then
+              live_ok=1
+              break
+            fi
+
+            echo "Attempt ${attempt}: alumno=${alumno_http}, entrenamiento=${training_http}; waiting for production deployment"
+            sleep 10
+          done
+
+          if [ "$live_ok" -ne 1 ]; then
+            result="FAIL"
+            if [ -n "$reason" ]; then reason="${reason}; "; fi
+            reason="${reason}Live pages did not expose the required final markers before timeout"
+          fi
+
+          validated_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          {
+            echo "result=${result}"
+            echo "source_sha=${GITHUB_SHA}"
+            echo "validated_at=${validated_at}"
+            echo "alumno_http=${alumno_http}"
+            echo "entrenamiento_http=${training_http}"
+            echo "static_validation=$([ "$static_status" -eq 0 ] && [ "$alumno_js_status" -eq 0 ] && [ "$training_js_status" -eq 0 ] && echo PASS || echo FAIL)"
+            echo "live_validation=$([ "$live_ok" -eq 1 ] && echo PASS || echo FAIL)"
+            echo "reason=${reason}"
+          } > scripts/live_appointment_training_status.txt
+
+          echo "result=${result}" >> "$GITHUB_OUTPUT"
+          cat scripts/live_appointment_training_status.txt
+
+      - name: Record smoke-test result
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/live_appointment_training_status.txt
+          if git diff --cached --quiet; then
+            echo "Smoke-test status is already current"
+          else
+            git commit -m "Record live appointment and training smoke test"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Fail workflow when production smoke test failed
+        if: steps.smoke.outputs.result != 'PASS'
+        run: exit 1
