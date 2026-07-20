@@ -96,24 +96,18 @@
 
 .pillars:hover article { animation-play-state: paused; }
 
-.pillars article::before {
-  content: "";
-  width: 176px;
-  height: 176px;
-  display: block;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-}
-
 .pillars article > img {
-  display: none !important;
+  display: block !important;
+  width: 176px !important;
+  height: 176px !important;
+  max-width: 176px !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  object-fit: contain !important;
+  object-position: center !important;
 }
-
-.pillars article:nth-child(1)::before { background-image: url("/assets/icon-service-mediciones.svg"); }
-.pillars article:nth-child(2)::before { background-image: url("/assets/icon-service-entrenamiento.svg"); }
-.pillars article:nth-child(3)::before { background-image: url("/assets/icon-service-alimentacion.svg"); }
-.pillars article:nth-child(4)::before { background-image: url("/assets/icon-service-seguimiento.svg"); }
 
 .pillars h3 {
   max-width: 100% !important;
@@ -162,9 +156,10 @@
     grid-template-rows: 170px auto 1fr !important;
     padding: 36px 28px 38px !important;
   }
-  .pillars article::before {
-    width: 162px;
-    height: 162px;
+  .pillars article > img {
+    width: 162px !important;
+    height: 162px !important;
+    max-width: 162px !important;
   }
 }
 
@@ -215,9 +210,10 @@
     border-radius: 30px !important;
     padding: 34px 24px 36px !important;
   }
-  .pillars article::before {
-    width: 154px;
-    height: 154px;
+  .pillars article > img {
+    width: 154px !important;
+    height: 154px !important;
+    max-width: 154px !important;
   }
   .pillars h3 { font-size: 22px !important; }
   .pillars p { font-size: 17px !important; line-height: 1.54 !important; }
