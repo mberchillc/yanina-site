@@ -24,6 +24,8 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
+
           alumno = Path('admin/alumno.html').read_text(encoding='utf-8')
           training = Path('admin/entrenamiento.html').read_text(encoding='utf-8')
           assert 'YANINA_APPOINTMENT_MODAL_V2' in alumno
@@ -33,8 +35,24 @@ jobs:
           assert '<title>Entrenamiento | Yanina Trainer</title>' in training
           assert '/api/classes/' in training
           assert 'Calendario de citas guardadas' in training
+
+          for name, html in [('alumno', alumno), ('entrenamiento', training)]:
+              scripts = re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', html, flags=re.S | re.I)
+              assert scripts, f'No inline script found in {name}'
+              Path(f'/tmp/{name}.js').write_text('\n'.join(scripts), encoding='utf-8')
+
           print('appointment/training pages validated')
           PY
+          node --check /tmp/alumno.js
+          node --check /tmp/entrenamiento.js
+      - name: Upload generated pages for verification
+        uses: actions/upload-artifact@v4
+        with:
+          name: appointment-training-pages
+          path: |
+            admin/alumno.html
+            admin/entrenamiento.html
+          retention-days: 3
       - name: Commit generated pages
         run: |
           if git diff --quiet -- admin/alumno.html admin/entrenamiento.html; then
