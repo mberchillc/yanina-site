@@ -1218,6 +1218,7 @@
 
 
     /* YANINA_APPOINTMENT_TRAINING_FOLLOWUP_V3 */
+    /* YANINA_APPOINTMENT_TRAINING_FINAL_V4 */
   </style>
 </head>
 
@@ -1229,7 +1230,7 @@
         <img src="../assets/logo-transp.png" alt="Yanina Trainer" />
         <div class="brand-text">
           <strong>Admin Trainer</strong>
-          <small>Ficha del alumno</small>
+          <small>Entrenamiento</small>
         </div>
       </div>
 
@@ -2479,7 +2480,10 @@ return {
       const nextClass = meaningfulClasses.find(item => String(item.class_date || "") >= todayKey) || null;
       const pastClasses = meaningfulClasses.filter(item => String(item.class_date || "") < todayKey);
       const defaultClass = nextClass || pastClasses[pastClasses.length - 1] || meaningfulClasses[0] || null;
-      const classToOpen = requestedClass || defaultClass;
+      const currentClass = selectedClass?.id
+        ? allClasses.find(item => String(item.id) === String(selectedClass.id)) || null
+        : null;
+      const classToOpen = requestedClass || currentClass || defaultClass;
 
       if (classToOpen) {
         await selectClass(classToOpen.id, false);
@@ -3376,9 +3380,11 @@ async function renderAdminClassVideos(classId) {
       const response = await fetch(`${API_BASE}/api/classes/${classId}/routine?cache=${Date.now()}`);
       if (!response.ok) {
         historicalRoutineEdits = [];
-        loadedRoutineSnapshot = null;
+        document.getElementById("notas-rutina").value = "";
         clearExerciseRows();
         addBlankExerciseRow();
+        loadedRoutineSnapshot = currentRoutineSnapshot();
+        updateRoutineEditState();
         return;
       }
 

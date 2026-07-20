@@ -1230,6 +1230,7 @@
 
 
     /* YANINA_APPOINTMENT_TRAINING_FOLLOWUP_V3 */
+    /* YANINA_APPOINTMENT_TRAINING_FINAL_V4 */
   </style>
 </head>
 
@@ -3700,6 +3701,10 @@ async function renderAdminClassVideos(classId) {
     }
     function closeAppointmentModal() { appointmentModal.classList.remove("is-open"); appointmentModal.setAttribute("aria-hidden","true"); document.body.classList.remove("modal-open"); appointmentClassId = null; appointmentClassSnapshot = null; appointmentState.style.display = "none"; }
     async function saveAppointment() {
+      if (!studentId) {
+        showAppointmentState("Primero guardá la ficha del alumno para crear una cita.", true);
+        return;
+      }
       const classDate = appointmentDateInput.value, classTime = appointmentTimeInput.value, comments = appointmentCommentsInput.value || "";
       if (!classDate) return showAppointmentState("La fecha no es válida.", true);
       if (!classTime) return showAppointmentState("Cargá la hora de la cita.", true);
@@ -3710,8 +3715,9 @@ async function renderAdminClassVideos(classId) {
         const response = await fetch(appointmentClassId ? `${API_BASE}/api/classes/${encodeURIComponent(appointmentClassId)}` : `${API_BASE}/api/students/${encodeURIComponent(studentId)}/classes`, { method:appointmentClassId ? "PUT" : "POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
         if (!response.ok) { const error = await response.json().catch(() => ({})); throw new Error(error.error || "No se pudo guardar la cita."); }
         const responseData = await response.json();
-        const saved = { ...previous, ...payload, ...responseData };
-        if (!saved.id && appointmentClassId) saved.id = appointmentClassId;
+        const returnedClass = responseData?.class || responseData?.appointment || responseData;
+        const saved = { ...previous, ...payload, ...returnedClass };
+        if (!saved.id) saved.id = responseData?.class_id || responseData?.appointment_id || appointmentClassId;
         if (!saved.id) throw new Error("La cita se guardó, pero la API no devolvió su identificador.");
         if (appointmentClassId) allClasses = allClasses.map(item => Number(item.id) === Number(saved.id) ? saved : item); else allClasses.push(saved);
         allClasses.sort((a,b) => String(a.class_date || "").localeCompare(String(b.class_date || "")) || String(a.class_time || "").localeCompare(String(b.class_time || "")));
