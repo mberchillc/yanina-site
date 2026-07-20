@@ -1,0 +1,61 @@
+name: Build appointment calendar and training page
+
+on:
+  push:
+    branches:
+      - codex/appointments-training-page-v2
+    paths:
+      - .github/workflows/patch-appointments-training.yml
+      - scripts/patch_appointments_training.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch pages
+        run: python scripts/patch_appointments_training.py
+
+      - name: Validate inline JavaScript
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          for source in ("admin/alumno.html", "admin/entrenamiento.html"):
+              text = Path(source).read_text(encoding="utf-8")
+              matches = re.findall(r"<script>(.*?)</script>", text, flags=re.S)
+              if len(matches) != 1:
+                  raise SystemExit(f"{source}: expected one inline script, found {len(matches)}")
+              output = Path("/tmp") / f"{Path(source).stem}.js"
+              output.write_text(matches[0], encoding="utf-8")
+              print(output)
+          PY
+          node --check /tmp/alumno.js
+          node --check /tmp/entrenamiento.js
+
+      - name: Validate required UI
+        run: |
+          grep -q 'id="appointmentModal"' admin/alumno.html
+          grep -q 'id="appointmentSaveBtn">Guardar' admin/alumno.html
+          grep -q 'id="appointmentEditBtn">Editar' admin/alumno.html
+          grep -q 'id="appointmentDeleteBtn"' admin/alumno.html
+          grep -q '<body class="training-page">' admin/entrenamiento.html
+          grep -q 'Guardar clase y rutina' admin/entrenamiento.html
+
+      - name: Commit generated pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No changes"
+          else
+            git add admin/alumno.html admin/entrenamiento.html
+            git commit -m "Separate appointment calendar from training"
+            git push
+          fi
