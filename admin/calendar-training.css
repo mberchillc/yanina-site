@@ -1,0 +1,198 @@
+/* Calendar appointments and training workspace split */
+body[data-page="calendar"] #clase-seleccionada,
+body[data-page="calendar"] #clase-seleccionada ~ * {
+  display: none !important;
+}
+
+body[data-page="training"] #datos,
+body[data-page="training"] #mediciones,
+body[data-page="training"] #calendario {
+  display: none !important;
+}
+
+body[data-page="training"] #plan {
+  margin-top: 0;
+}
+
+body[data-page="training"] #calendario-mensual {
+  margin-bottom: 22px;
+}
+
+body[data-page="training"] .calendar-save-actions,
+body[data-page="calendar"] #saveClassBtn {
+  display: none !important;
+}
+
+body[data-page="training"] .timeline-day.is-empty {
+  cursor: default;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.timeline-day.has-class,
+.timeline-day.has-class.no-routine {
+  background: #d9f2cb !important;
+  border-color: rgba(126, 200, 69, 0.78) !important;
+}
+
+.timeline-day.has-class:hover {
+  border-color: #7ec845 !important;
+  box-shadow: 0 8px 20px rgba(24, 63, 53, 0.12);
+}
+
+.timeline-day.has-class.is-active {
+  background: #b9e991 !important;
+  outline: 3px solid rgba(126, 200, 69, 0.38);
+}
+
+.timeline-day.has-class small {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.training-selection-hint {
+  margin-bottom: 22px;
+}
+
+#classDateInput[readonly] {
+  background: rgba(247, 243, 234, 0.8);
+  color: var(--green-dark);
+  cursor: default;
+}
+
+.appointment-modal[hidden] {
+  display: none;
+}
+
+.appointment-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(14, 36, 31, 0.56);
+  backdrop-filter: blur(6px);
+}
+
+.appointment-dialog {
+  width: min(620px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border: 1px solid rgba(24, 63, 53, 0.18);
+  border-radius: 24px;
+  padding: 22px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(11, 31, 26, 0.28);
+}
+
+.appointment-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.appointment-dialog-header h2 {
+  color: var(--green-dark);
+  font-size: 25px;
+  margin-bottom: 6px;
+}
+
+.appointment-dialog-header p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.appointment-close-btn {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--green-dark);
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.appointment-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.appointment-form-grid .field.full {
+  grid-column: 1 / -1;
+}
+
+.appointment-form-grid textarea {
+  min-height: 124px;
+}
+
+.appointment-form-grid input:disabled,
+.appointment-form-grid textarea:disabled {
+  opacity: 1;
+  background: rgba(247, 243, 234, 0.72);
+  color: var(--text);
+  cursor: default;
+}
+
+.appointment-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.appointment-modal-actions .delete-class-btn {
+  margin-right: auto;
+}
+
+.appointment-modal-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  transform: none;
+}
+
+.appointment-modal-status {
+  min-height: 22px;
+  margin-top: 13px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.appointment-modal-status.is-success {
+  color: var(--green-dark);
+}
+
+.appointment-modal-status.is-error {
+  color: #9c2f2f;
+}
+
+@media (max-width: 620px) {
+  .appointment-modal {
+    align-items: end;
+    padding: 0;
+  }
+
+  .appointment-dialog {
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .appointment-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .appointment-form-grid .field.full {
+    grid-column: auto;
+  }
+}
