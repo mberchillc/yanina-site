@@ -53,7 +53,26 @@ jobs:
         run: |
           set -euo pipefail
           echo validate-exact-output > /tmp/final-appointment-training-phase
-          python - <<'PY'
+          report=/tmp/final-validation-report.txt
+          {
+            echo '=== SHA256 ==='
+            sha256sum \
+              admin/alumno.html \
+              admin/entrenamiento.html \
+              functions/admin/alumno.html.js \
+              'functions/admin/[[path]].js'
+            echo '=== GIT BLOBS ==='
+            git hash-object \
+              admin/alumno.html \
+              admin/entrenamiento.html \
+              functions/admin/alumno.html.js \
+              'functions/admin/[[path]].js'
+            echo '=== MARKERS ==='
+            grep -nE 'student-profile-page|training-page no-training-selection|appointmentTimeInput|editSelectedAppointmentLink' \
+              admin/alumno.html admin/entrenamiento.html | head -80 || true
+          } > "$report" 2>&1
+
+          python - <<'PY' >> "$report" 2>&1
           from hashlib import sha256
           from html.parser import HTMLParser
           from pathlib import Path
@@ -105,11 +124,12 @@ jobs:
           Path('/tmp/entrenamiento.js').write_text(training_scripts[0], encoding='utf-8')
           print('exact appointment/training implementation validated')
           PY
-          node --check /tmp/alumno.js
-          node --check /tmp/entrenamiento.js
-          node --check 'functions/admin/alumno.html.js'
-          node --check 'functions/admin/[[path]].js'
-          git diff --check
+          node --check /tmp/alumno.js >> "$report" 2>&1
+          node --check /tmp/entrenamiento.js >> "$report" 2>&1
+          node --check 'functions/admin/alumno.html.js' >> "$report" 2>&1
+          node --check 'functions/admin/[[path]].js' >> "$report" 2>&1
+          git diff --check >> "$report" 2>&1
+          cat "$report"
 
       - name: Remove one-time installers and commit final implementation
         shell: bash
@@ -130,6 +150,7 @@ jobs:
           rm -f scripts/appointment_validation_status.txt
           rm -f scripts/live_appointment_training_status.txt
           rm -f scripts/final_appointment_training_status.txt
+          rm -f scripts/final_appointment_training_failure.log
           git diff --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -153,8 +174,12 @@ jobs:
             echo "run_id=${GITHUB_RUN_ID}"
             echo "recorded_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           } > scripts/final_appointment_training_status.txt
+          if [ -f /tmp/final-validation-report.txt ]; then
+            cp /tmp/final-validation-report.txt scripts/final_appointment_training_failure.log
+          fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add scripts/final_appointment_training_status.txt
+          git add scripts/final_appointment_training_status.txt scripts/final_appointment_training_failure.log 2>/dev/null || \
+            git add scripts/final_appointment_training_status.txt
           git commit -m "Record final appointment/training failure at ${phase}"
           git push origin HEAD:${GITHUB_REF_NAME}
