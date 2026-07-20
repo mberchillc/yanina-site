@@ -7,6 +7,9 @@ on:
     paths:
       - .github/workflows/codex-export-repository.yml
       - .codex-export-trigger
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
