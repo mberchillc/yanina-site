@@ -27,7 +27,12 @@
     const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
     const params=new URLSearchParams(window.location.search);
     const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');
-    const STUDENT_ID=String(params.get('id')||params.get('studentId')||sessionData.studentId||'6');
+    const requestedStudentId=String(params.get('id')||params.get('studentId')||'');
+    const STUDENT_ID=String(sessionData.studentId||'');
+    if(!sessionData.token||!STUDENT_ID){window.location.replace('../login.html');throw new Error('AUTH_REQUIRED')}
+    if(requestedStudentId&&requestedStudentId!==STUDENT_ID){window.history.replaceState(null,'',`notificaciones.html?id=${encodeURIComponent(STUDENT_ID)}`)}
+    const originalFetch=window.fetch.bind(window);
+    window.fetch=(input,init={})=>{const url=typeof input==='string'?input:input?.url||'';if(String(url).startsWith(API_BASE)){const headers=new Headers(init.headers||{});headers.set('Authorization',`Bearer ${sessionData.token}`);return originalFetch(input,{...init,headers})}return originalFetch(input,init)};
     const list=document.getElementById('notificationList');
     const backLink=document.getElementById('backLink');
     backLink.href=`index.html?id=${encodeURIComponent(STUDENT_ID)}`;

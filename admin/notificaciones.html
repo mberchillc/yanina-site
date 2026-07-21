@@ -22,6 +22,10 @@
   </main>
   <script>
     const API_BASE="https://yanina-trainer-api.mberchillc.workers.dev";
+    const adminSessionData=JSON.parse(localStorage.getItem('yaninaAdminSession')||'{}');
+    if(!adminSessionData.token){localStorage.removeItem('yaninaAdminSession');window.location.href='login.html';throw new Error('ADMIN_AUTH_REQUIRED')}
+    const originalFetch=window.fetch.bind(window);
+    window.fetch=(input,init={})=>{const url=typeof input==='string'?input:input?.url||'';if(String(url).startsWith(API_BASE)){const headers=new Headers(init.headers||{});headers.set('Authorization',`Bearer ${adminSessionData.token}`);return originalFetch(input,{...init,headers})}return originalFetch(input,init)};
     const list=document.getElementById('notificationsList');
     const markAllBtn=document.getElementById('markAllBtn');
     let currentNotifications=[];

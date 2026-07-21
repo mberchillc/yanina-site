@@ -17,15 +17,20 @@
   </main>
   <script>
     const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
-    const params=new URLSearchParams(location.search);const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');
-    const STUDENT_ID=String(params.get('id')||params.get('studentId')||sessionData.studentId||'');
+    const params=new URLSearchParams(location.search),adminPreview=params.get('adminPreview')==='1';
+    const studentSessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}'),adminSessionData=JSON.parse(localStorage.getItem('yaninaAdminSession')||'{}');
+    const sessionData=adminPreview?adminSessionData:studentSessionData,requestedStudentId=String(params.get('id')||params.get('studentId')||'');
+    const STUDENT_ID=String(adminPreview?requestedStudentId:(studentSessionData.studentId||''));
+    if(!sessionData.token||!STUDENT_ID){window.location.replace('../login.html');throw new Error('AUTH_REQUIRED')}
+    const originalFetch=window.fetch.bind(window);
+    window.fetch=(input,init={})=>{const url=typeof input==='string'?input:input?.url||'';if(String(url).startsWith(API_BASE)){const headers=new Headers(init.headers||{});headers.set('Authorization',`Bearer ${sessionData.token}`);return originalFetch(input,{...init,headers})}return originalFetch(input,init)};
     const $=id=>document.getElementById(id);
     function money(v){const n=Number(v||0);return `$${Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:0}):'0'}`}
     function monthName(value){const [y,m]=String(value).split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('es-US',{month:'long',year:'numeric'})}
     function monthKeys(count=18){const now=new Date();const arr=[];for(let i=0;i<count;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);arr.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`)}return arr}
     async function getStudent(){try{const r=await fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}?cache=${Date.now()}`);return r.ok?await r.json():null}catch(_){return null}}
     async function getSummary(month){try{const r=await fetch(`${API_BASE}/api/students/${encodeURIComponent(STUDENT_ID)}/payment-summary?month=${encodeURIComponent(month)}&cache=${Date.now()}`);return r.ok?await r.json():null}catch(_){return null}}
-    async function load(){if(!STUDENT_ID){$('historyGrid').innerHTML='<div class="empty">No se encontró alumna.</div>';return}if(STUDENT_ID)$('backLink').href=`index.html?id=${encodeURIComponent(STUDENT_ID)}`;const student=await getStudent();$('intro').textContent=student?`Resúmenes guardados para ${student.full_name||student.name||'alumna'}.`:'Resúmenes guardados.';const summaries=(await Promise.all(monthKeys().map(getSummary))).filter(Boolean);if(!summaries.length){$('historyGrid').innerHTML='<div class="empty">Todavía no hay resúmenes guardados.</div>';return}$('historyGrid').innerHTML=summaries.map(s=>{const month=s.month||'';const paid=s.status==='paid';return `<article class="card"><span class="status ${paid?'paid':'pending'}">${paid?'Pagado':'Pendiente'}</span><h3>${monthName(month)}</h3><div class="row"><span>Clases</span><strong>${s.classes_count??0}</strong></div><div class="row"><span>Total mensual</span><strong>${money(s.total_value)}</strong></div><a class="btn open" href="pago.html?id=${encodeURIComponent(STUDENT_ID)}&month=${encodeURIComponent(month)}">Ver resumen</a></article>`}).join('')}
+    async function load(){if(!STUDENT_ID){$('historyGrid').innerHTML='<div class="empty">No se encontró alumna.</div>';return}$('backLink').href=adminPreview?`../admin/historial-pagos.html?id=${encodeURIComponent(STUDENT_ID)}`:`index.html?id=${encodeURIComponent(STUDENT_ID)}`;const student=await getStudent();$('intro').textContent=student?`Resúmenes guardados para ${student.full_name||student.name||'alumna'}.`:'Resúmenes guardados.';const summaries=(await Promise.all(monthKeys().map(getSummary))).filter(Boolean);if(!summaries.length){$('historyGrid').innerHTML='<div class="empty">Todavía no hay resúmenes guardados.</div>';return}$('historyGrid').innerHTML=summaries.map(s=>{const month=s.month||'';const paid=s.status==='paid',preview=adminPreview?'&adminPreview=1':'';return `<article class="card"><span class="status ${paid?'paid':'pending'}">${paid?'Pagado':'Pendiente'}</span><h3>${monthName(month)}</h3><div class="row"><span>Clases</span><strong>${s.classes_count??0}</strong></div><div class="row"><span>Total mensual</span><strong>${money(s.total_value)}</strong></div><a class="btn open" href="pago.html?id=${encodeURIComponent(STUDENT_ID)}&month=${encodeURIComponent(month)}${preview}">Ver resumen</a></article>`}).join('')}
     load();
   </script>
 </body>
