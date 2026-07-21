@@ -42,6 +42,7 @@ assert.match(files.studentNotifications, /Authorization/, 'student notifications
 
 assert.match(files.migration, /password_setup_version = 1/, 'legacy hash flags must be normalized');
 assert.match(files.migration, /randomblob\(4\)/, 'passwordless accounts must receive the standard one-time setup path');
+assert.match(files.migration, /Backfill one unread notice/, 'existing pending summaries must light the student bell');
 assert.match(files.migration, /payment_summary_notify_student_insert/, 'new pending summaries must notify students');
 assert.match(files.migration, /payment_summary_notify_student_update/, 'updated pending summaries must notify students');
 

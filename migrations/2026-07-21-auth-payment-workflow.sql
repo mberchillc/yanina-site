@@ -1,5 +1,3 @@
-BEGIN;
-
 -- Legacy and current passwords use the same SHA-256 hexadecimal format.
 -- Preserve every password and only normalize the flags that made legacy rows
 -- return PASSWORD_NOT_SET.
@@ -56,6 +54,30 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_student_accounts_active_student
 ON student_accounts(student_id)
 WHERE COALESCE(is_active, 1) = 1;
 
+-- Backfill one unread notice for pending bills that predate these triggers.
+INSERT INTO notifications (
+  recipient_role, student_id, type, title, body, target_url, is_read, created_at
+)
+SELECT
+  'student',
+  summary.student_id,
+  'payment_summary_pending',
+  'Nuevo resumen pendiente',
+  'Tu resumen de ' || summary.month || ' ya esta disponible.',
+  'alumno/pago.html?id=' || CAST(summary.student_id AS TEXT) || '&month=' || summary.month,
+  0,
+  CURRENT_TIMESTAMP
+FROM payment_summaries AS summary
+WHERE summary.status = 'pending'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM notifications AS notice
+    WHERE notice.recipient_role = 'student'
+      AND notice.student_id = summary.student_id
+      AND notice.type = 'payment_summary_pending'
+      AND notice.target_url = 'alumno/pago.html?id=' || CAST(summary.student_id AS TEXT) || '&month=' || summary.month
+  );
+
 -- Saving or materially updating a pending resumen must light the student's
 -- notification bell and point to that exact persisted bill.
 CREATE TRIGGER IF NOT EXISTS payment_summary_notify_student_insert
@@ -102,5 +124,3 @@ BEGIN
     CURRENT_TIMESTAMP
   );
 END;
-
-COMMIT;
