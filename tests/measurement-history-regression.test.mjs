@@ -25,7 +25,12 @@ for (const file of [adminProfile, adminTraining]) {
 assert.match(studentProfile, /measurement-history-student\.js\?v=20260722-1/);
 assert.match(studentAdapter, /datasets\[config\.key\]\.slice\(-6\)/);
 assert.match(studentAdapter, /date:\s*measurementDate\(item\)/);
+assert.match(studentAdapter, /compactDateLabel\(measurementDate\(item\)\)/);
 assert.match(studentAdapter, /weight:[\s\S]*fat:[\s\S]*muscle:/);
+
+for (const file of [adminProfile, adminTraining]) {
+  assert.match(file, /return month && day \? `\$\{day\}\/\$\{month\}`/);
+}
 
 assert.match(controller, /const WINDOW_SIZE = 6/);
 assert.match(controller, /type="range"/);

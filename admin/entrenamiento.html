@@ -1873,7 +1873,10 @@ function formatMeasurementCardDate(value) {
 }
 
 function shortMeasurementDate(value) {
-  return formatMeasurementCardDate(value);
+  const normalized = normalizeMeasurementDateValue(value);
+  if (!normalized) return '—';
+  const [, month, day] = normalized.split('-');
+  return month && day ? `${day}/${month}` : normalized;
 }
 
 function metricPoints(measurements, key) {

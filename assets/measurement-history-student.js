@@ -1,6 +1,11 @@
 (function (global) {
   'use strict';
 
+  function compactDateLabel(value) {
+    const match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return match ? `${match[3]}/${match[2]}` : '—';
+  }
+
   global.renderMeasurementCharts = function renderMeasurementCharts(items) {
     const box = document.getElementById('studentMeasurementCharts');
     if (!box) return;
@@ -9,7 +14,7 @@
       .sort((a, b) => measurementSortKey(a).localeCompare(measurementSortKey(b)));
     const point = (item, keys) => ({
       date: measurementDate(item),
-      label: shortDate(measurementDate(item)),
+      label: compactDateLabel(measurementDate(item)),
       value: numberValue(item, keys)
     });
     const configs = [
