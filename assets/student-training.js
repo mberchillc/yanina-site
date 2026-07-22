@@ -39,6 +39,7 @@
   let exercises = [];
   let exerciseLibrary = [];
   let pendingVideoFile = null;
+  let selectionRequestId = 0;
 
   function dateIso(value) {
     const match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -46,8 +47,25 @@
   }
 
   function todayIso() {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Argentina/Buenos_Aires', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(new Date());
+    const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+    return `${values.year}-${values.month}-${values.day}`;
+  }
+
+  function timeInBuenosAires() {
+    return new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'America/Argentina/Buenos_Aires', hour: '2-digit', minute: '2-digit', hour12: false
+    }).format(new Date());
+  }
+
+  function classHasStarted(item) {
+    const classDate = dateIso(item?.class_date);
+    const today = todayIso();
+    if (!classDate || classDate > today) return false;
+    if (classDate < today) return true;
+    return String(item?.class_time || '00:00').slice(0, 5) <= timeInBuenosAires();
   }
 
   function formatClassDate(value) {
@@ -117,12 +135,51 @@
     return response.json();
   }
 
+  function classOptionLabel(item) {
+    const iso = dateIso(item.class_date);
+    if (!iso) return 'Fecha sin definir';
+    const [year, month, day] = iso.split('-').map(Number);
+    const weekday = new Intl.DateTimeFormat('es-AR', { weekday: 'long', timeZone: 'UTC' })
+      .format(new Date(Date.UTC(year, month - 1, day)));
+    return `● ${weekday} ${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')} · ${item.class_time || 'sin hora'}`;
+  }
+
+  function renderClassSelector() {
+    const select = byId('classSelect');
+    if (!classes.length) {
+      select.innerHTML = '<option value="">Sin clases programadas</option>';
+      select.disabled = true;
+      return;
+    }
+    select.disabled = false;
+    select.innerHTML = classes.map(item =>
+      `<option value="${escapeHtml(item.id)}">${escapeHtml(classOptionLabel(item))}</option>`
+    ).join('');
+    select.value = selectedClass ? String(selectedClass.id) : '';
+  }
+
+  function renderSelectedClassDetails() {
+    byId('classTime').value = selectedClass?.class_time || '';
+    byId('classRoutineType').value = selectedClass?.routine_type || '';
+    byId('classPlanningCriteria').value = selectedClass?.planning_criteria || '';
+    const button = byId('markCompletedBtn');
+    const message = byId('classActionMessage');
+    const status = normalizeStatus(selectedClass?.status);
+    const isCompleted = status === 'completed';
+    const hasStarted = Boolean(selectedClass && classHasStarted(selectedClass));
+    button.textContent = isCompleted ? '✓ Realizada' : 'Marcar realizada';
+    button.disabled = !selectedClass || isCompleted || !hasStarted || status === 'cancelled';
+    message.textContent = selectedClass && !hasStarted ? 'La clase podrá marcarse como realizada cuando comience.' : '';
+  }
+
   function renderClassHeader() {
     const status = normalizeStatus(selectedClass?.status);
     byId('classSummary').textContent = selectedClass
       ? `${formatClassDate(selectedClass.class_date)} · ${selectedClass.class_time || 'Sin hora'} · ${selectedClass.routine_type || 'Clase'}`
       : 'No hay una clase programada para mostrar.';
     byId('classStatus').textContent = !selectedClass ? 'Sin clase' : status === 'completed' ? 'Realizada' : status === 'cancelled' ? 'Cancelada' : 'Programada';
+    renderClassSelector();
+    renderSelectedClassDetails();
   }
 
   function findLibraryExercise(name) {
@@ -335,7 +392,7 @@
       const comments = await loadComments();
       byId('classCommentsList').innerHTML = comments.length
         ? comments.map(comment => `<article class="training-feed-card">
-            <strong>${comment.author_role === 'student' ? 'VOS:' : 'YANINA:'}</strong>
+            <strong>${comment.author_role === 'student' ? 'STUDENT:' : 'TRAINER:'}</strong>
             ${comment.video_name ? `<div class="training-meta"><span>Sobre video: ${escapeHtml(comment.video_name)}</span></div>` : ''}
             <p>${escapeHtml(comment.message || comment.body || '')}</p>
             <div class="training-meta"><span>${escapeHtml(comment.created_at || '')}</span></div>
@@ -369,13 +426,70 @@
     }
   }
 
+  async function selectTrainingClass(classId, updateUrl = true) {
+    const nextClass = classes.find(item => String(item.id) === String(classId));
+    if (!nextClass) return;
+    const requestId = ++selectionRequestId;
+    selectedClass = nextClass;
+    pendingVideoFile = null;
+    byId('videoFile').value = '';
+    byId('videoNote').value = '';
+    renderSelectedFile();
+    renderClassHeader();
+    byId('routineList').innerHTML = '<div class="training-empty">Cargando ejercicios...</div>';
+    byId('routineVisualPanel').innerHTML = '';
+    byId('videoList').innerHTML = '<div class="training-empty">Cargando videos...</div>';
+    byId('classCommentsList').innerHTML = '<div class="training-empty">Cargando comentarios...</div>';
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('classId', selectedClass.id);
+      window.history.replaceState({}, '', url);
+    }
+    try {
+      const routine = await loadRoutine();
+      if (requestId !== selectionRequestId) return;
+      renderRoutine(routine);
+      await Promise.all([renderVideos(), renderComments()]);
+    } catch (error) {
+      if (requestId !== selectionRequestId) return;
+      console.error(error);
+      byId('routineList').innerHTML = '<div class="training-empty">No se pudo cargar la rutina de esta clase.</div>';
+      byId('routineNotes').textContent = 'No se pudieron cargar las observaciones.';
+    }
+  }
+
+  async function markSelectedClassCompleted() {
+    if (!selectedClass || !classHasStarted(selectedClass)) return;
+    const button = byId('markCompletedBtn');
+    const message = byId('classActionMessage');
+    button.disabled = true;
+    message.textContent = 'Guardando...';
+    try {
+      const response = await fetch(`${API_BASE}/api/classes/${encodeURIComponent(selectedClass.id)}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'completed' })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No se pudo marcar la clase como realizada.');
+      selectedClass = { ...selectedClass, ...(result.class || result), status: 'completed' };
+      classes = classes.map(item => String(item.id) === String(selectedClass.id) ? selectedClass : item);
+      renderClassHeader();
+      message.textContent = 'Clase marcada como realizada.';
+    } catch (error) {
+      message.textContent = '';
+      button.disabled = false;
+      alert(error.message || 'No se pudo marcar la clase como realizada.');
+    }
+  }
+
   function renderNoClass() {
     renderClassHeader();
     byId('routineList').innerHTML = '<div class="training-empty">No hay clases programadas para mostrar.</div>';
     byId('routineNotes').textContent = 'Sin observaciones.';
     byId('videoList').innerHTML = '<div class="training-empty">Seleccioná una clase desde el calendario.</div>';
     byId('classCommentsList').innerHTML = '<div class="training-empty">Seleccioná una clase desde el calendario.</div>';
-    ['videoFile', 'videoNote', 'saveVideoBtn', 'classCommentInput', 'saveClassCommentBtn'].forEach(id => { byId(id).disabled = true; });
+    ['videoFile', 'videoNote', 'saveVideoBtn', 'classCommentInput', 'saveClassCommentBtn', 'markCompletedBtn'].forEach(id => { byId(id).disabled = true; });
   }
 
   async function init() {
@@ -386,10 +500,7 @@
       byId('studentBellLink').href = `notificaciones.html?id=${encodeURIComponent(STUDENT_ID)}`;
       selectedClass = chooseClass();
       if (!selectedClass) return renderNoClass();
-      renderClassHeader();
-      const routine = await loadRoutine();
-      renderRoutine(routine);
-      await Promise.all([renderVideos(), renderComments()]);
+      await selectTrainingClass(selectedClass.id, false);
     } catch (error) {
       console.error(error);
       byId('routineList').innerHTML = '<div class="training-empty">No se pudo cargar el entrenamiento.</div>';
@@ -404,6 +515,8 @@
   });
   byId('saveVideoBtn').addEventListener('click', saveVideo);
   byId('saveClassCommentBtn').addEventListener('click', saveComment);
+  byId('classSelect').addEventListener('change', event => selectTrainingClass(event.target.value));
+  byId('markCompletedBtn').addEventListener('click', markSelectedClassCompleted);
   byId('logoutBtn').addEventListener('click', () => {
     localStorage.removeItem('yaninaStudentSession');
     window.location.href = '/login.html';

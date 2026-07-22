@@ -19,7 +19,14 @@ assert.doesNotMatch(navigation, /selectClass\(button\.dataset/, 'green dates mus
 
 assert.match(page, /<h2>Rutina<\/h2>/);
 assert.match(page, /<h2>Comentarios de esta clase<\/h2>/);
+assert.match(page, /<h2>Clase seleccionada<\/h2>/);
+assert.ok(page.indexOf('<h2>Clase seleccionada</h2>') < page.indexOf('<h2>Rutina</h2>'));
 assert.ok(page.indexOf('<h2>Rutina</h2>') < page.indexOf('<h2>Comentarios de esta clase</h2>'));
+assert.match(page, /id="classSelect"/);
+assert.match(page, /id="classTime"[^>]*readonly/);
+assert.match(page, /id="classRoutineType"[^>]*readonly/);
+assert.match(page, /id="classPlanningCriteria"[^>]*readonly/);
+assert.match(page, /id="markCompletedBtn"/);
 assert.match(page, /id="videoFile"/);
 assert.match(page, /id="videoNote"/);
 assert.match(page, /id="classCommentInput"/);
@@ -30,7 +37,12 @@ assert.match(training, /dateIso\(item\.class_date\) === today/);
 assert.match(training, /dateIso\(item\.class_date\) > today/);
 assert.match(training, /videos\/direct-upload/);
 assert.match(training, /author_role: 'student'/);
+assert.match(training, /\? 'STUDENT:' : 'TRAINER:'/, 'comment authors must use the requested role labels');
+assert.match(training, /classSelect.*addEventListener\('change'/s, 'class selector must load the chosen training');
+assert.match(training, /\/api\/classes\/\$\{encodeURIComponent\(selectedClass\.id\)\}\/status/);
+assert.match(training, /method: 'PATCH'/);
+assert.match(training, /status: 'completed'/);
 assert.doesNotMatch(training, /saveClassAndRoutine|saveCalendarChanges|method:\s*'DELETE'/, 'students must not receive trainer editing actions');
-assert.doesNotMatch(page, /Guardar rutina|Editar cita|Eliminar clase|Agregar ejercicio/);
+assert.doesNotMatch(page, /Guardar rutina|Editar cita|Editar turno|Eliminar clase|Agregar ejercicio|deleteSelectedClassBtn|editSelectedAppointmentLink/);
 
 console.log('Student Entrenamiento routing, read-only routine, upload, and comment checks passed.');

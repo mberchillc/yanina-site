@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Entrenamiento | Yanina Trainer</title>
-  <link rel="stylesheet" href="../assets/student-training.css?v=20260722-1">
+  <link rel="stylesheet" href="../assets/student-training.css?v=20260722-2">
 </head>
 <body>
   <div class="training-shell">
@@ -30,6 +30,32 @@
     </section>
 
     <main>
+      <section class="training-card training-selected-class" id="selectedClassCard">
+        <h2>Clase seleccionada</h2>
+        <div class="training-class-grid">
+          <div class="training-field training-date-field">
+            <label for="classSelect">Fecha</label>
+            <select id="classSelect" aria-label="Seleccionar clase"></select>
+          </div>
+          <div class="training-field">
+            <label for="classTime">Hora</label>
+            <input id="classTime" type="text" readonly aria-readonly="true">
+          </div>
+          <div class="training-field">
+            <label for="classRoutineType">Tipo de rutina</label>
+            <input id="classRoutineType" type="text" readonly aria-readonly="true">
+          </div>
+          <div class="training-field training-field-full">
+            <label for="classPlanningCriteria">Comentarios / criterio de planificación</label>
+            <textarea id="classPlanningCriteria" readonly aria-readonly="true"></textarea>
+          </div>
+        </div>
+        <div class="training-class-actions">
+          <button class="training-complete-button" id="markCompletedBtn" type="button">Marcar realizada</button>
+          <span class="training-muted" id="classActionMessage" role="status" aria-live="polite"></span>
+        </div>
+      </section>
+
       <section class="training-card" id="routineCard">
         <h2>Rutina</h2>
         <div class="training-routine-list" id="routineList"><div class="training-empty">Cargando ejercicios...</div></div>
@@ -71,6 +97,6 @@
       </section>
     </main>
   </div>
-  <script src="../assets/student-training.js?v=20260722-1"></script>
+  <script src="../assets/student-training.js?v=20260722-2"></script>
 </body>
 </html>
