@@ -1,0 +1,211 @@
+body.measurement-history-open {
+  overflow: hidden;
+}
+
+.measurement-history-trigger {
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.measurement-history-trigger:hover,
+.measurement-history-trigger:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(95, 148, 25, .45);
+  box-shadow: 0 16px 34px rgba(24, 63, 53, .13);
+  outline: none;
+}
+
+.measurement-history-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.measurement-history-modal.is-open {
+  display: flex;
+}
+
+.measurement-history-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(16, 47, 53, .72);
+  backdrop-filter: blur(4px);
+}
+
+.measurement-history-dialog {
+  position: relative;
+  width: min(1120px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  background: linear-gradient(135deg, #f2faec, #fff);
+  border: 1px solid rgba(126, 200, 69, .32);
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: 0 32px 90px rgba(8, 58, 64, .32);
+}
+
+.measurement-history-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.measurement-history-kicker {
+  display: block;
+  color: #738092;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.measurement-history-header h3 {
+  color: #173f35;
+  font-size: clamp(26px, 4vw, 38px);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.measurement-history-close,
+.measurement-history-arrow {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border: 0;
+  border-radius: 999px;
+  background: #173f35;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.measurement-history-close:focus-visible,
+.measurement-history-arrow:focus-visible,
+.measurement-history-range:focus-visible {
+  outline: 3px solid rgba(115, 173, 19, .35);
+  outline-offset: 3px;
+}
+
+.measurement-history-chart {
+  min-width: 0;
+  touch-action: pan-y;
+}
+
+.measurement-history-chart .measurement-chart-card,
+.measurement-history-chart .tracking-chart {
+  cursor: default;
+  transform: none;
+  width: 100%;
+  min-width: 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, .96);
+  border: 1px solid #dfead9;
+  border-radius: 22px;
+  box-shadow: 0 14px 34px rgba(24, 63, 53, .09);
+}
+
+.measurement-history-chart svg,
+.measurement-history-chart .measurement-chart-svg {
+  width: 100%;
+  height: clamp(260px, 42vh, 410px);
+  display: block;
+  overflow: visible;
+}
+
+.measurement-history-controls {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.measurement-history-arrow {
+  background: linear-gradient(135deg, #73ad13, #5f9419);
+}
+
+.measurement-history-arrow:disabled {
+  background: #d8e2d3;
+  color: #82907d;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.measurement-history-range {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  accent-color: #73ad13;
+  cursor: grab;
+  touch-action: pan-x;
+}
+
+.measurement-history-range:active {
+  cursor: grabbing;
+}
+
+.measurement-history-range:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+.measurement-history-status {
+  color: #173f35;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.45;
+  margin: 8px 62px 0;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .measurement-history-modal {
+    align-items: flex-end;
+    padding: 8px;
+  }
+
+  .measurement-history-dialog {
+    width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+    border-radius: 24px;
+    padding: 18px 14px;
+  }
+
+  .measurement-history-close,
+  .measurement-history-arrow {
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+  }
+
+  .measurement-history-chart .measurement-chart-card,
+  .measurement-history-chart .tracking-chart {
+    padding: 12px 8px;
+  }
+
+  .measurement-history-chart svg,
+  .measurement-history-chart .measurement-chart-svg {
+    height: 270px;
+  }
+
+  .measurement-history-controls {
+    grid-template-columns: 46px minmax(0, 1fr) 46px;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .measurement-history-status {
+    margin: 8px 0 0;
+    font-size: 13px;
+  }
+}
