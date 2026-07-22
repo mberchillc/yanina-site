@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrenamiento | Yanina Trainer</title>
+  <link rel="stylesheet" href="../assets/student-training.css?v=20260722-1">
+</head>
+<body>
+  <div class="training-shell">
+    <header class="training-top">
+      <div class="training-brand">
+        <div class="training-logo"><img src="../assets/logo-cropped.png" alt="Yanina Trainer"></div>
+        <div><strong>Plataforma Yanina Trainer</strong><span>Entrenamiento de <b id="studentName">alumna</b></span></div>
+      </div>
+      <nav class="training-top-actions" aria-label="Acciones de la alumna">
+        <a class="training-icon-link" id="studentBellLink" href="notificaciones.html" aria-label="Notificaciones">🔔</a>
+        <a class="training-secondary-link" href="index.html">Volver a mi espacio</a>
+        <button class="training-secondary-link" id="logoutBtn" type="button">Salir</button>
+      </nav>
+    </header>
+
+    <section class="training-heading">
+      <div>
+        <span>Tu clase con Yanina</span>
+        <h1>Entrenamiento</h1>
+        <p id="classSummary">Cargando la clase seleccionada...</p>
+      </div>
+      <span class="training-status" id="classStatus">Clase</span>
+    </section>
+
+    <main>
+      <section class="training-card" id="routineCard">
+        <h2>Rutina</h2>
+        <div class="training-routine-list" id="routineList"><div class="training-empty">Cargando ejercicios...</div></div>
+        <div class="training-visual-panel" id="routineVisualPanel"></div>
+      </section>
+
+      <section class="training-card">
+        <h2>Observaciones técnicas</h2>
+        <p class="training-muted" id="routineNotes">Cargando observaciones de Yanina...</p>
+      </section>
+
+      <section class="training-card" id="classVideosCard">
+        <h2>Videos de esta clase</h2>
+        <p class="training-muted">Podés enviar hasta 3 videos para que Yanina revise tu técnica.</p>
+        <div class="training-upload-box">
+          <label class="training-file-label" for="videoFile">Elegir video</label>
+          <input id="videoFile" type="file" accept="video/*">
+          <div id="selectedFileBox"></div>
+          <textarea id="videoNote" placeholder="Comentario opcional. Ej: acá sentí molestia o quiero que revises la técnica."></textarea>
+          <div class="training-upload-actions">
+            <strong id="videoCounter">0/3 videos enviados</strong>
+            <button class="training-primary-button" id="saveVideoBtn" type="button" disabled>Guardar video</button>
+          </div>
+        </div>
+        <div class="training-feed" id="videoList"><div class="training-empty">Cargando videos...</div></div>
+      </section>
+
+      <section class="training-card" id="classCommentsCard">
+        <h2>Comentarios de esta clase</h2>
+        <p class="training-muted">Conversación con Yanina vinculada a esta rutina.</p>
+        <div class="training-feed" id="classCommentsList"><div class="training-empty">Cargando comentarios...</div></div>
+        <div class="training-upload-box">
+          <textarea id="classCommentInput" placeholder="Escribí una consulta o comentario para Yanina."></textarea>
+          <div class="training-upload-actions">
+            <span class="training-muted">Yanina recibirá una notificación.</span>
+            <button class="training-primary-button" id="saveClassCommentBtn" type="button">Enviar comentario</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../assets/student-training.js?v=20260722-1"></script>
+</body>
+</html>
