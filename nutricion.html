@@ -141,11 +141,15 @@
       let label = 'Volver al sitio';
 
       if (source === 'admin') {
-        href = 'admin/index.html';
-        label = 'Volver al panel';
+        href = studentId
+          ? `admin/nutricion.html?id=${encodeURIComponent(studentId)}`
+          : 'admin/index.html';
+        label = studentId ? 'Volver al seguimiento' : 'Volver al panel';
       } else if (source === 'alumno') {
-        href = `alumno/index.html${studentId ? `?id=${encodeURIComponent(studentId)}` : ''}`;
-        label = 'Volver a mi espacio';
+        href = studentId
+          ? `alumno/nutricion.html?id=${encodeURIComponent(studentId)}`
+          : 'alumno/index.html';
+        label = studentId ? 'Volver a mi nutrición' : 'Volver a mi espacio';
       }
 
       backLink.href = href;

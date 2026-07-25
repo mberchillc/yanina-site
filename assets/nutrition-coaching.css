@@ -1,0 +1,945 @@
+:root {
+  --ink: #173f36;
+  --ink-soft: #687972;
+  --green: #84cf38;
+  --green-dark: #1d4d42;
+  --green-deep: #153f36;
+  --green-soft: #eaf8de;
+  --green-pale: #f5faef;
+  --cream: #f7f8f1;
+  --white: #ffffff;
+  --line: #dfe7e1;
+  --warning: #f6a800;
+  --danger: #e94b2c;
+  --shadow: 0 18px 42px rgba(27, 70, 58, .09);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 100% 0, rgba(132, 207, 56, .16), transparent 28rem),
+    linear-gradient(180deg, #fbfcf8, var(--cream));
+  font-family: Inter, Montserrat, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+.coaching-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 78px;
+  padding: 12px clamp(18px, 4vw, 56px);
+  border-bottom: 1px solid rgba(29, 77, 66, .12);
+  background: rgba(255, 255, 255, .94);
+  backdrop-filter: blur(14px);
+}
+
+.coaching-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.coaching-brand img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.coaching-brand span,
+.coaching-student span {
+  display: grid;
+  gap: 2px;
+}
+
+.coaching-brand strong {
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.coaching-brand small,
+.coaching-student small {
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.coaching-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coaching-icon-link,
+.coaching-link-button,
+.coaching-guide-link {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.coaching-icon-link {
+  width: 42px;
+}
+
+.coaching-link-button {
+  padding: 0 18px;
+}
+
+.coaching-layout {
+  display: grid;
+  grid-template-columns: 224px minmax(0, 1fr);
+  gap: 24px;
+  width: min(1500px, 100%);
+  margin: 0 auto;
+  padding: 24px clamp(18px, 3vw, 42px) 54px;
+}
+
+.coaching-sidebar {
+  position: sticky;
+  top: 102px;
+  align-self: start;
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(29, 77, 66, .12);
+  border-radius: 28px;
+  background: rgba(247, 248, 241, .96);
+  box-shadow: var(--shadow);
+}
+
+.coaching-student {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 22px;
+  color: var(--white);
+  background: var(--green-dark);
+}
+
+.coaching-avatar {
+  display: grid !important;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 5px solid rgba(255, 255, 255, .15);
+  border-radius: 50%;
+  color: var(--green-deep);
+  background: var(--green);
+  font-weight: 950;
+}
+
+.coaching-student strong {
+  overflow: hidden;
+  max-width: 130px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coaching-student small {
+  color: rgba(255, 255, 255, .72);
+}
+
+.coaching-nav {
+  display: grid;
+  gap: 8px;
+}
+
+.coaching-nav a,
+.coaching-guide-link {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  font-size: 14px;
+  font-weight: 850;
+  text-align: center;
+  text-decoration: none;
+}
+
+.coaching-nav a:hover,
+.coaching-nav a:focus-visible,
+.coaching-guide-link:hover,
+.coaching-guide-link:focus-visible {
+  border-color: var(--green);
+}
+
+.coaching-nav a.active {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+.coaching-guide-link {
+  border-color: transparent;
+  color: var(--white);
+  background: var(--green-dark);
+}
+
+.coaching-main {
+  min-width: 0;
+}
+
+.coaching-loading,
+.coaching-error,
+.nutrition-empty {
+  padding: 28px;
+  border: 1px dashed #bfd0c5;
+  border-radius: 22px;
+  color: var(--ink-soft);
+  background: rgba(255, 255, 255, .72);
+  text-align: center;
+}
+
+.coaching-error strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--ink);
+}
+
+.nutrition-page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 18px;
+  margin: 4px 0 18px;
+}
+
+.nutrition-page-head h1 {
+  margin: 4px 0 6px;
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: .98;
+  letter-spacing: -.045em;
+}
+
+.nutrition-page-head p {
+  max-width: 730px;
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+.nutrition-eyebrow {
+  margin: 0;
+  color: #4b8a2b !important;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.week-actions,
+.panel-actions,
+.meal-review-actions,
+.counter-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nutrition-button,
+.nutrition-icon-button,
+.review-choice {
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.nutrition-button {
+  padding: 0 18px;
+  color: var(--green-deep);
+  background: var(--green);
+}
+
+.nutrition-button.secondary {
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.nutrition-button.dark {
+  color: var(--white);
+  background: var(--green-dark);
+}
+
+.nutrition-button:disabled {
+  cursor: not-allowed;
+  opacity: .56;
+}
+
+.nutrition-icon-button {
+  width: 42px;
+  color: var(--green-deep);
+  background: var(--green-soft);
+}
+
+.nutrition-card {
+  margin-bottom: 18px;
+  padding: clamp(18px, 3vw, 28px);
+  border: 1px solid rgba(29, 77, 66, .13);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, .96);
+  box-shadow: var(--shadow);
+}
+
+.plan-card {
+  overflow: hidden;
+  background:
+    linear-gradient(120deg, rgba(234, 248, 222, .94), rgba(255, 255, 255, .96)),
+    var(--white);
+}
+
+.card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.card-heading h2,
+.card-heading h3 {
+  margin: 4px 0 4px;
+  line-height: 1.12;
+}
+
+.card-heading h2 {
+  font-size: clamp(25px, 4vw, 34px);
+}
+
+.card-heading h3 {
+  font-size: 21px;
+}
+
+.card-heading p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.plan-fields,
+.plan-readonly,
+.habit-grid,
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.plan-field,
+.plan-value {
+  display: grid;
+  gap: 8px;
+}
+
+.plan-field label,
+.composer-field label,
+.review-comment-field label {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.plan-field textarea,
+.composer-field textarea,
+.composer-field select,
+.composer-field input,
+.review-comment-field textarea {
+  width: 100%;
+  border: 1px solid #ccd9d1;
+  border-radius: 16px;
+  outline: none;
+  color: var(--ink);
+  background: var(--white);
+}
+
+.plan-field textarea,
+.composer-field textarea,
+.review-comment-field textarea {
+  min-height: 112px;
+  padding: 14px 16px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.composer-field select,
+.composer-field input {
+  min-height: 48px;
+  padding: 10px 14px;
+}
+
+.plan-field textarea:focus,
+.composer-field textarea:focus,
+.composer-field select:focus,
+.composer-field input:focus,
+.review-comment-field textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 4px rgba(132, 207, 56, .16);
+}
+
+.plan-value {
+  align-content: start;
+  min-height: 118px;
+  padding: 18px;
+  border: 1px solid rgba(29, 77, 66, .1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .76);
+}
+
+.plan-value span {
+  color: #568c35;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.plan-value p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.save-status {
+  min-height: 20px;
+  margin: 12px 0 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.save-status.success {
+  color: #397b1a;
+}
+
+.save-status.error {
+  color: #b33a23;
+}
+
+.habit-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.habit-card,
+.summary-card {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--white);
+}
+
+.habit-card {
+  display: grid;
+  gap: 12px;
+}
+
+.habit-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.habit-title strong {
+  font-size: 15px;
+}
+
+.habit-title span {
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.habit-progress {
+  overflow: hidden;
+  height: 9px;
+  border-radius: 999px;
+  background: #edf1ed;
+}
+
+.habit-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), #4fae30);
+}
+
+.habit-count {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.habit-count b {
+  font-size: 24px;
+}
+
+.counter-actions button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--green-deep);
+  background: var(--green-soft);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(84px, 1fr));
+  gap: 8px;
+  overflow-x: auto;
+  padding: 3px 2px 8px;
+}
+
+.week-day {
+  display: grid;
+  gap: 5px;
+  min-height: 88px;
+  padding: 12px 9px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--white);
+  text-align: center;
+}
+
+.week-day span {
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.week-day strong {
+  font-size: 20px;
+}
+
+.week-day small {
+  min-height: 16px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.week-day.has-data {
+  border-color: #b9dd9d;
+  background: var(--green-pale);
+}
+
+.week-day.active {
+  border-color: var(--green-dark);
+  color: var(--white);
+  background: var(--green-dark);
+}
+
+.week-day.active span,
+.week-day.active small {
+  color: rgba(255, 255, 255, .78);
+}
+
+.meal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.meal-card {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  min-height: 112px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--white);
+  text-align: left;
+}
+
+.meal-card.active {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(132, 207, 56, .16);
+}
+
+.meal-photo,
+.review-photo {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  place-items: center;
+  color: #5a746c;
+  background: linear-gradient(135deg, #e7f3e8, #f1f4ed);
+}
+
+.meal-photo img,
+.review-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.meal-photo span {
+  font-size: 25px;
+}
+
+.meal-card-body {
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.meal-card-body strong {
+  font-size: 15px;
+}
+
+.meal-card-body p {
+  overflow: hidden;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.42;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meal-status {
+  justify-self: start;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: #53635e;
+  background: #eef2ef;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.meal-status.good {
+  color: #2c6c19;
+  background: #e1f6d2;
+}
+
+.meal-status.review {
+  color: #8a5a00;
+  background: #fff0c7;
+}
+
+.meal-status.pending {
+  color: #6c5b16;
+  background: #f8efc8;
+}
+
+.meal-detail {
+  display: grid;
+  grid-template-columns: minmax(190px, 290px) minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 20px;
+  background: var(--green-pale);
+}
+
+.meal-detail .review-photo {
+  min-height: 230px;
+  border-radius: 16px;
+}
+
+.meal-detail h4,
+.review-detail h4 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.meal-detail p,
+.review-detail p {
+  color: var(--ink-soft);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.feedback-box {
+  margin-top: 14px;
+  padding: 14px;
+  border-left: 5px solid var(--green);
+  border-radius: 12px;
+  background: var(--white);
+}
+
+.feedback-box strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.meal-composer {
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid #cfe0d3;
+  border-radius: 20px;
+  background: var(--green-pale);
+}
+
+.composer-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, .65fr) minmax(260px, 1.35fr);
+  gap: 14px;
+}
+
+.composer-field {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.composer-field.full {
+  grid-column: 1 / -1;
+}
+
+.composer-help {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 18px;
+}
+
+.summary-card {
+  display: grid;
+  gap: 7px;
+}
+
+.summary-card span {
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.summary-card strong {
+  font-size: clamp(25px, 4vw, 38px);
+}
+
+.summary-card small {
+  color: var(--ink-soft);
+}
+
+.coach-grid {
+  display: grid;
+  grid-template-columns: minmax(270px, .8fr) minmax(0, 1.2fr);
+  gap: 18px;
+}
+
+.review-list {
+  display: grid;
+  gap: 9px;
+  max-height: 650px;
+  overflow-y: auto;
+}
+
+.review-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--white);
+  text-align: left;
+}
+
+.review-item.active {
+  border-color: var(--green);
+  background: var(--green-pale);
+}
+
+.review-item strong,
+.review-item small {
+  display: block;
+}
+
+.review-item small {
+  margin-top: 4px;
+  color: var(--ink-soft);
+}
+
+.review-detail {
+  min-height: 420px;
+}
+
+.review-detail .review-photo {
+  width: 100%;
+  min-height: 310px;
+  max-height: 430px;
+  border-radius: 18px;
+}
+
+.review-choice {
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--white);
+}
+
+.review-choice.active {
+  border-color: var(--green-dark);
+  color: var(--white);
+  background: var(--green-dark);
+}
+
+.review-comment-field {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 12px;
+}
+
+.filter-label {
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+@media (max-width: 1040px) {
+  .coaching-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .coaching-sidebar {
+    position: static;
+  }
+
+  .coaching-nav {
+    grid-template-columns: repeat(5, minmax(130px, 1fr));
+    overflow-x: auto;
+  }
+
+  .coaching-student {
+    max-width: 320px;
+  }
+
+  .coaching-guide-link {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 780px) {
+  .coaching-topbar {
+    position: static;
+    align-items: flex-start;
+  }
+
+  .coaching-brand small,
+  .coaching-link-button {
+    display: none;
+  }
+
+  .coaching-layout {
+    padding: 14px 12px 36px;
+  }
+
+  .nutrition-page-head,
+  .card-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .plan-fields,
+  .plan-readonly,
+  .habit-grid,
+  .summary-grid,
+  .meal-grid,
+  .coach-grid,
+  .composer-grid,
+  .meal-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .nutrition-card {
+    padding: 18px 14px;
+    border-radius: 20px;
+  }
+
+  .week-strip {
+    grid-template-columns: repeat(7, 78px);
+  }
+
+  .composer-field.full {
+    grid-column: auto;
+  }
+
+  .meal-detail .review-photo {
+    min-height: 210px;
+  }
+}
+
+@media (max-width: 440px) {
+  .coaching-brand strong {
+    font-size: 14px;
+  }
+
+  .coaching-brand img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .coaching-topbar {
+    min-height: 68px;
+    padding: 10px 12px;
+  }
+
+  .coaching-sidebar {
+    border-radius: 20px;
+  }
+
+  .meal-card {
+    grid-template-columns: 78px minmax(0, 1fr);
+  }
+}

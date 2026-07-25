@@ -1,0 +1,27 @@
+{
+  "main_module": "worker.js",
+  "compatibility_date": "2026-05-14",
+  "keep_bindings": [
+    "secret_text"
+  ],
+  "bindings": [
+    {
+      "name": "AI",
+      "type": "ai"
+    },
+    {
+      "name": "DB",
+      "type": "d1",
+      "id": "72b5571b-0f8a-4073-ac2e-1126e7838a74"
+    },
+    {
+      "name": "STARFIT_IMAGES",
+      "type": "r2_bucket",
+      "bucket_name": "starfit-images"
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

@@ -1351,6 +1351,7 @@
       <a href="#datos" class="student-tab active" id="profileTabLink" data-student-page="profile">Datos del alumno</a>
       <a href="#calendario-mensual" class="student-tab" id="calendarTabLink" data-student-page="calendar">Calendario de clases</a>
       <a href="entrenamiento.html" class="student-tab" id="trainingTabLink" data-student-page="training">Entrenamiento</a>
+      <a href="nutricion.html" class="student-tab" id="nutritionTabLink" data-student-page="nutrition">Nutrición</a>
       <a href="#mediciones" class="student-tab" id="measurementsTabLink" data-student-page="measurements">Hist. Mediciones</a>
       <button type="button" class="student-tab student-tab-arrow" id="backToTopBtn" aria-label="Volver arriba">↑</button>
     </nav>
@@ -1739,6 +1740,7 @@
       const profileTabLink = document.getElementById("profileTabLink");
       const calendarTabLink = document.getElementById("calendarTabLink");
       const trainingTabLink = document.getElementById("trainingTabLink");
+      const nutritionTabLink = document.getElementById("nutritionTabLink");
       const measurementsTabLink = document.getElementById("measurementsTabLink");
       const createTrainingLink = document.getElementById("createTrainingLink");
       const openTrainingLink = document.getElementById("openTrainingLink");
@@ -1755,6 +1757,11 @@
         link.style.pointerEvents = studentId ? "auto" : "none";
         link.style.opacity = studentId ? "1" : ".5";
       });
+      if (nutritionTabLink) {
+        nutritionTabLink.href = studentId ? `nutricion.html?id=${encodeURIComponent(studentId)}` : "#";
+        nutritionTabLink.style.pointerEvents = studentId ? "auto" : "none";
+        nutritionTabLink.style.opacity = studentId ? "1" : ".5";
+      }
     }
 
     const starfitMeasurementsHistoryBtn = document.getElementById("starfitMeasurementsHistoryBtn");

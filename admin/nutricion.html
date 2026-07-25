@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nutrición del alumno | Yanina Trainer</title>
+  <meta name="description" content="Plan y seguimiento nutricional personalizado del alumno.">
+  <link rel="icon" href="../assets/logo-cropped.png" type="image/png">
+  <link rel="stylesheet" href="../assets/nutrition-coaching.css?v=20260725-1">
+</head>
+<body class="nutrition-coaching-page" data-nutrition-role="admin">
+  <header class="coaching-topbar">
+    <a class="coaching-brand" href="index.html" aria-label="Volver al panel de Yanina">
+      <img src="../assets/logo-cropped.png" alt="">
+      <span><strong>Plataforma Yanina Trainer</strong><small>Seguimiento personalizado</small></span>
+    </a>
+    <div class="coaching-top-actions">
+      <a class="coaching-icon-link" href="notificaciones.html" aria-label="Notificaciones">🔔</a>
+      <a class="coaching-link-button" id="topBackLink" href="index.html">Volver al panel</a>
+    </div>
+  </header>
+
+  <div class="coaching-layout">
+    <aside class="coaching-sidebar" aria-label="Secciones del alumno">
+      <div class="coaching-student">
+        <span class="coaching-avatar" id="sidebarAvatar">AL</span>
+        <span><strong id="sidebarName">Alumno</strong><small>Alumno activo</small></span>
+      </div>
+      <nav class="coaching-nav">
+        <a id="profileNavLink" href="alumno.html">Datos del alumno</a>
+        <a id="calendarNavLink" href="alumno.html#calendario-mensual">Calendario de clases</a>
+        <a id="trainingNavLink" href="entrenamiento.html">Entrenamiento</a>
+        <a class="active" href="#" aria-current="page">Nutrición</a>
+        <a id="measurementsNavLink" href="mediciones-starfit.html">Hist. Mediciones</a>
+      </nav>
+      <a class="coaching-guide-link" id="guideLink" href="../nutricion.html?origen=admin">Guía de alimentos</a>
+    </aside>
+
+    <main class="coaching-main" id="nutritionApp">
+      <div class="coaching-loading">Cargando el seguimiento nutricional…</div>
+    </main>
+  </div>
+
+  <script src="../assets/nutrition-coaching.js?v=20260725-1"></script>
+</body>
+</html>

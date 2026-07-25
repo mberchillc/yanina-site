@@ -26,7 +26,7 @@
     const nutritionLink = document.createElement('a');
     nutritionLink.className = 'tab-btn';
     nutritionLink.id = 'nutritionNavLink';
-    nutritionLink.href = `../nutricion.html?origen=alumno${studentId ? `&id=${encodeURIComponent(studentId)}` : ''}`;
+    nutritionLink.href = `nutricion.html${studentId ? `?id=${encodeURIComponent(studentId)}` : ''}`;
     nutritionLink.textContent = 'Nutrición';
     const trainingButton = document.getElementById('trainingNavBtn');
     (trainingButton || calendarButton)?.insertAdjacentElement('afterend', nutritionLink);
