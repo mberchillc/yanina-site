@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nutrición | Yanina Trainer</title>
+  <meta name="description" content="Guía práctica de alimentos por macronutriente de Yanina Trainer.">
+  <link rel="icon" href="assets/logo-cropped.png" type="image/png">
+  <link rel="stylesheet" href="assets/nutrition.css?v=20260724-1">
+</head>
+<body>
+  <div class="nutrition-shell">
+    <header class="nutrition-topbar">
+      <a class="nutrition-brand" id="brandBackLink" href="index.html" aria-label="Volver a Yanina Trainer">
+        <img src="assets/logo-cropped.png" alt="">
+        <span>
+          <strong>Plataforma Yanina Trainer</strong>
+          <small>Guía de alimentación</small>
+        </span>
+      </a>
+      <nav class="nutrition-actions" aria-label="Navegación de la guía">
+        <a class="back-link" id="backLink" href="index.html">Volver</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="nutrition-intro" aria-labelledby="nutritionTitle">
+        <p class="eyebrow">Alimentación consciente</p>
+        <h1 id="nutritionTitle">Nutrición</h1>
+        <p>Una guía simple para elegir alimentos que aportan proteínas, carbohidratos y grasas saludables.</p>
+      </section>
+
+      <section class="nutrition-guide" aria-labelledby="guideTitle">
+        <div class="guide-heading">
+          <div>
+            <p class="eyebrow">Guía práctica</p>
+            <h2 id="guideTitle">Alimentos por macronutriente</h2>
+          </div>
+          <p>Elegí opciones variadas y ajustá las cantidades a tus necesidades.</p>
+        </div>
+
+        <div class="table-frame">
+          <table class="nutrition-table">
+            <caption class="sr-only">Alimentos recomendados organizados por categoría y macronutriente</caption>
+            <thead>
+              <tr>
+                <th scope="col">Categoría</th>
+                <th scope="col">Proteínas</th>
+                <th scope="col">Carbohidratos</th>
+                <th scope="col">Grasas saludables</th>
+              </tr>
+            </thead>
+            <tbody class="category-super">
+              <tr>
+                <th scope="row">
+                  <span class="category-badge">Super</span>
+                  <span class="category-caption">Para priorizar</span>
+                </th>
+                <td data-label="Proteínas">
+                  <ol>
+                    <li>Pechuga de pollo o pavo</li>
+                    <li>Carne vacuna magra</li>
+                    <li>Huevos</li>
+                    <li>Pescado: salmón, atún o sardinas</li>
+                    <li>Yogur griego o queso cottage</li>
+                  </ol>
+                </td>
+                <td data-label="Carbohidratos">
+                  <ol>
+                    <li>Avena</li>
+                    <li>Papa o batata</li>
+                    <li>Arroz integral o quinoa</li>
+                    <li>Lentejas o garbanzos</li>
+                    <li>Banana y otras frutas enteras</li>
+                  </ol>
+                </td>
+                <td data-label="Grasas saludables">
+                  <ol>
+                    <li>Aceite de oliva extra virgen</li>
+                    <li>Palta / aguacate</li>
+                    <li>Nueces o almendras</li>
+                    <li>Semillas de chía o lino</li>
+                    <li>Salmón o sardinas</li>
+                  </ol>
+                </td>
+              </tr>
+            </tbody>
+            <tbody class="category-good">
+              <tr>
+                <th scope="row">
+                  <span class="category-badge">Bueno / recomendable</span>
+                  <span class="category-caption">Opciones positivas</span>
+                </th>
+                <td data-label="Proteínas">
+                  <ol>
+                    <li>Leche</li>
+                    <li>Quesos en general</li>
+                    <li>Ricota</li>
+                    <li>Jamón cocido natural o pavo feteado de buena calidad</li>
+                    <li>Kéfir o yogur común</li>
+                  </ol>
+                </td>
+                <td data-label="Carbohidratos">
+                  <ol>
+                    <li>Manzana</li>
+                    <li>Naranja</li>
+                    <li>Zanahoria</li>
+                    <li>Remolacha</li>
+                    <li>Calabaza</li>
+                  </ol>
+                </td>
+                <td data-label="Grasas saludables">
+                  <ol>
+                    <li>Aceitunas</li>
+                    <li>Maní o mantequilla de maní 100%</li>
+                    <li>Tahini / pasta de sésamo</li>
+                    <li>Semillas de girasol o calabaza</li>
+                  </ol>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <aside class="guide-note" aria-label="Cómo leer esta guía">
+          <p>Super identifica alimentos que conviene priorizar por su calidad nutricional, saciedad y aporte dentro de una alimentación equilibrada. Bueno / recomendable identifica opciones positivas que también pueden formar parte de la alimentación habitual.</p>
+          <p>Un mismo alimento puede aportar más de un macronutriente. Por ejemplo, el salmón aporta proteínas y grasas saludables.</p>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const source = params.get('origen');
+      const studentId = params.get('id');
+      const backLink = document.getElementById('backLink');
+      const brandBackLink = document.getElementById('brandBackLink');
+      let href = 'index.html';
+      let label = 'Volver al sitio';
+
+      if (source === 'admin') {
+        href = 'admin/index.html';
+        label = 'Volver al panel';
+      } else if (source === 'alumno') {
+        href = `alumno/index.html${studentId ? `?id=${encodeURIComponent(studentId)}` : ''}`;
+        label = 'Volver a mi espacio';
+      }
+
+      backLink.href = href;
+      backLink.textContent = label;
+      brandBackLink.href = href;
+    })();
+  </script>
+</body>
+</html>
+
