@@ -20,6 +20,18 @@
     calendarButton.insertAdjacentElement('afterend', button);
   }
 
+  if (tabList && !document.getElementById('nutritionNavLink')) {
+    const params = new URLSearchParams(global.location.search);
+    const studentId = params.get('id');
+    const nutritionLink = document.createElement('a');
+    nutritionLink.className = 'tab-btn';
+    nutritionLink.id = 'nutritionNavLink';
+    nutritionLink.href = `../nutricion.html?origen=alumno${studentId ? `&id=${encodeURIComponent(studentId)}` : ''}`;
+    nutritionLink.textContent = 'Nutrición';
+    const trainingButton = document.getElementById('trainingNavBtn');
+    (trainingButton || calendarButton)?.insertAdjacentElement('afterend', nutritionLink);
+  }
+
   const calendarIntro = document.querySelector('#clases .panel-head p');
   if (calendarIntro) calendarIntro.textContent = 'Tocá una fecha verde para abrir el entrenamiento de esa clase.';
 
@@ -60,3 +72,4 @@
     });
   };
 })(window);
+
