@@ -1,0 +1,79 @@
+/* Compact services and introduction, scoped to the public homepage. */
+#servicios.pillars {
+  width: min(1380px, 88vw) !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  align-items: stretch;
+  gap: 16px !important;
+  margin: 20px auto 0 !important;
+  padding: 4px 0 16px !important;
+  overflow: visible !important;
+  scroll-snap-type: none !important;
+  scroll-margin-top: 174px;
+}
+#servicios.pillars > article {
+  min-width: 0;
+  min-height: 0 !important;
+  padding: 22px 18px !important;
+  border: 1px solid rgba(103, 145, 49, .14) !important;
+  border-radius: 24px !important;
+  background: linear-gradient(180deg, #fff, #f8fbf3) !important;
+  box-shadow: 0 10px 24px rgba(31, 50, 68, .07) !important;
+  grid-template-rows: 80px minmax(42px, auto) auto !important;
+  align-content: start !important;
+  gap: 12px !important;
+  animation: none !important;
+  transform: none;
+  opacity: 1;
+  will-change: auto;
+}
+#servicios.pillars > article > img {
+  width: 80px !important;
+  height: 80px !important;
+  max-width: 80px !important;
+}
+#servicios.pillars h3 {
+  min-width: 0;
+  width: 100%;
+  font-size: 17px !important;
+  line-height: 1.22 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+#servicios.pillars p {
+  max-width: 280px !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+#presentacion.about {
+  padding-top: 34px;
+  padding-bottom: 34px;
+  gap: 38px;
+}
+#presentacion .quote { padding: 28px; }
+#presentacion + .testimonials { padding-top: 48px; }
+@media (max-width: 1250px) {
+  #servicios.pillars { scroll-margin-top: 230px; }
+}
+@media (max-width: 1000px) {
+  #servicios.pillars { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  #servicios.pillars > article { grid-template-rows: 70px minmax(38px, auto) auto !important; padding: 20px !important; }
+  #servicios.pillars > article > img { width: 70px !important; height: 70px !important; max-width: 70px !important; }
+}
+@media (max-width: 700px) {
+  #servicios.pillars { width: 88vw !important; gap: 12px !important; margin-top: 16px !important; padding-bottom: 8px !important; scroll-margin-top: 320px; }
+  #servicios.pillars > article { padding: 18px 13px !important; grid-template-rows: 60px minmax(40px, auto) auto !important; gap: 10px !important; border-radius: 20px !important; }
+  #servicios.pillars > article > img { width: 60px !important; height: 60px !important; max-width: 60px !important; }
+  #servicios.pillars h3 { font-size: clamp(12px, 3.75vw, 15px) !important; }
+  #servicios.pillars p { font-size: 14px !important; line-height: 1.45 !important; }
+  #presentacion.about { padding-top: 26px; padding-bottom: 26px; gap: 22px; }
+  #presentacion .quote { padding: 24px; font-size: 24px; }
+  #presentacion + .testimonials { padding-top: 32px; }
+}
+@media (max-width: 380px) {
+  #servicios.pillars { scroll-margin-top: 370px; }
+}
+@media (prefers-reduced-motion: reduce), print {
+  #servicios.pillars > article { opacity: 1; transform: none; }
+}
