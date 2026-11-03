@@ -1,0 +1,90 @@
+/* Homepage only: a quiet outdoor setting behind the original trainer portrait. */
+.hero {
+  isolation: isolate;
+  min-height: 690px;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 0;
+  padding: 48px 6vw 0;
+  background: #e6edce url("home-park-background-v2.webp") center center / cover no-repeat;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: linear-gradient(90deg, rgba(251,252,240,.96) 0%, rgba(251,252,240,.9) 30%, rgba(251,252,240,.65) 48%, rgba(251,252,240,.1) 70%, transparent 100%);
+  pointer-events: none;
+}
+.hero::after {
+  content: none;
+  display: none;
+}
+.hero .hero-copy {
+  padding: 12px 0 64px;
+  max-width: 680px;
+}
+.hero .eyebrow { color: #316447; }
+.hero h1 { font-size: clamp(54px, 6.7vw, 96px); }
+.hero .hero-text { max-width: 580px; }
+.hero .hero-actions { gap: 16px; }
+.hero .hero-image {
+  min-width: 0;
+  min-height: 640px;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+.hero .hero-image img {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(790px, 59vw);
+  height: auto;
+  max-width: none;
+  max-height: none;
+  filter: drop-shadow(0 16px 24px rgba(32,51,31,.14));
+}
+@media (min-width: 1700px) {
+  .hero { padding-right: calc((100vw - 1496px) / 2); padding-left: calc((100vw - 1496px) / 2); }
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+  .hero { min-height: 610px; padding: 36px 5vw 0; }
+  .hero .hero-copy { padding-bottom: 42px; }
+  .hero h1 { font-size: 64px; }
+  .hero .hero-text { font-size: 18px; }
+  .hero .hero-image { min-height: 570px; }
+  .hero .hero-image img { width: 660px; }
+  .hero .hero-actions { gap: 12px; margin-top: 24px; }
+  .hero .hero-actions .btn { padding: 14px 20px; font-size: 11px; }
+}
+@media (max-width: 900px) {
+  .hero {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 44px 7vw 0;
+    background-position: 70% bottom;
+  }
+  .hero::before {
+    background: linear-gradient(180deg, rgba(251,252,240,.96) 0%, rgba(251,252,240,.92) 36%, rgba(251,252,240,.5) 58%, rgba(251,252,240,.04) 82%);
+  }
+  .hero .hero-copy { max-width: 650px; padding: 0 0 20px; }
+  .hero h1 { font-size: clamp(50px, 9vw, 74px); }
+  .hero .hero-text { font-size: 19px; }
+  .hero .hero-actions { flex-direction: row; margin-top: 26px; gap: 14px; }
+  .hero .hero-image { min-height: 500px; }
+  .hero .hero-image img { width: 600px; }
+}
+@media (max-width: 540px) {
+  .hero { padding: 34px 6vw 0; background-position: 68% bottom; }
+  .hero .eyebrow { max-width: 310px; margin-bottom: 20px; font-size: 13px; line-height: 1.5; }
+  .hero h1 { font-size: clamp(44px, 12.6vw, 66px); line-height: 1.02; }
+  .hero .hero-text { font-size: 17px; line-height: 1.65; margin: 22px 0 0; }
+  .hero .hero-actions { flex-direction: column; gap: 12px; margin-top: 24px; }
+  .hero .hero-actions .btn { width: 100%; min-height: 48px; padding: 14px 18px; font-size: 11px; }
+  .hero .hero-image { min-height: 450px; }
+  .hero .hero-image img { width: min(530px, 142vw); }
+}
