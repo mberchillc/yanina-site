@@ -8,7 +8,7 @@
   function capacity(){
     if(!latest)return;
     const input=Number($('requestsPerUser').value);
-    if(!Number.isFinite(input)||input<1||input>10000){$('capacityResult').textContent='—';return;}
+    if(!Number.isFinite(input)||input<1||input>10000){$('capacityResult').textContent='—';$('capacity').textContent='—';return;}
     const estimate=Math.floor(latest.capacity.reference_daily_requests/input);
     $('capacity').textContent='≈ '+number(estimate);$('capacityResult').textContent='≈ '+number(estimate);
   }
@@ -18,9 +18,9 @@
     const maximum=Math.max(1,...days.map(day=>day.calendar_class+day.routine+day.message));
     const fragment=document.createDocumentFragment();
     days.forEach((day,index)=>{
-      const date=new Date(new Date(data.period.from).getTime()+index*86400000);
+      const date=new Date(new Date(data.period.from).getTime()+(index+1)*86400000);
       const bar=document.createElement('div');bar.className='chart-bar';
-      bar.title=date.toLocaleDateString('es-AR',{timeZone:'America/New_York'})+': '+day.calendar_class+' clases · '+day.routine+' rutinas · '+day.message+' mensajes';
+      bar.title='24 h hasta '+date.toLocaleDateString('es-AR',{timeZone:'America/New_York'})+': '+day.calendar_class+' clases · '+day.routine+' rutinas · '+day.message+' mensajes';
       [['message','message'],['routine','routine'],['calendar_class','calendar']].forEach(([key,cls])=>{const segment=document.createElement('span');segment.className=cls;segment.style.height=(day[key]/maximum*100)+'%';bar.append(segment);});
       if([0,7,14,21,29].includes(index)){const label=document.createElement('small');label.className='chart-label';label.textContent=date.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',timeZone:'America/New_York'});if(index===29)label.style.right='0';bar.append(label);}
       fragment.append(bar);
@@ -54,3 +54,4 @@
   $('logoutBtn').addEventListener('click',access.logout);$('refresh').addEventListener('click',refresh);$('requestsPerUser').addEventListener('input',capacity);
   refresh();setInterval(()=>{if(document.visibilityState==='visible')refresh();},60000);
 })();
+
