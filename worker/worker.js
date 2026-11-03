@@ -503,31 +503,54 @@ async function handlePerformanceDashboard(env) {
   add('student_nutrition_meals', "SELECT 'message' kind, created_at at, student_id, NULL asset, 'student' role FROM student_nutrition_meals WHERE trim(note)<>''");
   add('student_nutrition_meals', "SELECT 'message' kind, reviewed_at at, student_id, NULL asset, 'admin' role FROM student_nutrition_meals WHERE trim(trainer_comment)<>''");
   sources.push("SELECT 'session' kind, datetime(started_at/1000,'unixepoch') at, student_id, NULL asset, role FROM platform_activity_sessions");
-  const cte = `WITH bounds AS (SELECT ? lo, ? hi), activity AS (${sources.join(' UNION ALL ')}),
-    recent AS (SELECT a.*, b.lo FROM activity a, bounds b WHERE unixepoch(a.at)>=b.lo AND unixepoch(a.at)<=b.hi) `;
   const range = [Math.floor(from / 1000), Math.floor(now / 1000)];
-  const counts = await env.DB.prepare(cte + "SELECT kind, COUNT(*) count, COUNT(DISTINCT asset) files FROM recent GROUP BY kind").bind(...range).all();
-  const daily = await env.DB.prepare(cte + "SELECT min(29, CAST((unixepoch(at)-lo)/86400 AS INTEGER)) day, kind, COUNT(*) count FROM recent GROUP BY day, kind ORDER BY day").bind(...range).all();
-  const feed = await env.DB.prepare(cte + "SELECT kind, at, role FROM recent ORDER BY unixepoch(at) DESC LIMIT 20").bind(...range).all();
-  const activeSources = ['SELECT student_id FROM recent WHERE student_id IS NOT NULL'];
-  if(tables.has('classes')) activeSources.push("SELECT student_id FROM classes,bounds WHERE unixepoch(class_date)>=lo AND unixepoch(class_date)<=hi");
+  // D1's compound-SELECT limit is lower than desktop SQLite's. Keep categories in
+  // small groups; media of the same kind stay together to deduplicate their keys.
+  const groups = new Map();
+  for(const sql of sources) {
+    const kind = sql.match(/SELECT '([^']+)' kind/)[1];
+    const group = ['class','calendar_class','routine'].includes(kind) ? 'training' : kind;
+    if(!groups.has(group)) groups.set(group, []);
+    groups.get(group).push(sql);
+  }
+  const countRows=[], dailyRows=[], feedRows=[], activeStudents=new Set();
+  for(const group of groups.values()) {
+    const cte = `WITH bounds AS (SELECT ? lo, ? hi), activity AS (${group.join(' UNION ALL ')}),
+      recent AS (SELECT a.*, b.lo FROM activity a, bounds b WHERE unixepoch(a.at)>=b.lo AND unixepoch(a.at)<=b.hi) `;
+    const studentIds = tables.has('students') ? "json_group_array(DISTINCT CASE WHEN student_id IN (SELECT id FROM students) THEN student_id END)" : "'[]'";
+    const counts = await env.DB.prepare(cte + `SELECT kind, COUNT(*) count, COUNT(DISTINCT asset) files, ${studentIds} student_ids FROM recent GROUP BY kind`).bind(...range).all();
+    for(const row of counts.results || []) {
+      countRows.push(row);
+      for(const id of JSON.parse(row.student_ids || '[]')) if(id !== null) activeStudents.add(Number(id));
+    }
+    const daily = await env.DB.prepare(cte + "SELECT min(29, CAST((unixepoch(at)-lo)/86400 AS INTEGER)) day, kind, COUNT(*) count FROM recent GROUP BY day, kind ORDER BY day").bind(...range).all();
+    dailyRows.push(...(daily.results || []));
+    const feed = await env.DB.prepare(cte + "SELECT kind, at, role FROM recent ORDER BY unixepoch(at) DESC LIMIT 20").bind(...range).all();
+    feedRows.push(...(feed.results || []));
+  }
+  const activeSources = [];
   if(tables.has('student_accounts')) activeSources.push("SELECT student_id FROM student_accounts,bounds WHERE COALESCE(is_active,1)=1 AND unixepoch(last_login_at)>=lo AND unixepoch(last_login_at)<=hi");
   if(tables.has('student_nutrition_habits')) activeSources.push("SELECT student_id FROM student_nutrition_habits,bounds WHERE unixepoch(updated_at)>=lo AND unixepoch(updated_at)<=hi");
-  const students = tables.has('students') ? await env.DB.prepare(cte + `SELECT
-    (SELECT COUNT(*) FROM students) registered,
-    (SELECT COUNT(DISTINCT s.id) FROM students s JOIN (${activeSources.join(' UNION ALL ')}) a ON a.student_id=s.id) active`).bind(...range).first() : {registered:0,active:0};
+  if(tables.has('students') && activeSources.length) {
+    const extra = await env.DB.prepare(`WITH bounds AS (SELECT ? lo, ? hi) SELECT DISTINCT s.id
+      FROM students s JOIN (${activeSources.join(' UNION ALL ')}) a ON a.student_id=s.id`).bind(...range).all();
+    for(const row of extra.results || []) activeStudents.add(Number(row.id));
+  }
+  const students = tables.has('students') ? await env.DB.prepare('SELECT COUNT(*) registered FROM students').first() : {registered:0};
   const sessions = await env.DB.prepare(`SELECT COUNT(*) observed,
     SUM(CASE WHEN ended_at IS NULL AND last_seen_at>=? AND expires_at>? THEN 1 ELSE 0 END) open
     FROM platform_activity_sessions WHERE started_at>=?`).bind(now - 15*60*1000, now, from).first();
   const meta = await env.DB.prepare('SELECT enabled_at FROM platform_activity_meta WHERE id=1').first();
-  const metrics = Object.fromEntries((counts.results || []).map(row => [row.kind, row]));
+  const metrics = Object.fromEntries(countRows.map(row => [row.kind, row]));
+  const eventTime = row => Date.parse(row.at.includes('T') ? row.at : row.at.replace(' ','T')+'Z');
+  feedRows.sort((a,b) => eventTime(b)-eventTime(a));
   return json({
     period:{days:30, from:new Date(from).toISOString(), to:new Date(now).toISOString()},
     metrics:{classes:Number(metrics.class?.count || 0), calendar_classes:Number(metrics.calendar_class?.count || 0), routines:Number(metrics.routine?.count || 0),
       messages:Number(metrics.message?.count || 0), images:Number(metrics.image?.files || 0), videos:Number(metrics.video?.files || 0),
-      active_students:Number(students.active || 0), registered_students:Number(students.registered || 0),
+      active_students:activeStudents.size, registered_students:Number(students.registered || 0),
       open_sessions:Number(sessions.open || 0), observed_sessions:Number(sessions.observed || 0)},
-    daily:daily.results || [], recent:feed.results || [],
+    daily:dailyRows, recent:feedRows.slice(0,20),
     sessions_measured_since:new Date(meta.enabled_at).toISOString(),
     retention:{days:30,scope:'Only platform_activity_sessions; business records are never purged.'},
     capacity:{reference_daily_requests:100000,requests_per_user_per_day:50,kind:'reference_model',
@@ -541,7 +564,13 @@ async function handleSuperadminRoute(request, env, url) {
   if (url.pathname === "/api/superadmin/login" && request.method === "POST") return handleSuperadminLogin(request, env);
   const auth = await verifyAuthToken(request, env).catch(() => null);
   if (auth?.role !== "superadmin") return json({ error: "SUPERADMIN_AUTH_REQUIRED" }, 401);
-  if (url.pathname === "/api/superadmin/performance" && request.method === "GET") return handlePerformanceDashboard(env);
+  if (url.pathname === "/api/superadmin/performance" && request.method === "GET") {
+    try { return await handlePerformanceDashboard(env); }
+    catch (error) {
+      console.error('Performance metrics query failed:', error?.name || 'Error');
+      return json({error:'No se pudo cargar la actividad. Volvé a intentar con Actualizar.'},503);
+    }
+  }
   if (url.pathname === "/api/superadmin/me" && request.method === "GET") return json({ username: auth.username, exp: auth.exp });
   if (url.pathname === "/api/superadmin/students" && request.method === "GET") {
     const result = await env.DB.prepare(`SELECT s.id, s.full_name,

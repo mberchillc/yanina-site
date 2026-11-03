@@ -54,4 +54,3 @@
   $('logoutBtn').addEventListener('click',access.logout);$('refresh').addEventListener('click',refresh);$('requestsPerUser').addEventListener('input',capacity);
   refresh();setInterval(()=>{if(document.visibilityState==='visible')refresh();},60000);
 })();
-
