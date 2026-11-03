@@ -2,14 +2,15 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <script src="/assets/superadmin-access.js?v=20261103-1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel Admin | Yanina Trainer</title>
 
   <script>
     const SESSION_KEY = "yaninaAdminSession";
-    const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    const session = JSON.parse(window.YaninaAccess.storage.getItem(SESSION_KEY) || "null");
     if (!session || session.loggedIn !== true || !session.token) {
-      localStorage.removeItem(SESSION_KEY);
+      window.YaninaAccess.storage.removeItem(SESSION_KEY);
       window.location.href = "/login.html";
     }
   </script>
@@ -57,7 +58,7 @@
 
   <script>
     const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
-    const adminSession = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    const adminSession = JSON.parse(window.YaninaAccess.storage.getItem(SESSION_KEY) || "null");
     const studentsGrid = document.getElementById("studentsGrid");
     const studentsCount = document.getElementById("studentsCount");
     const classesCount = document.getElementById("classesCount");
@@ -72,7 +73,7 @@
       headers.set("Authorization", `Bearer ${adminSession.token}`);
       const response = await fetch(url, { ...options, headers });
       if (response.status === 401 || response.status === 403) {
-        localStorage.removeItem(SESSION_KEY);
+        window.YaninaAccess.storage.removeItem(SESSION_KEY);
         window.location.href = "/login.html";
         throw new Error("Sesion admin vencida. Volve a entrar.");
       }
@@ -134,7 +135,7 @@
     }
 
     async function refreshNotificationBell(){if(!notificationBell)return;try{const r=await apiFetch(`${API_BASE}/api/notifications?recipient=admin&cache=${Date.now()}`);if(!r.ok)return;const items=await r.json();const unread=Array.isArray(items)&&items.some(n=>Number(n.is_read||0)===0);notificationBell.classList.toggle("has-unread",unread)}catch(e){console.warn(e)}}
-    if(logoutBtn){logoutBtn.addEventListener("click",()=>{localStorage.removeItem(SESSION_KEY);window.location.href="/login.html"})}
+    if(logoutBtn){logoutBtn.addEventListener("click",()=>{window.YaninaAccess.storage.removeItem(SESSION_KEY);window.location.href="/login.html"})}
     loadStudents();refreshNotificationBell();
   </script>
 </body>

@@ -2,9 +2,9 @@
   'use strict';
 
   const API_BASE = 'https://yanina-trainer-api.mberchillc.workers.dev';
-  const session = JSON.parse(localStorage.getItem('yaninaStudentSession') || '{}');
+  const session = JSON.parse(window.YaninaAccess.storage.getItem('yaninaStudentSession') || '{}');
   if (!session.token || !session.studentId) {
-    localStorage.removeItem('yaninaStudentSession');
+    window.YaninaAccess.storage.removeItem('yaninaStudentSession');
     window.location.href = '/login.html';
     throw new Error('STUDENT_AUTH_REQUIRED');
   }
@@ -518,7 +518,7 @@
   byId('classSelect').addEventListener('change', event => selectTrainingClass(event.target.value));
   byId('markCompletedBtn').addEventListener('click', markSelectedClassCompleted);
   byId('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('yaninaStudentSession');
+    window.YaninaAccess.storage.removeItem('yaninaStudentSession');
     window.location.href = '/login.html';
   });
 
