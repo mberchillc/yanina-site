@@ -84,7 +84,7 @@
     const home = document.createElement('a'); home.href = previewHref('/superadmin/'); home.textContent = 'Todas las vistas';
     const exit = document.createElement('button'); exit.type = 'button'; exit.textContent = 'Salir'; exit.addEventListener('click', logout);
     const error = document.createElement('span'); error.className = 'sa-error'; error.setAttribute('role', 'status');
-    const performance = document.createElement('a'); performance.href = previewHref('/superadmin/performance.html'); performance.textContent = 'Poerformance';
+    const performance = document.createElement('a'); performance.href = previewHref('/superadmin/performance.html'); performance.textContent = 'Performance';
     bar.append(title, label, select, note, home, performance, exit, error);
     document.body.prepend(bar);
     document.addEventListener('click', event => {
