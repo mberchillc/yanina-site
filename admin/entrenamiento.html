@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <script src="/assets/superadmin-access.js?v=20261103-1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Entrenamiento | Yanina Trainer</title>
   <style>
@@ -1676,9 +1677,9 @@
   <script src="../assets/measurement-history.js?v=20260722-1"></script>
   <script>
     const API_BASE = "https://yanina-trainer-api.mberchillc.workers.dev";
-    const adminSessionData = JSON.parse(localStorage.getItem("yaninaAdminSession") || "{}");
+    const adminSessionData = JSON.parse(window.YaninaAccess.storage.getItem("yaninaAdminSession") || "{}");
     if (!adminSessionData.token) {
-      localStorage.removeItem("yaninaAdminSession");
+      window.YaninaAccess.storage.removeItem("yaninaAdminSession");
       window.location.href = "/login.html";
       throw new Error("ADMIN_AUTH_REQUIRED");
     }
@@ -2679,7 +2680,7 @@ return {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         if (errorData.error === "ADMIN_AUTH_REQUIRED") {
-          localStorage.removeItem("yaninaAdminSession");
+          window.YaninaAccess.storage.removeItem("yaninaAdminSession");
           window.location.href = "/login.html";
           throw new Error("Sesion admin vencida. Volve a entrar y guarda la ficha otra vez.");
         }

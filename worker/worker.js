@@ -349,8 +349,117 @@ function base64UrlDecode(value) {
   return new TextDecoder().decode(bytes);
 }
 
+// Only a digest of the private, expiring invitation is shipped in the public source.
+const SUPERADMIN_INVITE_SHA256 = "d6ead937724a0a86d9bcb6743c61b4fe9505797e70bc5784b4d31898ff405563";
+const SUPERADMIN_INVITE_EXPIRES = 1794312616906;
+
+async function ensureSuperadminTable(env) {
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS platform_superadmin (
+    id INTEGER PRIMARY KEY CHECK (id = 1), username TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL, password_salt TEXT NOT NULL,
+    session_secret TEXT NOT NULL, is_active INTEGER NOT NULL DEFAULT 1,
+    login_failures INTEGER NOT NULL DEFAULT 0, locked_until INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`).run();
+}
+
+function equalSecret(a, b) {
+  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+  let difference = 0;
+  for (let index = 0; index < a.length; index++) difference |= a.charCodeAt(index) ^ b.charCodeAt(index);
+  return difference === 0;
+}
+
+async function authSigningSecret(payload, env) {
+  if (payload.role === "superadmin" || payload.superadmin_preview === true) {
+    const account = await env.DB.prepare("SELECT username, session_secret, is_active FROM platform_superadmin WHERE id = 1").first();
+    const owner = payload.superadmin_preview === true ? payload.owner : payload.username;
+    if (!account || account.is_active !== 1 || account.username !== owner) throw new Error("SUPERADMIN_AUTH_REQUIRED");
+    return account.session_secret;
+  }
+  return String(env.AUTH_SECRET || env.ADMIN_PASSWORD || "yanina-auth-secret");
+}
+
+async function superadminPasswordHash(password, salt) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: new TextEncoder().encode(salt), iterations: 100000, hash: "SHA-256" }, key, 256);
+  return [...new Uint8Array(bits)].map(value => value.toString(16).padStart(2, "0")).join("");
+}
+
+async function handleSuperadminSetup(request, env) {
+  const data = await readJsonBody(request);
+  const invite = String(data.invite || "");
+  if (Date.now() > SUPERADMIN_INVITE_EXPIRES || !equalSecret(await sha256Hex(invite), SUPERADMIN_INVITE_SHA256)) {
+    return json({ error: "El enlace de alta no es válido o venció." }, 403);
+  }
+  const username = String(data.username || "").trim().toLowerCase();
+  const password = String(data.password || "");
+  if (!/^[a-z0-9@._+-]{3,120}$/.test(username) || password.length < 12 || password.length > 256) {
+    return json({ error: "Elegí un usuario de 3 a 120 caracteres y una contraseña de al menos 12 caracteres." }, 400);
+  }
+  await ensureSuperadminTable(env);
+  const salt = randomToken();
+  const passwordHash = await superadminPasswordHash(password, salt);
+  // The singleton primary key makes invitation consumption atomic, including simultaneous requests.
+  const result = await env.DB.prepare(`INSERT INTO platform_superadmin
+    (id, username, password_hash, password_salt, session_secret) VALUES (1, ?, ?, ?, ?)
+    ON CONFLICT(id) DO NOTHING`).bind(username, passwordHash, salt, randomToken()).run();
+  if (Number(result.meta?.changes) !== 1) return json({ error: "El Superadmin ya fue creado. Ingresá con tu usuario y contraseña." }, 409);
+  return json({ ok: true });
+}
+
+async function handleSuperadminLogin(request, env) {
+  const data = await readJsonBody(request);
+  await ensureSuperadminTable(env);
+  const account = await env.DB.prepare("SELECT * FROM platform_superadmin WHERE id = 1").first();
+  const username = String(data.username || "").trim().toLowerCase();
+  const password = String(data.password || "");
+  if (!account || account.is_active !== 1 || account.username !== username || password.length > 256) return json({ error: "Usuario o contraseña incorrectos." }, 401);
+  if (Number(account.locked_until) > Date.now()) return json({ error: "Demasiados intentos. Volvé a intentar en 15 minutos." }, 429);
+  const hash = await superadminPasswordHash(password, account.password_salt);
+  if (!equalSecret(hash, account.password_hash)) {
+    await env.DB.prepare(`UPDATE platform_superadmin SET
+      login_failures = login_failures + 1,
+      locked_until = CASE WHEN login_failures + 1 >= 5 THEN ? ELSE 0 END
+      WHERE id = 1`).bind(Date.now() + 15 * 60 * 1000).run();
+    return json({ error: "Usuario o contraseña incorrectos." }, 401);
+  }
+  await env.DB.prepare("UPDATE platform_superadmin SET login_failures = 0, locked_until = 0 WHERE id = 1").run();
+  const exp = Date.now() + 8 * 60 * 60 * 1000;
+  return json({ ok: true, role: "superadmin", username, exp, token: await signAuthPayload({ role: "superadmin", username, exp }, env) });
+}
+
+async function handleSuperadminRoute(request, env, url) {
+  if (url.pathname === "/api/superadmin/setup" && request.method === "POST") return handleSuperadminSetup(request, env);
+  if (url.pathname === "/api/superadmin/login" && request.method === "POST") return handleSuperadminLogin(request, env);
+  const auth = await verifyAuthToken(request, env).catch(() => null);
+  if (auth?.role !== "superadmin") return json({ error: "SUPERADMIN_AUTH_REQUIRED" }, 401);
+  if (url.pathname === "/api/superadmin/me" && request.method === "GET") return json({ username: auth.username, exp: auth.exp });
+  if (url.pathname === "/api/superadmin/students" && request.method === "GET") {
+    const result = await env.DB.prepare(`SELECT s.id, s.full_name,
+      (SELECT COUNT(*) FROM classes c WHERE c.student_id = s.id) AS classes_count,
+      (SELECT MAX(class_date) FROM classes c WHERE c.student_id = s.id) AS latest_class
+      FROM students s ORDER BY (classes_count > 0) DESC, latest_class DESC, s.full_name COLLATE NOCASE`).all();
+    return json(result.results || []);
+  }
+  if (url.pathname === "/api/superadmin/view" && request.method === "POST") {
+    const data = await readJsonBody(request);
+    const exp = Math.min(auth.exp, Date.now() + 2 * 60 * 60 * 1000);
+    const common = { owner: auth.username, superadmin_preview: true, read_only: true, exp };
+    if (data.view === "admin") {
+      return json({ view: "admin", name: "Yanina", exp, token: await signAuthPayload({ ...common, role: "admin", username: auth.username }, env) });
+    }
+    if (data.view !== "student" || !Number.isSafeInteger(Number(data.student_id)) || Number(data.student_id) < 1) return json({ error: "Elegí una vista válida." }, 400);
+    const student = await env.DB.prepare("SELECT id, full_name FROM students WHERE id = ?").bind(Number(data.student_id)).first();
+    if (!student) return json({ error: "No se encontró el alumno." }, 404);
+    return json({ view: "student", student_id: student.id, name: student.full_name, exp,
+      token: await signAuthPayload({ ...common, role: "student", student_id: student.id }, env) });
+  }
+  return json({ error: "Not found" }, 404);
+}
+
 async function signAuthPayload(payload, env) {
-  const secret = String(env.AUTH_SECRET || env.ADMIN_PASSWORD || "yanina-auth-secret");
+  const secret = await authSigningSecret(payload, env);
   const cleanPayload = { ...payload };
   const body = base64UrlEncode(JSON.stringify({
     ...cleanPayload,
@@ -371,9 +480,10 @@ async function verifyAuthToken(request, env) {
   const header = request.headers.get("Authorization") || "";
   const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
   if (!token || !token.includes(".")) return null;
-  const [body, signature] = token.split(".");
+  const [body, signature, extra] = token.split(".");
+  if (extra || !body || !signature) return null;
   const expected = await signAuthPayload(JSON.parse(base64UrlDecode(body)), env);
-  if (signature !== expected.split(".")[1]) return null;
+  if (!equalSecret(signature, expected.split(".")[1])) return null;
   const payload = JSON.parse(base64UrlDecode(body));
   if (!payload.exp || Number(payload.exp) < Date.now()) return null;
   return payload;
@@ -382,14 +492,14 @@ async function verifyAuthToken(request, env) {
 async function requireStudentAccess(request, env, studentId) {
   const auth = await verifyAuthToken(request, env).catch(() => null);
   if (!auth) return json({ error: "AUTH_REQUIRED" }, 401);
-  if (auth.role === "admin") return null;
+  if (auth.role === "admin" || auth.role === "superadmin") return null;
   if (auth.role === "student" && Number(auth.student_id) === Number(studentId)) return null;
   return json({ error: "FORBIDDEN" }, 403);
 }
 
 async function requireAdminAccess(request, env) {
   const auth = await verifyAuthToken(request, env).catch(() => null);
-  if (auth?.role === "admin") return null;
+  if (auth?.role === "admin" || auth?.role === "superadmin") return null;
   return json({ error: "ADMIN_AUTH_REQUIRED" }, 401);
 }
 
@@ -1968,6 +2078,16 @@ async function handleGetNutritionMealPhoto(request, env, mealId) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (request.method !== "OPTIONS" && url.pathname.startsWith("/api/superadmin/")) {
+      const response = await handleSuperadminRoute(request, env, url);
+      response.headers.set("Cache-Control", "no-store");
+      return response;
+    }
+    // Preview credentials can read existing screens, never alter a student's real activity.
+    if (!["GET", "HEAD", "OPTIONS"].includes(request.method)) {
+      const auth = await verifyAuthToken(request, env).catch(() => null);
+      if (auth?.read_only === true) return json({ error: "PREVIEW_READ_ONLY", message: "La vista de muestra es de solo lectura." }, 403);
+    }
 
     async function cloneDefaultClassesForStudent(studentId) {
       const template = await env.DB

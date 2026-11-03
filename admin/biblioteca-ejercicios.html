@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <script src="/assets/superadmin-access.js?v=20261103-1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Biblioteca de ejercicios | Yanina Trainer</title>
   <script>
     const SESSION_KEY = "yaninaAdminSession";
-    const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    const session = JSON.parse(window.YaninaAccess.storage.getItem(SESSION_KEY) || "null");
     if (!session || session.loggedIn !== true) window.location.href = "login.html";
   </script>
   <style>

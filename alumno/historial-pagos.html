@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <script src="/assets/superadmin-access.js?v=20261103-1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Historial de pagos | Yanina Trainer</title>
   <style>
@@ -18,7 +19,7 @@
   <script>
     const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
     const params=new URLSearchParams(location.search),adminPreview=params.get('adminPreview')==='1';
-    const studentSessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}'),adminSessionData=JSON.parse(localStorage.getItem('yaninaAdminSession')||'{}');
+    const studentSessionData=JSON.parse(window.YaninaAccess.storage.getItem('yaninaStudentSession')||'{}'),adminSessionData=JSON.parse(window.YaninaAccess.storage.getItem('yaninaAdminSession')||'{}');
     const sessionData=adminPreview?adminSessionData:studentSessionData,requestedStudentId=String(params.get('id')||params.get('studentId')||'');
     const STUDENT_ID=String(adminPreview?requestedStudentId:(studentSessionData.studentId||''));
     if(!sessionData.token||!STUDENT_ID){window.location.replace('../login.html');throw new Error('AUTH_REQUIRED')}

@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <script src="/assets/superadmin-access.js?v=20261103-1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Acceso | Yanina Trainer</title>
   <style>
@@ -57,6 +58,7 @@
     </form>
 
     <div class="note" id="loginNote">Ingresa con tu usuario y contrasena.</div>
+    <a class="back-link" href="/superadmin/">Acceso Superadmin</a>
     <a class="back-link" href="/">Volver al sitio</a>
   </main>
 
@@ -117,12 +119,12 @@
     }
 
     function enterAdmin(payload) {
-      localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({ user: payload.username, role: "admin", token: payload.token || "", loggedIn: true, createdAt: new Date().toISOString() }));
+      window.YaninaAccess.storage.setItem(ADMIN_SESSION_KEY, JSON.stringify({ user: payload.username, role: "admin", token: payload.token || "", loggedIn: true, createdAt: new Date().toISOString() }));
       window.location.href = "/admin/index.html";
     }
 
     function enterStudent(payload) {
-      localStorage.setItem(STUDENT_SESSION_KEY, JSON.stringify({ role: "student", studentId: payload.student_id, name: payload.name || "Alumna", username: payload.username, token: payload.token || "", loggedIn: true, createdAt: new Date().toISOString() }));
+      window.YaninaAccess.storage.setItem(STUDENT_SESSION_KEY, JSON.stringify({ role: "student", studentId: payload.student_id, name: payload.name || "Alumna", username: payload.username, token: payload.token || "", loggedIn: true, createdAt: new Date().toISOString() }));
       window.location.href = "/alumno/index.html?v=tracking-back";
     }
 

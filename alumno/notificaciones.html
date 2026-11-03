@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <script src="/assets/superadmin-access.js?v=20261103-1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Notificaciones | Yanina Trainer</title>
   <style>
@@ -26,7 +27,7 @@
   <script>
     const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
     const params=new URLSearchParams(window.location.search);
-    const sessionData=JSON.parse(localStorage.getItem('yaninaStudentSession')||'{}');
+    const sessionData=JSON.parse(window.YaninaAccess.storage.getItem('yaninaStudentSession')||'{}');
     const requestedStudentId=String(params.get('id')||params.get('studentId')||'');
     const STUDENT_ID=String(sessionData.studentId||'');
     if(!sessionData.token||!STUDENT_ID){window.location.replace('../login.html');throw new Error('AUTH_REQUIRED')}

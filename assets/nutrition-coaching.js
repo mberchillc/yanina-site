@@ -5,7 +5,7 @@
   const ROLE = document.body.dataset.nutritionRole === "admin" ? "admin" : "student";
   const params = new URLSearchParams(window.location.search);
   const sessionKey = ROLE === "admin" ? "yaninaAdminSession" : "yaninaStudentSession";
-  const session = JSON.parse(localStorage.getItem(sessionKey) || "{}");
+  const session = JSON.parse(window.YaninaAccess.storage.getItem(sessionKey) || "{}");
   const studentId = String(params.get("id") || params.get("studentId") || session.studentId || "");
   const app = document.getElementById("nutritionApp");
   const photoCache = new Map();
@@ -38,7 +38,7 @@
   };
 
   if (!session.token || (ROLE === "student" && !session.studentId)) {
-    localStorage.removeItem(sessionKey);
+    window.YaninaAccess.storage.removeItem(sessionKey);
     window.location.href = "/login.html";
     return;
   }
@@ -124,7 +124,7 @@
     }
     const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
     if (response.status === 401 || response.status === 403) {
-      localStorage.removeItem(sessionKey);
+      window.YaninaAccess.storage.removeItem(sessionKey);
       window.location.href = "/login.html";
       throw new Error("La sesión venció. Volvé a ingresar.");
     }

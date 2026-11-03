@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <script src="/assets/superadmin-access.js?v=20261103-1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Historial administrativo | Yanina Trainer</title>
   <script>
     const SESSION_KEY = "yaninaAdminSession";
-    const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    const session = JSON.parse(window.YaninaAccess.storage.getItem(SESSION_KEY) || "null");
     if (!session || session.loggedIn !== true) window.location.href = "login.html";
   </script>
   <style>
@@ -23,8 +24,8 @@
   </main>
   <script>
     const API_BASE='https://yanina-trainer-api.mberchillc.workers.dev';
-    const adminSessionData=JSON.parse(localStorage.getItem('yaninaAdminSession')||'{}');
-    if(!adminSessionData.token){localStorage.removeItem('yaninaAdminSession');window.location.href='login.html';throw new Error('ADMIN_AUTH_REQUIRED')}
+    const adminSessionData=JSON.parse(window.YaninaAccess.storage.getItem('yaninaAdminSession')||'{}');
+    if(!adminSessionData.token){window.YaninaAccess.storage.removeItem('yaninaAdminSession');window.location.href='login.html';throw new Error('ADMIN_AUTH_REQUIRED')}
     const originalFetch=window.fetch.bind(window);
     window.fetch=(input,init={})=>{const url=typeof input==='string'?input:input?.url||'';if(String(url).startsWith(API_BASE)){const headers=new Headers(init.headers||{});headers.set('Authorization',`Bearer ${adminSessionData.token}`);return originalFetch(input,{...init,headers})}return originalFetch(input,init)};
     const params=new URLSearchParams(location.search);const preselected=String(params.get('id')||params.get('studentId')||'');
