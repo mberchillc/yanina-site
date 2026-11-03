@@ -4,6 +4,8 @@
   const OWNER_KEY = 'yaninaSuperadmin';
   const VIEW_KEY = 'yaninaSuperadminView';
   const SESSION_KEYS = ['yaninaAdminSession', 'yaninaStudentSession'];
+  // Capture transport before legacy screens wrap window.fetch with their preview token.
+  const ownerFetch = window.fetch.bind(window);
   const read = key => { try { return JSON.parse(sessionStorage.getItem(key) || 'null'); } catch { return null; } };
   const owner = () => read(OWNER_KEY);
   const view = () => read(VIEW_KEY);
@@ -18,7 +20,7 @@
     location.assign('/superadmin/');
   }
   async function api(path, data) {
-    const response = await fetch(API + '/api/superadmin/' + path, {
+    const response = await ownerFetch(API + '/api/superadmin/' + path, {
       method: data ? 'POST' : 'GET',
       headers: { 'Content-Type': 'application/json', ...(owner()?.token ? { Authorization: 'Bearer ' + owner().token } : {}) },
       ...(data ? { body: JSON.stringify(data) } : {})
@@ -96,3 +98,4 @@
     } catch (failure) { error.textContent = failure.message; }
   });
 })();
+
