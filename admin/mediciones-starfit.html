@@ -11,8 +11,9 @@
   </style>
   <link rel=stylesheet href=../assets/yanina-brand-refresh.css?v=20260629-brand>
   <link rel="stylesheet" href="/assets/yanina-brand.css?v=20261103-1">
+  <link rel="stylesheet" href="/assets/catchdog-footer.css?v=20261103-1">
 </head>
-<body>
+<body class="yt-powered-page">
   <main class="shell">
     <header class="top yt-brand-header"><div class="brand yt-brand-group"><div class="badge yt-brand-frame"><img src="/assets/logo-cropped.png?v=20261103-brand1" alt="Yanina Trainer" class="yt-brand-logo"></div><div class="yt-brand-context"><h1>Admin · Mediciones Starfit</h1><p>Subir captura, extraer datos, validar y guardar medición</p></div></div><a class="btn" id="backLink" href="alumno.html">Volver a ficha</a></header>
     <section class="hero"><p class="kicker">Tracking de alumna</p><h2>Captura Starfit → <span>datos validados</span></h2><p id="heroContextText">Estás incluyendo una nueva medición.</p><div class="student-context" id="studentContextPill">Alumna: cargando...</div></section>
@@ -68,5 +69,11 @@
     $('saveBtn').addEventListener('click',async()=>{if(!studentId){alert('Abrí Mediciones desde la ficha de una alumna para guardar la medición.');return;}if(!dateConfirmed){alert('Confirmá la fecha con OK antes de guardar.');return;}const measuredIso=$('measuredAt').value;const payload={student_id:studentId,measured_at:measuredIso,measured_date_iso:measuredIso,measured_date_confirmed:1,weight_kg:$('weight').value,bmi:$('bmi').value,body_fat_percent:$('fat').value,skeletal_muscle_kg:$('skeletal').value,visceral_fat:$('visceral').value,body_score:$('score').value,starfit_goal_kg:$('goal').value,trainer_note:$('trainerNote').value,source_image_url:extractedImageUrl};try{const r=await fetch(`${API_BASE}/api/students/${encodeURIComponent(studentId)}/measurements`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const result=await r.json().catch(()=>({}));if(!r.ok){if(r.status===401||result.error==='ADMIN_AUTH_REQUIRED')throw new Error('Tu sesión de admin venció. Volvé a ingresar y guardá la medición nuevamente.');throw new Error(result.error||'Endpoint de guardado no disponible.');}$('saveMsg').innerHTML='<strong>Medición guardada.</strong>'; $('saveMsg').classList.remove('hidden')}catch(e){console.error(e);$('saveMsg').innerHTML=`<strong>No se pudo guardar la medición.</strong> ${esc(e.message||'Revisá conexión con D1/R2.')}`;$('saveMsg').classList.remove('hidden')}});
     updateStudentContext();loadStudentContext();render();
   </script>
+  <footer class="cd-powered-footer" aria-label="Powered by CatchDog">
+    <span>Powered by</span>
+    <a href="https://catchdog.net/" target="_blank" rel="noopener noreferrer" aria-label="CatchDog — visitar sitio web de la empresa">
+      <img src="/assets/catchdog-logo-light.png" alt="CatchDog" width="52" height="60" loading="lazy">
+    </a>
+  </footer>
 </body>
 </html>

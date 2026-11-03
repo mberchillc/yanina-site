@@ -16,8 +16,9 @@
   </style>
   <link rel=stylesheet href=../assets/yanina-brand-refresh.css?v=20260629-brand>
   <link rel="stylesheet" href="/assets/yanina-brand.css?v=20261103-1">
+  <link rel="stylesheet" href="/assets/catchdog-footer.css?v=20261103-1">
 </head>
-<body>
+<body class="yt-powered-page">
   <main class="admin-shell">
     <header class="topbar yt-brand-header yt-brand-dark"><div class="brand yt-brand-group"><span class="yt-brand-frame"><img src="/assets/logo-cropped.png?v=20261103-brand1" alt="Yanina Trainer" class="yt-brand-logo"></span><div class="brand-text yt-brand-context"><strong>Admin Trainer</strong><small>Gestión administrativa</small></div></div><div class="top-actions yt-brand-actions"><a href="index.html" class="btn btn-secondary">Panel Admin</a><a href="alumno.html?new=1" class="btn btn-primary">+ Nuevo alumno</a></div></header>
     <section class="page-header"><div class="eyebrow">Plataforma Yanina Trainer</div><h1>Gestión administrativa</h1><p class="subtitle">Seleccioná alumna y mes, revisá las clases programadas, cargá el valor por clase y calculá el resumen mensual.</p></section>
@@ -46,5 +47,11 @@
     async function loadClasses(id){selectedClasses=[];currentSummary=null;if(!id){selectedStudent=null;classValueInput.value="";otherValueInput.value="0";update();return}selectedStudent=students.find(s=>String(sid(s))===String(id))||null;statusNote.textContent="Cargando calendario de clases...";const r=await fetch(`${API_BASE}/api/students/${encodeURIComponent(id)}/classes?cache=${Date.now()}`);if(!r.ok)throw new Error("No se pudieron cargar las clases de la alumna");const data=await r.json();selectedClasses=Array.isArray(data)?data:[];await loadSavedSummary()}
     studentSelect.addEventListener("change",()=>loadClasses(studentSelect.value).catch(e=>{console.error(e);statusNote.textContent=e.message||"No se pudo cargar el calendario."}));monthSelect.addEventListener("change",()=>loadSavedSummary().catch(e=>{console.error(e);statusNote.textContent=e.message||"No se pudo cargar el resumen guardado."}));classValueInput.addEventListener("input",()=>{currentSummary=null;update()});otherValueInput.addEventListener("input",()=>{currentSummary=null;update()});generateBtn.addEventListener("click",()=>{update();generateBtn.textContent="✓ Aceptado";setTimeout(()=>generateBtn.textContent="Aceptar",1400)});saveBtn.addEventListener("click",saveSummary);months();update();loadStudents().catch(e=>{console.error(e);studentSelect.innerHTML='<option value="">No se pudieron cargar alumnas</option>';statusNote.textContent=e.message||"No se pudieron cargar alumnas."});
   </script>
+  <footer class="cd-powered-footer" aria-label="Powered by CatchDog">
+    <span>Powered by</span>
+    <a href="https://catchdog.net/" target="_blank" rel="noopener noreferrer" aria-label="CatchDog — visitar sitio web de la empresa">
+      <img src="/assets/catchdog-logo-light.png" alt="CatchDog" width="52" height="60" loading="lazy">
+    </a>
+  </footer>
 </body>
 </html>

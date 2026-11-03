@@ -20,8 +20,9 @@
   </style>
   <link rel=stylesheet href=../assets/yanina-brand-refresh.css?v=20260629-brand>
   <link rel="stylesheet" href="/assets/yanina-brand.css?v=20261103-1">
+  <link rel="stylesheet" href="/assets/catchdog-footer.css?v=20261103-1">
 </head>
-<body>
+<body class="yt-powered-page">
   <main class="wrap">
     <header class="topbar yt-brand-header yt-brand-dark"><div class="brand yt-brand-group"><span class="yt-brand-frame"><img src="/assets/logo-cropped.png?v=20261103-brand1" alt="Yanina Trainer" class="yt-brand-logo"></span><div class="yt-brand-context"><strong>Admin Trainer</strong><small>Preview gestión</small></div></div><div class="actions yt-brand-actions"><a href="gestion-administrativa.html" class="btn btn-secondary">Volver a gestión actual</a><a href="index.html" class="btn btn-primary">Panel Admin</a></div></header>
     <section class="page"><div class="eyebrow">Plataforma Yanina Trainer</div><h1>Preview gestión administrativa</h1><p class="subtitle">Prueba aislada. No reemplaza la pantalla actual hasta aprobar diseño.</p></section>
@@ -48,5 +49,11 @@
     async function downloadImage(){try{downloadBtn.disabled=true;downloadBtn.textContent="Generando imagen...";const dataUrl=await htmlToImage.toPng(summaryCard,{cacheBust:true,pixelRatio:2,backgroundColor:"#ffffff"});const a=document.createElement("a"),student=selectedStudent?sname(selectedStudent).toLowerCase().replaceAll(/\s+/g,"-"):"alumna",month=String(monthSelect.value||"mes");a.download=`resumen-${student}-${month}.png`;a.href=dataUrl;a.click();downloadBtn.textContent="Imagen lista";setTimeout(()=>{downloadBtn.textContent="Descargar imagen";downloadBtn.disabled=false},1500)}catch(e){console.error(e);alert("No se pudo generar la imagen.");downloadBtn.textContent="Descargar imagen";downloadBtn.disabled=false}}
     studentSelect.addEventListener("change",()=>loadClasses(studentSelect.value).catch(e=>{console.error(e);statusNote.textContent=e.message||"No se pudo cargar el calendario."}));monthSelect.addEventListener("change",update);classValueInput.addEventListener("input",update);otherValueInput.addEventListener("input",update);generateBtn.addEventListener("click",()=>{update();generateBtn.textContent="Aceptado";setTimeout(()=>generateBtn.textContent="Aceptar",1400)});downloadBtn.addEventListener("click",downloadImage);months();update();loadStudents().catch(e=>{console.error(e);studentSelect.innerHTML='<option value="">No se pudieron cargar alumnas</option>';statusNote.textContent=e.message||"No se pudieron cargar alumnas."});
   </script>
+  <footer class="cd-powered-footer" aria-label="Powered by CatchDog">
+    <span>Powered by</span>
+    <a href="https://catchdog.net/" target="_blank" rel="noopener noreferrer" aria-label="CatchDog — visitar sitio web de la empresa">
+      <img src="/assets/catchdog-logo-light.png" alt="CatchDog" width="52" height="60" loading="lazy">
+    </a>
+  </footer>
 </body>
 </html>

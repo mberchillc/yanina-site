@@ -1,0 +1,66 @@
+/* Shared, non-floating company credit. Space is reserved so it never covers page controls. */
+body.yt-powered-page {
+  position: relative;
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding-bottom: 108px;
+}
+.cd-powered-footer {
+  position: absolute;
+  inset: auto 0 0;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 76px;
+  margin: 0;
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  color: #c8d0df;
+  background: #081426;
+  border-top: 1px solid rgba(130,141,171,.16);
+}
+.cd-powered-footer > span {
+  font: 700 12px/1.2 Arial, sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+.cd-powered-footer > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 52px;
+  min-height: 60px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  text-decoration: none;
+}
+.cd-powered-footer > a:focus-visible { outline: 2px solid #a69cff; outline-offset: 5px; }
+.cd-powered-footer img {
+  display: block;
+  width: 52px;
+  height: 60px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  object-fit: contain;
+  transform: none;
+  filter: none;
+}
+@media (max-width: 600px) {
+  body.yt-powered-page { padding-bottom: 92px; }
+  .cd-powered-footer { min-height: 68px; gap: 14px; }
+  .cd-powered-footer > span { font-size: 11px; }
+  .cd-powered-footer > a { min-width: 45px; min-height: 52px; }
+  .cd-powered-footer img { width: 45px; height: 52px; }
+}
+@media print {
+  body.yt-powered-page { padding-bottom: 0; }
+  .cd-powered-footer { position: static; margin-top: 20px; break-inside: avoid; print-color-adjust: exact; }
+}
