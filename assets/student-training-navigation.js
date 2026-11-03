@@ -5,7 +5,8 @@
 
   global.openStudentTraining = function openStudentTraining(classId) {
     const query = classId ? `?classId=${encodeURIComponent(classId)}` : '';
-    global.location.href = `entrenamiento.html${query}`;
+    const target = `entrenamiento.html${query}`;
+    global.location.href = global.YaninaAccess?.active() ? global.YaninaAccess.previewHref(target) : target;
   };
 
   const tabList = document.querySelector('.tab-list');

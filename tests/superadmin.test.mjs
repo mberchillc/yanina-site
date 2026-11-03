@@ -82,7 +82,7 @@ const local=memoryStorage(), session=memoryStorage();
 local.setItem('yaninaStudentSession','real-student-session');
 session.setItem('yaninaSuperadmin',JSON.stringify({token:'owner',exp:Date.now()+60000}));
 const context={window:{fetch:()=>{}},localStorage:local,sessionStorage:session,location:{pathname:'/superadmin/'},URL,Response,Date,JSON,document:{}};
-vm.runInNewContext(fs.readFileSync(path.join(root,'assets/superadmin-access.js'),'utf8'),context);
+vm.runInNewContext(fs.readFileSync(path.join(root,'assets/superadmin-access-v2.js'),'utf8'),context);
 assert.equal(context.window.YaninaAccess.storage.getItem('yaninaStudentSession'),null);
 context.window.YaninaAccess.storage.setItem('yaninaStudentSession','preview');
 assert.equal(session.getItem('yaninaStudentSession'),'preview');
@@ -100,23 +100,24 @@ const transport=async (url,init)=>{
   requests.push({url,authorization:new Headers(init.headers).get('Authorization')});
   return Response.json(url.endsWith('/view')?{view:'student',student_id:1,name:'Alumna activa',token:'preview-token',exp:Date.now()+60000}:[]);
 };
-const browser={fetch:transport,localStorage:memoryStorage(),sessionStorage:ownerSession,location:{pathname:'/superadmin/',assign:url=>navigation.push(url)},URL,Response,Headers,Date,JSON,document:{}};
+const browser={fetch:transport,localStorage:memoryStorage(),sessionStorage:ownerSession,location:{pathname:'/superadmin/',href:'https://yaninatrainer.net/superadmin/',origin:'https://yaninatrainer.net',assign:url=>navigation.push(url)},URL,Response,Headers,Date,JSON,document:{}};
 browser.window=browser;
-vm.runInNewContext(fs.readFileSync(path.join(root,'assets/superadmin-access.js'),'utf8'),browser);
+vm.runInNewContext(fs.readFileSync(path.join(root,'assets/superadmin-access-v2.js'),'utf8'),browser);
 browser.fetch=(url,init={})=>transport(url,{...init,headers:{...init.headers,Authorization:'Bearer student-preview-token'}});
 await browser.YaninaAccess.api('students');
 await browser.YaninaAccess.switchView('1');
 assert.ok(requests.every(request=>request.authorization==='Bearer owner-token'),'student fetch wrapper must not overwrite owner authorization');
-assert.deepEqual(navigation,['/alumno/index.html?id=1']);
+assert.deepEqual(navigation,['https://yaninatrainer.net/alumno/index.html?id=1&sa=20261103-3']);
+assert.equal(browser.YaninaAccess.previewHref('https://other.example/path'), 'https://other.example/path');
+assert.equal(browser.YaninaAccess.previewHref('/alumno/entrenamiento.html?classId=7'), 'https://yaninatrainer.net/alumno/entrenamiento.html?classId=7&sa=20261103-3');
 assert.equal(JSON.parse(ownerSession.getItem('yaninaStudentSession')).token,'preview-token');
 assert.equal(JSON.parse(ownerSession.getItem('yaninaSuperadmin')).token,'owner-token');
 
 // Every page that consumes the preview adapter must load it before any inline guard.
 for(const dir of ['admin','alumno','student']) for(const file of fs.readdirSync(path.join(root,dir)).filter(f=>f.endsWith('.html'))) {
   const html=fs.readFileSync(path.join(root,dir,file),'utf8');
-  assert.ok(html.includes('/assets/superadmin-access.js?'),dir+'/'+file);
+  assert.ok(html.includes('/assets/superadmin-access-v2.js?'),dir+'/'+file);
   for(const match of html.matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/gi)) if(!match[1]?.includes('src=')) new Function(match[2]);
 }
 for(const match of fs.readFileSync(path.join(root,'superadmin/index.html'),'utf8').matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/gi)) if(!match[1]?.includes('src=')) new Function(match[2]);
 console.log('Superadmin setup, one-time invite, login, lockout, signatures, scoped previews, read-only restrictions and session isolation passed.');
-
