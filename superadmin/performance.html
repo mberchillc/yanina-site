@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Poerformance de la app | Yanina Trainer</title>
+  <script src="/assets/superadmin-access-v2.js?v=20261103-4"></script>
+  <link rel="stylesheet" href="/assets/yanina-brand.css?v=20261103-1">
+  <link rel="stylesheet" href="/assets/catchdog-footer.css?v=20261103-1">
+  <link rel="stylesheet" href="/assets/performance.css?v=20261103-1">
+  <script src="/assets/performance.js?v=20261103-1" defer></script>
+</head>
+<body class="yt-powered-page">
+<main class="performance-shell">
+  <header class="performance-header yt-brand-header yt-brand-dark">
+    <a class="yt-brand-group" href="/superadmin/"><span class="yt-brand-frame"><img class="yt-brand-logo" src="/assets/logo-cropped.png?v=20261103-brand1" alt="Yanina Trainer"></span><span class="yt-brand-context"><strong>Superadmin</strong><small>Actividad de la plataforma</small></span></a>
+    <nav class="yt-brand-actions" aria-label="Superadmin"><a class="button secondary" href="/superadmin/">Cambiar vistas</a><button class="button secondary" id="logoutBtn" type="button">Salir</button></nav>
+  </header>
+  <div class="performance-heading"><div><p class="eyebrow">Uso y crecimiento</p><h1>Poerformance de la app</h1><p id="period">Últimos 30 días</p></div><div class="refresh"><span class="live-dot"></span><span id="updated">Cargando actividad…</span><button id="refresh" class="button" type="button">Actualizar</button></div></div>
+  <p class="error" id="error" role="status" aria-live="polite"></p>
+  <section class="metrics" aria-label="Indicadores de actividad">
+    <article class="metric"><span class="metric-label">Clases cargadas</span><strong id="classes">—</strong><p id="classDetail">Creadas en los últimos 30 días</p></article>
+    <article class="metric"><span class="metric-label">Sesiones abiertas</span><strong id="open_sessions">—</strong><p id="sessionDetail">Actividad en los últimos 15 minutos</p></article>
+    <article class="metric"><span class="metric-label">Rutinas cargadas</span><strong id="routines">—</strong><p>Creadas en los últimos 30 días</p></article>
+    <article class="metric"><span class="metric-label">Ejercicios en biblioteca</span><strong id="library">—</strong><p>Catálogo disponible actualmente</p></article>
+    <article class="metric"><span class="metric-label">Mensajes intercambiados</span><strong id="messages">—</strong><p>Comentarios y mensajes de ambas partes</p></article>
+    <article class="metric"><span class="metric-label">Imágenes utilizadas</span><strong id="images">—</strong><p>Archivos únicos vinculados a nuevos registros</p></article>
+    <article class="metric"><span class="metric-label">Videos utilizados</span><strong id="videos">—</strong><p>Archivos únicos vinculados a nuevos registros</p></article>
+    <article class="metric"><span class="metric-label">Alumnos/as activos</span><strong id="active_students">—</strong><p id="studentDetail">Con actividad o clases en el período</p></article>
+    <article class="metric capacity-card"><span class="metric-label">Capacidad potencial estimada</span><strong id="capacity">—</strong><p>Usuarios activos por día · modelo de referencia</p><a href="#capacityModel">Ver supuestos de la estimación ↓</a></article>
+  </section>
+  <section class="activity-grid">
+    <article class="panel chart-panel"><div class="panel-heading"><div><h2>Actividad de los últimos 30 días</h2><p>Clases del calendario, rutinas y conversaciones.</p></div><span class="chip">30 días</span></div><div id="chart" class="chart" aria-live="polite"></div><div class="legend"><span><i class="calendar"></i>Clases del calendario</span><span><i class="routine"></i>Rutinas creadas</span><span><i class="message"></i>Mensajes</span></div></article>
+    <article class="panel"><h2>Actividad reciente</h2><p>Últimos movimientos dentro del período.</p><ol id="recent" class="recent"><li>Cargando…</li></ol></article>
+  </section>
+  <section class="panel model" id="capacityModel"><div><p class="eyebrow">Estimación técnica</p><h2>Capacidad según el uso diario</h2><p>Escenario de referencia: 100.000 solicitudes al día, compartidas por la cuenta de Cloudflare en su plan Free. No confirma el plan contratado ni la capacidad libre de esta app.</p><p>El cálculo divide ese presupuesto entre el uso supuesto por persona. No es una prueba de carga y no equivale a usuarios simultáneos. La base de datos, las imágenes, los videos, otras aplicaciones de la cuenta y el uso de IA pueden reducir la capacidad real.</p><a href="https://developers.cloudflare.com/workers/platform/limits/" target="_blank" rel="noopener noreferrer">Ver el límite de referencia de Cloudflare ↗</a></div><div class="model-control"><label for="requestsPerUser">Solicitudes por usuario al día<br><small>Supuesto editable para explorar escenarios</small></label><input id="requestsPerUser" type="number" min="1" max="10000" step="1" value="50"><p><strong id="capacityResult">—</strong> usuarios activos por día</p></div></section>
+  <details class="panel definitions"><summary>Cómo se cuentan los indicadores</summary><div><p><strong>Período:</strong> ventana móvil de los últimos 30 días. Los registros con fechas futuras quedan fuera.</p><p><strong>Clases y rutinas:</strong> se cuentan por su fecha de creación. Las clases del calendario se muestran aparte por su fecha programada.</p><p><strong>Sesiones:</strong> accesos reales de Yanina y alumnos con actividad reciente y sin cierre registrado. Se excluyen el Superadmin y todas sus vistas de muestra. La medición empieza con esta actualización; no se reconstruyen sesiones anteriores.</p><p><strong>Mensajes:</strong> comentarios de clases y videos, notas y mensajes de nutrición que continúan guardados. No se leen ni muestran sus textos.</p><p><strong>Archivos:</strong> se cuentan una vez por archivo vinculado a registros creados en el período. No es un contador de visualizaciones ni incluye las imágenes estáticas del sitio.</p><p><strong>Alumnos activos:</strong> perfiles existentes con clases, accesos o actividad registrada en el período. No equivale exclusivamente a alumnos que iniciaron sesión.</p><p><strong>Biblioteca y capacidad:</strong> son el inventario actual y una estimación, respectivamente; no tienen un histórico de altas de 30 días.</p><p><strong>Conservación:</strong> las métricas de sesiones se eliminan al superar 30 días, con limpieza diaria y al consultar. Las fichas, clases, rutinas, mensajes y archivos originales se conservan.</p><p id="sessionCoverage"></p></div></details>
+</main>
+<footer class="cd-powered-footer" aria-label="Powered by CatchDog"><span>Powered by</span><a href="https://catchdog.net/" target="_blank" rel="noopener noreferrer" aria-label="CatchDog — visitar sitio web de la empresa"><img src="/assets/catchdog-logo-light.png" alt="CatchDog" width="52" height="60" loading="lazy"></a></footer>
+</body>
+</html>

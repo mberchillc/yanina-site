@@ -429,11 +429,119 @@ async function handleSuperadminLogin(request, env) {
   return json({ ok: true, role: "superadmin", username, exp, token: await signAuthPayload({ role: "superadmin", username, exp }, env) });
 }
 
+// Performance telemetry is separate from training data and retains only 30 days.
+const PERFORMANCE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+async function ensurePerformanceTables(env) {
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS platform_activity_sessions (
+    session_hash TEXT PRIMARY KEY, role TEXT NOT NULL, student_id INTEGER,
+    started_at INTEGER NOT NULL, last_seen_at INTEGER NOT NULL,
+    ended_at INTEGER, expires_at INTEGER NOT NULL
+  )`).run();
+  await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_platform_activity_started
+    ON platform_activity_sessions(started_at)`).run();
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS platform_activity_meta (
+    id INTEGER PRIMARY KEY CHECK(id=1), enabled_at INTEGER NOT NULL
+  )`).run();
+  await env.DB.prepare(`INSERT INTO platform_activity_meta(id, enabled_at) VALUES(1, ?)
+    ON CONFLICT(id) DO NOTHING`).bind(Date.now()).run();
+}
+async function purgePerformanceSessions(env, now = Date.now()) {
+  await ensurePerformanceTables(env);
+  await env.DB.prepare("DELETE FROM platform_activity_sessions WHERE started_at < ?").bind(now - PERFORMANCE_WINDOW_MS).run();
+}
+async function observeAppSession(token, auth, env, close = false) {
+  if (!auth || auth.superadmin_preview || !['admin', 'student'].includes(auth.role)) return false;
+  await ensurePerformanceTables(env);
+  const now = Date.now();
+  await env.DB.prepare("DELETE FROM platform_activity_sessions WHERE started_at < ?").bind(now - PERFORMANCE_WINDOW_MS).run();
+  const hash = await sha256Hex(token);
+  if (close) {
+    await env.DB.prepare("UPDATE platform_activity_sessions SET ended_at = ?, last_seen_at = ? WHERE session_hash = ?")
+      .bind(now, now, hash).run();
+  } else {
+    await env.DB.prepare(`INSERT INTO platform_activity_sessions
+      (session_hash, role, student_id, started_at, last_seen_at, expires_at)
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT(session_hash) DO UPDATE SET last_seen_at = excluded.last_seen_at, ended_at = NULL`)
+      .bind(hash, auth.role, auth.role === 'student' ? Number(auth.student_id) : null, now, now, Number(auth.exp)).run();
+  }
+  return true;
+}
+async function issueAppToken(payload, env) {
+  const token = await signAuthPayload(payload, env);
+  try { await observeAppSession(token, JSON.parse(base64UrlDecode(token.split('.')[0])), env); }
+  catch (_) { console.warn('Session metrics unavailable; authentication continues.'); }
+  return token;
+}
+async function handleSessionActivity(request, env) {
+  const auth = await verifyAuthToken(request, env).catch(() => null);
+  if (!auth) return json({ error: 'AUTH_REQUIRED' }, 401);
+  if (auth.superadmin_preview || auth.role === 'superadmin') return json({ ignored: true });
+  const body = await readJsonBody(request);
+  const token = request.headers.get('Authorization').slice(7).trim();
+  await observeAppSession(token, auth, env, body.action === 'close');
+  return json({ ok: true });
+}
+async function handlePerformanceDashboard(env) {
+  const now = Date.now(), from = now - PERFORMANCE_WINDOW_MS;
+  await purgePerformanceSessions(env, now);
+  const tableResult = await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
+  const tables = new Set((tableResult.results || []).map(row => row.name));
+  const sources = [];
+  const add = (table, sql) => { if (tables.has(table)) sources.push(sql); };
+  add('classes', "SELECT 'class' kind, created_at at, student_id, NULL asset, 'admin' role FROM classes");
+  add('classes', "SELECT 'calendar_class' kind, class_date || ' ' || COALESCE(NULLIF(class_time,''),'00:00') at, student_id, NULL asset, 'admin' role FROM classes");
+  if (tables.has('classes')) add('routines', "SELECT 'routine' kind, r.created_at at, c.student_id, NULL asset, 'admin' role FROM routines r JOIN classes c ON c.id=r.class_id");
+  add('student_calendar_comments', "SELECT 'message' kind, created_at at, student_id, NULL asset, author_role role FROM student_calendar_comments");
+  add('student_video_comments', "SELECT 'message' kind, created_at at, student_id, NULL asset, author_role role FROM student_video_comments");
+  add('student_notes', "SELECT 'message' kind, created_at at, student_id, NULL asset, author_role role FROM student_notes WHERE trim(content)<>''");
+  add('student_measurements', "SELECT 'image' kind, created_at at, student_id, source_image_url asset, 'admin' role FROM student_measurements WHERE trim(COALESCE(source_image_url,''))<>''");
+  add('student_videos', "SELECT 'video' kind, created_at at, student_id, file_key asset, 'student' role FROM student_videos WHERE trim(COALESCE(file_key,''))<>''");
+  add('student_health_questionnaires', "SELECT 'image' kind, created_at at, student_id, file_key asset, 'student' role FROM student_health_questionnaires WHERE content_type LIKE 'image/%' AND trim(file_key)<>''");
+  add('payment_summaries', "SELECT 'image' kind, snapshot_created_at at, CAST(student_id AS INTEGER) student_id, snapshot_file_key asset, 'admin' role FROM payment_summaries WHERE snapshot_content_type LIKE 'image/%' AND trim(COALESCE(snapshot_file_key,''))<>''");
+  add('student_nutrition_meals', "SELECT 'image' kind, created_at at, student_id, photo_key asset, 'student' role FROM student_nutrition_meals WHERE content_type LIKE 'image/%' AND trim(photo_key)<>''");
+  add('student_nutrition_meals', "SELECT 'message' kind, created_at at, student_id, NULL asset, 'student' role FROM student_nutrition_meals WHERE trim(note)<>''");
+  add('student_nutrition_meals', "SELECT 'message' kind, reviewed_at at, student_id, NULL asset, 'admin' role FROM student_nutrition_meals WHERE trim(trainer_comment)<>''");
+  sources.push("SELECT 'session' kind, datetime(started_at/1000,'unixepoch') at, student_id, NULL asset, role FROM platform_activity_sessions");
+  const cte = `WITH bounds AS (SELECT ? lo, ? hi), activity AS (${sources.join(' UNION ALL ')}),
+    recent AS (SELECT a.*, b.lo FROM activity a, bounds b WHERE unixepoch(a.at)>=b.lo AND unixepoch(a.at)<=b.hi) `;
+  const range = [Math.floor(from / 1000), Math.floor(now / 1000)];
+  const counts = await env.DB.prepare(cte + "SELECT kind, COUNT(*) count, COUNT(DISTINCT asset) files FROM recent GROUP BY kind").bind(...range).all();
+  const daily = await env.DB.prepare(cte + "SELECT min(29, CAST((unixepoch(at)-lo)/86400 AS INTEGER)) day, kind, COUNT(*) count FROM recent GROUP BY day, kind ORDER BY day").bind(...range).all();
+  const feed = await env.DB.prepare(cte + "SELECT kind, at, role FROM recent ORDER BY unixepoch(at) DESC LIMIT 20").bind(...range).all();
+  const activeSources = ['SELECT student_id FROM recent WHERE student_id IS NOT NULL'];
+  if(tables.has('classes')) activeSources.push("SELECT student_id FROM classes,bounds WHERE unixepoch(class_date)>=lo AND unixepoch(class_date)<=hi");
+  if(tables.has('student_accounts')) activeSources.push("SELECT student_id FROM student_accounts,bounds WHERE COALESCE(is_active,1)=1 AND unixepoch(last_login_at)>=lo AND unixepoch(last_login_at)<=hi");
+  if(tables.has('student_nutrition_habits')) activeSources.push("SELECT student_id FROM student_nutrition_habits,bounds WHERE unixepoch(updated_at)>=lo AND unixepoch(updated_at)<=hi");
+  const students = tables.has('students') ? await env.DB.prepare(cte + `SELECT
+    (SELECT COUNT(*) FROM students) registered,
+    (SELECT COUNT(DISTINCT s.id) FROM students s JOIN (${activeSources.join(' UNION ALL ')}) a ON a.student_id=s.id) active`).bind(...range).first() : {registered:0,active:0};
+  const sessions = await env.DB.prepare(`SELECT COUNT(*) observed,
+    SUM(CASE WHEN ended_at IS NULL AND last_seen_at>=? AND expires_at>? THEN 1 ELSE 0 END) open
+    FROM platform_activity_sessions WHERE started_at>=?`).bind(now - 15*60*1000, now, from).first();
+  const meta = await env.DB.prepare('SELECT enabled_at FROM platform_activity_meta WHERE id=1').first();
+  const metrics = Object.fromEntries((counts.results || []).map(row => [row.kind, row]));
+  return json({
+    period:{days:30, from:new Date(from).toISOString(), to:new Date(now).toISOString()},
+    metrics:{classes:Number(metrics.class?.count || 0), calendar_classes:Number(metrics.calendar_class?.count || 0), routines:Number(metrics.routine?.count || 0),
+      messages:Number(metrics.message?.count || 0), images:Number(metrics.image?.files || 0), videos:Number(metrics.video?.files || 0),
+      active_students:Number(students.active || 0), registered_students:Number(students.registered || 0),
+      open_sessions:Number(sessions.open || 0), observed_sessions:Number(sessions.observed || 0)},
+    daily:daily.results || [], recent:feed.results || [],
+    sessions_measured_since:new Date(meta.enabled_at).toISOString(),
+    retention:{days:30,scope:'Only platform_activity_sessions; business records are never purged.'},
+    capacity:{reference_daily_requests:100000,requests_per_user_per_day:50,kind:'reference_model',
+      source:'https://developers.cloudflare.com/workers/platform/limits/'}
+  });
+}
+
+
 async function handleSuperadminRoute(request, env, url) {
   if (url.pathname === "/api/superadmin/setup" && request.method === "POST") return handleSuperadminSetup(request, env);
   if (url.pathname === "/api/superadmin/login" && request.method === "POST") return handleSuperadminLogin(request, env);
   const auth = await verifyAuthToken(request, env).catch(() => null);
   if (auth?.role !== "superadmin") return json({ error: "SUPERADMIN_AUTH_REQUIRED" }, 401);
+  if (url.pathname === "/api/superadmin/performance" && request.method === "GET") return handlePerformanceDashboard(env);
   if (url.pathname === "/api/superadmin/me" && request.method === "GET") return json({ username: auth.username, exp: auth.exp });
   if (url.pathname === "/api/superadmin/students" && request.method === "GET") {
     const result = await env.DB.prepare(`SELECT s.id, s.full_name,
@@ -725,7 +833,7 @@ async function handleSetupStudentPassword(request, env) {
     username: account.username || username,
     student_id: account.student_id,
     name: account.display_name || "Alumna",
-    token: await signAuthPayload({ role: "student", student_id: account.student_id, username: account.username || username }, env)
+    token: await issueAppToken({ role: "student", student_id: account.student_id, username: account.username || username }, env)
   });
 }
 
@@ -748,7 +856,7 @@ async function handleAuthLogin(request, env) {
       ok: true,
       role: "admin",
       username: usernameRaw,
-      token: await signAuthPayload({ role: "admin", username: usernameRaw }, env)
+      token: await issueAppToken({ role: "admin", username: usernameRaw }, env)
     });
   }
 
@@ -792,7 +900,7 @@ async function handleAuthLogin(request, env) {
     username: account.username || usernameRaw,
     student_id: account.student_id,
     name: account.display_name || "Alumna",
-    token: await signAuthPayload({ role: "student", student_id: account.student_id, username: account.username || usernameRaw }, env)
+    token: await issueAppToken({ role: "student", student_id: account.student_id, username: account.username || usernameRaw }, env)
   });
 }
 async function handleStarfitExtract(request, env) {
@@ -2076,8 +2184,14 @@ async function handleGetNutritionMealPhoto(request, env, mealId) {
 }
 
 export default {
+  async scheduled(event, env, ctx) { ctx.waitUntil(purgePerformanceSessions(env)); },
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === "/api/activity/session" && request.method === "POST") {
+      const response = await handleSessionActivity(request, env);
+      response.headers.set("Cache-Control", "no-store");
+      return response;
+    }
     if (request.method !== "OPTIONS" && url.pathname.startsWith("/api/superadmin/")) {
       const response = await handleSuperadminRoute(request, env, url);
       response.headers.set("Cache-Control", "no-store");
