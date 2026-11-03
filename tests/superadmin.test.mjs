@@ -81,7 +81,7 @@ function memoryStorage() { const values=new Map();return {getItem:k=>values.get(
 const local=memoryStorage(), session=memoryStorage();
 local.setItem('yaninaStudentSession','real-student-session');
 session.setItem('yaninaSuperadmin',JSON.stringify({token:'owner',exp:Date.now()+60000}));
-const context={window:{},localStorage:local,sessionStorage:session,location:{pathname:'/superadmin/'},URL,Response,Date,JSON,document:{}};
+const context={window:{fetch:()=>{}},localStorage:local,sessionStorage:session,location:{pathname:'/superadmin/'},URL,Response,Date,JSON,document:{}};
 vm.runInNewContext(fs.readFileSync(path.join(root,'assets/superadmin-access.js'),'utf8'),context);
 assert.equal(context.window.YaninaAccess.storage.getItem('yaninaStudentSession'),null);
 context.window.YaninaAccess.storage.setItem('yaninaStudentSession','preview');
@@ -89,6 +89,27 @@ assert.equal(session.getItem('yaninaStudentSession'),'preview');
 assert.equal(local.getItem('yaninaStudentSession'),'real-student-session');
 session.removeItem('yaninaSuperadmin');
 assert.equal(context.window.YaninaAccess.storage.getItem('yaninaStudentSession'),'real-student-session');
+
+// The student screen wraps the global fetch function to add its own token. Owner API
+// requests must keep the Superadmin token when the switcher loads or changes views.
+const ownerSession=memoryStorage();
+ownerSession.setItem('yaninaSuperadmin',JSON.stringify({token:'owner-token',username:'mauro',exp:Date.now()+60000}));
+const requests=[];
+const navigation=[];
+const transport=async (url,init)=>{
+  requests.push({url,authorization:new Headers(init.headers).get('Authorization')});
+  return Response.json(url.endsWith('/view')?{view:'student',student_id:1,name:'Alumna activa',token:'preview-token',exp:Date.now()+60000}:[]);
+};
+const browser={fetch:transport,localStorage:memoryStorage(),sessionStorage:ownerSession,location:{pathname:'/superadmin/',assign:url=>navigation.push(url)},URL,Response,Headers,Date,JSON,document:{}};
+browser.window=browser;
+vm.runInNewContext(fs.readFileSync(path.join(root,'assets/superadmin-access.js'),'utf8'),browser);
+browser.fetch=(url,init={})=>transport(url,{...init,headers:{...init.headers,Authorization:'Bearer student-preview-token'}});
+await browser.YaninaAccess.api('students');
+await browser.YaninaAccess.switchView('1');
+assert.ok(requests.every(request=>request.authorization==='Bearer owner-token'),'student fetch wrapper must not overwrite owner authorization');
+assert.deepEqual(navigation,['/alumno/index.html?id=1']);
+assert.equal(JSON.parse(ownerSession.getItem('yaninaStudentSession')).token,'preview-token');
+assert.equal(JSON.parse(ownerSession.getItem('yaninaSuperadmin')).token,'owner-token');
 
 // Every page that consumes the preview adapter must load it before any inline guard.
 for(const dir of ['admin','alumno','student']) for(const file of fs.readdirSync(path.join(root,dir)).filter(f=>f.endsWith('.html'))) {
@@ -98,3 +119,4 @@ for(const dir of ['admin','alumno','student']) for(const file of fs.readdirSync(
 }
 for(const match of fs.readFileSync(path.join(root,'superadmin/index.html'),'utf8').matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/gi)) if(!match[1]?.includes('src=')) new Function(match[2]);
 console.log('Superadmin setup, one-time invite, login, lockout, signatures, scoped previews, read-only restrictions and session isolation passed.');
+
